@@ -98,8 +98,12 @@ export async function computePayslip(
   const existingComputedPayslip = await prisma.payslip.findFirst({
     where: {
       employeeId: parseInt(employeeId, 10),
-      payrunId: payrun.id,
-      status: { in: ["COMPUTED", "VALIDATED", "PAID"] }
+      payrunId: { not: payrun.id },
+      status: { in: ["COMPUTED", "VALIDATED", "PAID"] },
+      payrun: {
+        periodStart: { lte: payrun.periodEnd },
+        periodEnd: { gte: payrun.periodStart }
+      }
     }
   });
 
