@@ -55,6 +55,36 @@
       "regex": "^/login(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/payroll/dashboard",
+      "regex": "^/payroll/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/payroll/dashboard(?:/)?$"
+    },
+    {
+      "page": "/payroll/payruns",
+      "regex": "^/payroll/payruns(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/payroll/payruns(?:/)?$"
+    },
+    {
+      "page": "/payroll/payslips",
+      "regex": "^/payroll/payslips(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/payroll/payslips(?:/)?$"
+    },
+    {
+      "page": "/payroll/rules",
+      "regex": "^/payroll/rules(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/payroll/rules(?:/)?$"
+    },
+    {
+      "page": "/payroll/structures",
+      "regex": "^/payroll/structures(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/payroll/structures(?:/)?$"
     }
   ],
   "dataRoutes": [],

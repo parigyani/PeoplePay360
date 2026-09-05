@@ -1,4 +1,9 @@
 {
+  "/(dashboard)/payroll/dashboard/page": "/payroll/dashboard",
+  "/(dashboard)/payroll/payruns/page": "/payroll/payruns",
+  "/(dashboard)/payroll/payslips/page": "/payroll/payslips",
+  "/(dashboard)/payroll/rules/page": "/payroll/rules",
+  "/(dashboard)/payroll/structures/page": "/payroll/structures",
   "/_global-error/page": "/_global-error",
   "/_not-found/page": "/_not-found",
   "/api/auth/[...nextauth]/route": "/api/auth/[...nextauth]",

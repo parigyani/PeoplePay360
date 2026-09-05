@@ -47,6 +47,51 @@ type RouteHandlerConfig<Route extends AppRouteHandlerRoutes = AppRouteHandlerRou
 }
 
 
+// Validate ../../app/(dashboard)/payroll/dashboard/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/payroll/dashboard">> = Specific
+  const handler = {} as typeof import("../../app/(dashboard)/payroll/dashboard/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(dashboard)/payroll/payruns/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/payroll/payruns">> = Specific
+  const handler = {} as typeof import("../../app/(dashboard)/payroll/payruns/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(dashboard)/payroll/payslips/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/payroll/payslips">> = Specific
+  const handler = {} as typeof import("../../app/(dashboard)/payroll/payslips/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(dashboard)/payroll/rules/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/payroll/rules">> = Specific
+  const handler = {} as typeof import("../../app/(dashboard)/payroll/rules/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
+// Validate ../../app/(dashboard)/payroll/structures/page.tsx
+{
+  type __IsExpected<Specific extends AppPageConfig<"/payroll/structures">> = Specific
+  const handler = {} as typeof import("../../app/(dashboard)/payroll/structures/page.js")
+  type __Check = __IsExpected<typeof handler>
+  // @ts-ignore
+  type __Unused = __Check
+}
+
 // Validate ../../app/login/page.tsx
 {
   type __IsExpected<Specific extends AppPageConfig<"/login">> = Specific
