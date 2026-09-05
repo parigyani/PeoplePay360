@@ -17,7 +17,7 @@ const PERMISSIONS: Record<Role, string[]> = {
     "attendance:read", "attendance:write",
     "schedule:read", "schedule:write",
     "timeoff:approve",
-    "payrun:read", "payrun:write", "payrun:compute",
+    "payrun:read", "payrun:write", "payrun:compute", "payrun:validate", "payrun:mark-paid",
     "payslip:read", "payslip:write",
     "structure:read",
     "rule:read"
@@ -28,7 +28,7 @@ const PERMISSIONS: Record<Role, string[]> = {
     "attendance:read", "attendance:write",
     "schedule:read", "schedule:write",
     "timeoff:approve",
-    "payrun:read", "payrun:write", "payrun:compute",
+    "payrun:read", "payrun:write", "payrun:compute", "payrun:validate", "payrun:mark-paid",
     "payslip:read", "payslip:write",
     "structure:read", "structure:write",
     "rule:read", "rule:write"
@@ -40,7 +40,7 @@ const PERMISSIONS: Record<Role, string[]> = {
     "attendance:read", "attendance:write",
     "schedule:read", "schedule:write",
     "timeoff:approve",
-    "payrun:read", "payrun:write", "payrun:compute",
+    "payrun:read", "payrun:write", "payrun:compute", "payrun:validate", "payrun:mark-paid",
     "payslip:read", "payslip:write",
     "structure:read", "structure:write",
     "rule:read", "rule:write",
