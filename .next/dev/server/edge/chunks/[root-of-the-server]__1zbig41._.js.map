@@ -2,5 +2,5 @@
   "version": 3,
   "sources": [],
   "sections": [
-    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["file:///Users/parigyan/Desktop/PeoplePay360/middleware.ts"],"sourcesContent":["import { withAuth } from \"next-auth/middleware\";\n\nexport default withAuth({\n  pages: {\n    signIn: \"/login\",\n  },\n});\n\nexport const config = {\n  matcher: [\n    \"/((?!api/auth|_next/static|_next/image|favicon.ico|login).*)\"\n  ],\n};\n"],"names":["pages","signIn","config","matcher"],"mappings":";;;;;;AAAA;;uCAEe,IAAA,8JAAQ,EAAC;IACtBA,OAAO;QACLC,QAAQ;IACV;AACF;AAEO,MAAMC,SAAS;IACpBC,SAAS;QACP;KACD;AACH"}}]
+    {"offset": {"line": 16, "column": 0}, "map": {"version":3,"sources":["file:///Users/utkarsingh/PeoplePay360/middleware.ts"],"sourcesContent":["import { withAuth } from \"next-auth/middleware\";\n\nexport default withAuth({\n  pages: {\n    signIn: \"/login\",\n  },\n});\n\nexport const config = {\n  matcher: [\n    \"/((?!api/auth|_next/static|_next/image|favicon.ico|login).*)\"\n  ],\n};\n"],"names":["pages","signIn","config","matcher"],"mappings":";;;;;;AAAA;;uCAEe,IAAA,8JAAQ,EAAC;IACtBA,OAAO;QACLC,QAAQ;IACV;AACF;AAEO,MAAMC,SAAS;IACpBC,SAAS;QACP;KACD;AACH"}}]
 }
