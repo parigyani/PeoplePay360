@@ -29,6 +29,10 @@ export async function PUT(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
+    if (!can((session.user as any).role, "timeoff:approve")) {
+      return new NextResponse("Forbidden", { status: 403 });
+    }
+
 
     const requestId = parseInt(id, 10);
     if (isNaN(requestId)) {

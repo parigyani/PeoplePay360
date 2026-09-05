@@ -3,6 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { computeWorkedHours, computeStatus } from "@/lib/attendance";
+import { can } from "@/lib/rbac";
 
 export async function GET() {
   const session = await getServerSession(authOptions);
@@ -55,6 +56,10 @@ export async function POST(request: Request) {
   const session = await getServerSession(authOptions);
   if (!session || !(session.user as any).employeeId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (!can((session.user as any).role, "attendance:submit")) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const employeeId = (session.user as any).employeeId;

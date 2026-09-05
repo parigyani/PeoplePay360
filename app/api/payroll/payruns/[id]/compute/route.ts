@@ -28,6 +28,10 @@ export async function POST(
 
     if (!payrun) return new NextResponse("Not Found", { status: 404 });
 
+    if (payrun.status === "VALIDATED" || payrun.status === "PAID") {
+      return new NextResponse("Cannot recompute a payrun that is already validated or paid", { status: 400 });
+    }
+
     // Compute payslips (we do this outside the main transaction because
     // computePayslip itself executes Prisma queries, and mixing interactive 
     // transactions with external queries is fragile in Prisma).

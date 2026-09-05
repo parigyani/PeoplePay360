@@ -4,6 +4,9 @@ import { renderToBuffer } from '@react-pdf/renderer';
 import { PayslipPDF } from '@/components/payroll/PayslipPDF';
 import { sendPayslipEmail } from '@/lib/mailer';
 import React from 'react';
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { can } from "@/lib/rbac";
 
 export const runtime = 'nodejs';
 
@@ -11,6 +14,11 @@ export async function POST(
   request: NextRequest
 ) {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session || !can((session.user as any).role, "payslip:send")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const { payrunId, payslipIds } = await request.json();
 
     let payslips = [];
