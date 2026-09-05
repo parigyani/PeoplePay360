@@ -12,6 +12,7 @@ const requestSchema = z.object({
   endDate: z.coerce.date(),
   duration: z.coerce.number().positive(),
   status: z.string().default("PENDING"),
+  reason: z.string().nullable().optional(),
 }).refine(
   (data) => data.endDate >= data.startDate,
   { message: "End Date cannot be earlier than Start Date" }
@@ -27,6 +28,7 @@ export async function PUT(
     if (!session) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
+
 
     const requestId = parseInt(id, 10);
     if (isNaN(requestId)) {
@@ -54,6 +56,7 @@ export async function PUT(
         endDate: data.endDate,
         duration: data.duration,
         status: "PENDING", // Resets to PENDING just in case
+        reason: data.reason,
       },
     });
 

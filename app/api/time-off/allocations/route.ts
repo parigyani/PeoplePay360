@@ -11,6 +11,7 @@ const allocationSchema = z.object({
   allocated: z.coerce.number().min(0),
   validFrom: z.coerce.date(),
   validTo: z.coerce.date().nullable().optional(),
+  description: z.string().nullable().optional(),
 }).refine(
   (data) => !data.validTo || data.validTo >= data.validFrom,
   { message: "Valid To cannot be earlier than Valid From" }
@@ -39,6 +40,7 @@ export async function POST(request: Request) {
         remaining: data.allocated,
         validFrom: data.validFrom,
         validTo: data.validTo,
+        description: data.description,
       },
     });
 

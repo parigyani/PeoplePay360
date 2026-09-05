@@ -12,6 +12,7 @@ const requestSchema = z.object({
   endDate: z.coerce.date(),
   duration: z.coerce.number().positive(),
   status: z.string().default("PENDING"),
+  reason: z.string().nullable().optional(),
 }).refine(
   (data) => data.endDate >= data.startDate,
   { message: "End Date cannot be earlier than Start Date" }
@@ -35,6 +36,7 @@ export async function POST(request: Request) {
         endDate: data.endDate,
         duration: data.duration,
         status: "PENDING", // Always PENDING on creation
+        reason: data.reason,
       },
     });
 

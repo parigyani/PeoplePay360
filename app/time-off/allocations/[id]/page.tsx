@@ -19,6 +19,7 @@ export default async function EditAllocationPage({ params }: { params: { id: str
 
   const allocation = await prisma.allocation.findUnique({
     where: { id: allocId },
+    include: { employee: true },
   });
 
   if (!allocation) {
@@ -42,7 +43,16 @@ export default async function EditAllocationPage({ params }: { params: { id: str
     remaining: allocation.remaining,
     validFrom: allocation.validFrom,
     validTo: allocation.validTo,
+    status: allocation.status,
+    description: allocation.description || "",
+    approverId: allocation.approverId?.toString() || "",
   };
+
+  const approver = allocation.approverId 
+    ? await prisma.user.findUnique({ where: { id: allocation.approverId } })
+    : null;
+    
+  const canApprove = can((session.user as any).role, "timeoff:approve");
 
   return (
     <div className="container mx-auto py-10">
@@ -50,6 +60,9 @@ export default async function EditAllocationPage({ params }: { params: { id: str
         initialData={initialData} 
         employees={employees} 
         types={types} 
+        employeeName={allocation.employee.name}
+        approverName={approver?.email}
+        canApprove={canApprove}
       />
     </div>
   );

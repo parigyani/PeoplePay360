@@ -1,4 +1,6 @@
 import { prisma } from "@/lib/prisma";
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
 
 export async function applyApproval(requestId: string): Promise<void> {
   const reqId = parseInt(requestId, 10);
@@ -24,6 +26,7 @@ export async function applyApproval(requestId: string): Promise<void> {
     }
 
     // 3. If requiresAllocation is true:
+    let allocationIdToSave = null;
     if (request.type.requiresAllocation) {
       // Find the matching Allocation for this employeeId + typeId that is currently valid
       // (validFrom <= request.startDate, and validTo is null or >= request.startDate)
@@ -62,13 +65,20 @@ export async function applyApproval(requestId: string): Promise<void> {
           remaining: { decrement: request.duration },
         },
       });
+      
+      allocationIdToSave = allocation.id;
     }
+
+    const session = await getServerSession(authOptions);
+    const approverId = session?.user ? parseInt((session.user as any).id, 10) : null;
 
     // Set the TimeOffRequest's status to APPROVED
     await tx.timeOffRequest.update({
       where: { id: request.id },
       data: {
         status: "APPROVED",
+        approverId,
+        allocationId: allocationIdToSave,
       },
     });
   });

@@ -10,6 +10,10 @@ const typeSchema = z.object({
   unit: z.enum(["DAYS", "HOURS"]),
   requiresAllocation: z.boolean(),
   payrollIntegrated: z.boolean(),
+  approverRole: z.string().nullable().optional(),
+  color: z.string().nullable().optional(),
+  isActive: z.boolean().optional(),
+  notes: z.string().nullable().optional(),
 });
 
 export async function POST(request: Request) {

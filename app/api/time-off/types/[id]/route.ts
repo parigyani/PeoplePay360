@@ -10,6 +10,10 @@ const typeSchema = z.object({
   unit: z.enum(["DAYS", "HOURS"]),
   requiresAllocation: z.boolean(),
   payrollIntegrated: z.boolean(),
+  approverRole: z.string().nullable().optional(),
+  color: z.string().nullable().optional(),
+  isActive: z.boolean().optional(),
+  notes: z.string().nullable().optional(),
 });
 
 export async function PUT(
@@ -22,6 +26,7 @@ export async function PUT(
     if (!session || !can((session.user as any).role, "timeoff:configure")) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
+
 
     const typeId = parseInt(id, 10);
     if (isNaN(typeId)) {

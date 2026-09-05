@@ -56,6 +56,7 @@ model User {
   email      String    @unique
   password   String
   role       Role
+  isActive   Boolean   @default(true)
   employeeId Int?      @unique
   employee   Employee? @relation("UserEmployee", fields: [employeeId], references: [id])
 }
@@ -145,6 +146,10 @@ model TimeOffType {
   unit               LeaveUnit
   requiresAllocation Boolean
   payrollIntegrated  Boolean
+  approverRole       String?
+  color              String?
+  isActive           Boolean   @default(true)
+  notes              String?
 
   allocations Allocation[]     @relation("TypeAllocations")
   requests    TimeOffRequest[] @relation("TypeRequests")
@@ -163,6 +168,9 @@ model Allocation {
   remaining  Float
   validFrom  DateTime
   validTo    DateTime?
+  status     String      @default("PENDING")
+  approverId Int?
+  description String?
 }
 
 model TimeOffRequest {
@@ -175,8 +183,11 @@ model TimeOffRequest {
   type       TimeOffType @relation("TypeRequests", fields: [typeId], references: [id])
   startDate  DateTime
   endDate    DateTime
-  duration   Float
-  status     String
+  duration     Float
+  status       String
+  approverId   Int?
+  allocationId Int?
+  reason       String?
 }
 
 model SalaryStructure {

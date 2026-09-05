@@ -8,41 +8,35 @@ export async function POST(
   request: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session || !can((session.user as any).role, "timeoff:approve")) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-
-    const requestId = parseInt(id, 10);
-    if (isNaN(requestId)) {
+    const allocationId = parseInt((await params).id, 10);
+    if (isNaN(allocationId)) {
       return new NextResponse("Invalid ID", { status: 400 });
     }
 
-    const req = await prisma.timeOffRequest.findUnique({
-      where: { id: requestId },
+    const allocation = await prisma.allocation.findUnique({
+      where: { id: allocationId },
     });
 
-    if (!req) {
-      return new NextResponse("Not Found", { status: 404 });
+    if (!allocation || allocation.status !== "PENDING") {
+      return new NextResponse("Allocation not found or not pending", { status: 400 });
     }
 
-    if (req.status !== "PENDING") {
-      return new NextResponse("Only PENDING requests can be refused", { status: 400 });
-    }
-
-    await prisma.timeOffRequest.update({
-      where: { id: requestId },
-      data: { 
-        status: "REFUSED",
+    const updated = await prisma.allocation.update({
+      where: { id: allocationId },
+      data: {
+        status: "APPROVED",
         approverId: parseInt((session.user as any).id, 10),
       },
     });
 
-    return new NextResponse("Refused", { status: 200 });
-  } catch (error: any) {
+    return NextResponse.json(updated);
+  } catch (error) {
     console.error(error);
     return new NextResponse("Internal Error", { status: 500 });
   }

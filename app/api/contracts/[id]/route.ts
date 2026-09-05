@@ -30,6 +30,7 @@ export async function PUT(
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
+
     const contractId = parseInt(id, 10);
     if (isNaN(contractId)) {
       return new NextResponse("Invalid ID", { status: 400 });

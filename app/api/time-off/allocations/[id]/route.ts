@@ -11,6 +11,7 @@ const allocationSchema = z.object({
   allocated: z.coerce.number().min(0),
   validFrom: z.coerce.date(),
   validTo: z.coerce.date().nullable().optional(),
+  description: z.string().nullable().optional(),
 }).refine(
   (data) => !data.validTo || data.validTo >= data.validFrom,
   { message: "Valid To cannot be earlier than Valid From" }
@@ -26,6 +27,7 @@ export async function PUT(
     if (!session || !can((session.user as any).role, "timeoff:configure")) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
+
 
     const allocationId = parseInt(id, 10);
     if (isNaN(allocationId)) {
@@ -60,6 +62,7 @@ export async function PUT(
         // Notice we do NOT touch 'taken' here.
         validFrom: data.validFrom,
         validTo: data.validTo,
+        description: data.description,
       },
     });
 
