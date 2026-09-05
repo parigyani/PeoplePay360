@@ -39,7 +39,18 @@ const NAV_ITEMS = [
       { label: "Allocations", href: "/time-off/allocations" }
     ]
   },
-  { label: "Payroll", href: "/payroll/structures", permission: "structure:read" },
+  { 
+    label: "Payroll", 
+    href: "/payroll", 
+    permission: "structure:read",
+    subItems: [
+      { label: "Dashboard", href: "/payroll/dashboard" },
+      { label: "Payruns", href: "/payroll/payruns" },
+      { label: "Payslips", href: "/payroll/payslips" },
+      { label: "Structures", href: "/payroll/structures" },
+      { label: "Rules", href: "/payroll/rules" }
+    ]
+  },
 ];
 
 export function TopNav() {
@@ -56,7 +67,7 @@ export function TopNav() {
     if (href === "/contracts") return pathname.startsWith("/contracts");
     if (href === "/attendance") return pathname.startsWith("/attendance");
     if (href === "/time-off") return pathname.startsWith("/time-off");
-    if (href === "/payroll/structures") return pathname.startsWith("/payroll");
+    if (href === "/payroll") return pathname.startsWith("/payroll");
     if (href === "/users") return pathname.startsWith("/users");
     return false;
   }
