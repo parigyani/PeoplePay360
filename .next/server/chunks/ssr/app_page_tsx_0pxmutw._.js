@@ -1,0 +1,3 @@
+module.exports=[60350,a=>{"use strict";var b=a.i(87924),c=a.i(75003);a.s(["default",0,function(){let{data:a,status:d}=(0,c.useSession)();return"loading"===d?(0,b.jsx)("div",{className:"p-8",children:"Loading..."}):a?(0,b.jsxs)("div",{className:"p-8",children:[(0,b.jsx)("h1",{className:"text-3xl font-bold mb-4",children:"Welcome to PeoplePay360"}),(0,b.jsxs)("div",{className:"mb-4 text-lg",children:["Logged in as ",a.user?.email," — role: ",a.user?.role]}),(0,b.jsx)("button",{onClick:()=>(0,c.signOut)(),className:"bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600",children:"Sign Out"})]}):(0,b.jsx)("div",{className:"p-8",children:"Not authenticated"})}])}];
+
+//# sourceMappingURL=app_page_tsx_0pxmutw._.js.map
