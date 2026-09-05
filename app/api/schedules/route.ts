@@ -22,6 +22,9 @@ const scheduleSchema = z.object({
   name: z.string().min(1, "Name is required"),
   type: z.enum(["Standard", "Shift", "Flexible"]),
   patterns: z.array(patternSchema).min(1, "At least one pattern row is required"),
+  company: z.string().optional(),
+  timezone: z.string().optional(),
+  isActive: z.boolean().default(true),
 });
 
 function computeWeeklyHours(patterns: z.infer<typeof patternSchema>[]) {
@@ -77,6 +80,9 @@ export async function POST(request: Request) {
         name: data.name,
         type: data.type,
         weeklyHours,
+        company: data.company,
+        timezone: data.timezone,
+        isActive: data.isActive,
         patterns: {
           create: data.patterns.map((p) => ({
             day: p.day,

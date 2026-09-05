@@ -74,9 +74,7 @@ export function EmployeeKanban({ employees, onClick }: EmployeeKanbanProps) {
                 <div className="flex items-start gap-3">
                   {/* Avatar */}
                   <div
-                    className={`avatar-initials h-10 w-10 text-xs bg-gradient-to-br ${getAvatarColor(
-                      employee.name
-                    )} shrink-0`}
+                    className="h-10 w-10 flex items-center justify-center rounded-md border border-purple-500/30 bg-purple-500/10 text-purple-400 font-bold text-xs shrink-0"
                   >
                     {getInitials(employee.name)}
                   </div>
@@ -89,7 +87,7 @@ export function EmployeeKanban({ employees, onClick }: EmployeeKanbanProps) {
                     <p className="text-xs text-muted-foreground truncate mt-0.5">
                       {employee.jobPosition}
                     </p>
-                    <p className="text-xs text-muted-foreground/60 truncate">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 truncate mt-1">
                       {employee.department}
                     </p>
 

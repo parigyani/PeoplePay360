@@ -37,7 +37,7 @@ export async function POST(
       where: { id: requestId },
       data: { 
         status: "REFUSED",
-        approverId: parseInt((session.user as any).id, 10),
+        approverRole: (session.user as any).role,
       },
     });
 

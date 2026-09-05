@@ -47,7 +47,7 @@ const contractSchema = z.object({
 export type ContractFormValues = z.infer<typeof contractSchema>;
 
 interface ContractFormProps {
-  initialData?: ContractFormValues & { id?: number };
+  initialData?: ContractFormValues & { id?: number; code?: string | null };
   employees: { id: number; name: string }[];
   structures: { id: number; name: string }[];
 }
@@ -101,7 +101,7 @@ export function ContractForm({ initialData, employees, structures }: ContractFor
   return (
     <Card className="max-w-2xl mx-auto mt-8">
       <CardHeader>
-        <CardTitle>{initialData ? "Edit Contract" : "New Contract"}</CardTitle>
+        <CardTitle>{initialData?.code ? `Contract / ${initialData.code}` : "New Contract"}</CardTitle>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -162,6 +162,12 @@ export function ContractForm({ initialData, employees, structures }: ContractFor
                   </FormItem>
                 )}
               />
+
+              <div className="col-span-1 md:col-span-2 mt-2">
+                <div className="rounded-md border border-white/[0.08] bg-white/[0.02] p-4 text-sm text-muted-foreground">
+                  <strong>Note:</strong> The assigned Salary Structure defines the pay components (Basic, HRA, etc.) computed during payroll. Changing this will only affect future payruns.
+                </div>
+              </div>
 
               <FormField
                 control={form.control}

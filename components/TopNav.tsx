@@ -9,8 +9,24 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { ChevronDown } from "lucide-react";
 
 const NAV_ITEMS = [
-  { label: "Employees", href: "/employees", permission: "employee:read" },
-  { label: "Contracts", href: "/contracts", permission: "contract:read" },
+  { label: "Users", href: "/users", permission: "user:manage" },
+  { 
+    label: "Employees", 
+    href: "/employees", 
+    permission: "employee:read",
+    subItems: [
+      { label: "Kanban View", href: "/employees" },
+      { label: "List View", href: "/employees?view=list" }
+    ]
+  },
+  { 
+    label: "Contracts", 
+    href: "/contracts", 
+    permission: "contract:read",
+    subItems: [
+      { label: "All Contracts", href: "/contracts" },
+    ]
+  },
   { label: "Attendance", href: "/attendance", permission: "attendance:read" },
   { 
     label: "Time Off", 
@@ -24,7 +40,6 @@ const NAV_ITEMS = [
     ]
   },
   { label: "Payroll", href: "/payroll/structures", permission: "structure:read" },
-  { label: "Users", href: "/users", permission: "user:manage" },
 ];
 
 export function TopNav() {
@@ -62,7 +77,7 @@ export function TopNav() {
     <nav className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-[hsl(224,71%,4%)]/95 backdrop-blur-md">
       <div className="flex h-14 items-center px-6">
         {/* Logo */}
-        <Link href="/employees" className="flex items-center gap-2 mr-8">
+        <Link href="/users" className="flex items-center gap-2 mr-8">
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary font-bold text-sm">
             HR
           </div>

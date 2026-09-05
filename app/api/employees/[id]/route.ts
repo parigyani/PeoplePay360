@@ -12,6 +12,9 @@ const employeeSchema = z.object({
   managerId: z.number().nullable().optional(),
   scheduleId: z.number().nullable().optional(),
   status: z.string().min(1, "Status is required").optional(),
+  phone: z.string().optional().nullable(),
+  workLocation: z.string().optional().nullable(),
+  company: z.string().optional().nullable(),
 });
 
 export async function GET(
@@ -91,6 +94,9 @@ export async function PATCH(
         ...(data.managerId !== undefined && { managerId: data.managerId }),
         ...(data.scheduleId !== undefined && { scheduleId: data.scheduleId }),
         ...(data.status !== undefined && { status: data.status }),
+        ...(data.phone !== undefined && { phone: data.phone }),
+        ...(data.workLocation !== undefined && { workLocation: data.workLocation }),
+        ...(data.company !== undefined && { company: data.company }),
       },
     });
 

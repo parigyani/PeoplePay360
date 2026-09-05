@@ -158,8 +158,10 @@ export function EmployeeClientView({
       )}
 
       {/* Footer hint */}
-      <p className="text-xs text-muted-foreground/60 pt-4">
-        💡 Click any employee card to view their full profile, edit details, or navigate to related records.
+      <p className="text-xs text-muted-foreground/60 pt-4 text-center">
+        {activeView === "kanban" 
+          ? "Useful note: Kanban is good for browsing; clicking a card should open the same Employee Form used everywhere else."
+          : "the list view is the main entry point for opening a specific employee record quickly"}
       </p>
 
       {/* Create Dialog */}

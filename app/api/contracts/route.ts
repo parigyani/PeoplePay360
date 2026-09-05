@@ -33,6 +33,24 @@ export async function POST(request: Request) {
       endDate: body.endDate ? new Date(body.endDate) : null,
     });
 
+    if (data.status === "Active") {
+      const existingActiveContracts = await prisma.contract.findMany({
+        where: {
+          employeeId: parseInt(data.employeeId, 10),
+          status: "Active",
+        },
+      });
+      const start1 = data.startDate.getTime();
+      const end1 = data.endDate ? data.endDate.getTime() : Infinity;
+      for (const existing of existingActiveContracts) {
+        const start2 = existing.startDate.getTime();
+        const end2 = existing.endDate ? existing.endDate.getTime() : Infinity;
+        if (Math.max(start1, start2) <= Math.min(end1, end2)) {
+          return new NextResponse(JSON.stringify({ error: "Overlapping active contract exists" }), { status: 400 });
+        }
+      }
+    }
+
     const contract = await prisma.contract.create({
       data: {
         employeeId: parseInt(data.employeeId, 10),
@@ -43,6 +61,7 @@ export async function POST(request: Request) {
         endDate: data.endDate,
         structureId: parseInt(data.structureId, 10),
         status: data.status,
+        code: `CON/${data.startDate.getFullYear()}/${Math.floor(Math.random() * 10000)}`,
       },
     });
 

@@ -40,6 +40,7 @@ export default async function EditContractPage({ params }: { params: { id: strin
     endDate: contract.endDate,
     structureId: contract.structureId.toString(),
     status: contract.status,
+    code: contract.code,
   };
 
   return (

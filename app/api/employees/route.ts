@@ -12,6 +12,9 @@ const employeeSchema = z.object({
   managerId: z.number().nullable().optional(),
   scheduleId: z.number().nullable().optional(),
   status: z.string().min(1, "Status is required"),
+  phone: z.string().optional().nullable(),
+  workLocation: z.string().optional().nullable(),
+  company: z.string().optional().nullable(),
 });
 
 export async function GET() {
@@ -62,6 +65,9 @@ export async function POST(req: NextRequest) {
         managerId: data.managerId ?? null,
         scheduleId: data.scheduleId ?? null,
         status: data.status,
+        phone: data.phone ?? null,
+        workLocation: data.workLocation ?? null,
+        company: data.company ?? null,
       },
     });
 

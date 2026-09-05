@@ -78,12 +78,11 @@ export default async function ContractsListPage({
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Employee Name</TableHead>
-              <TableHead>Department</TableHead>
-              <TableHead>Job Position</TableHead>
-              <TableHead>Wage</TableHead>
+              <TableHead>Contract</TableHead>
+              <TableHead>Employee</TableHead>
               <TableHead>Start Date</TableHead>
               <TableHead>End Date</TableHead>
+              <TableHead>Wage / Month</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -104,22 +103,28 @@ export default async function ContractsListPage({
                     className={isActive ? "bg-green-50/50 hover:bg-green-50/80 dark:bg-green-900/10 dark:hover:bg-green-900/20" : ""}
                   >
                     <TableCell className="font-medium">
+                      {contract.code || "N/A"}
+                    </TableCell>
+                    <TableCell>
                       {contract.employee.name}
                     </TableCell>
-                    <TableCell>{contract.department}</TableCell>
-                    <TableCell>{contract.jobPosition}</TableCell>
-                    <TableCell>${contract.wage.toFixed(2)}</TableCell>
-                    <TableCell>{format(new Date(contract.startDate), "PPP")}</TableCell>
+                    <TableCell>{format(new Date(contract.startDate), "MMM d, yyyy")}</TableCell>
                     <TableCell>
                       {contract.endDate
-                        ? format(new Date(contract.endDate), "PPP")
+                        ? format(new Date(contract.endDate), "MMM d, yyyy")
                         : "Ongoing"}
                     </TableCell>
+                    <TableCell>${contract.wage.toFixed(2)}</TableCell>
                     <TableCell>
-                      <div className="flex flex-col gap-2 items-start">
-                        <Badge variant="secondary">{contract.status}</Badge>
-                        {isActive && <Badge variant="default" className="bg-green-600 hover:bg-green-700">Active</Badge>}
-                      </div>
+                      {isActive ? (
+                        <Badge variant="default" className="bg-green-600 hover:bg-green-700">Running</Badge>
+                      ) : (
+                        contract.endDate && new Date(contract.endDate) < now ? (
+                          <Badge variant="secondary" className="bg-amber-500/20 text-amber-500 hover:bg-amber-500/30">Expired</Badge>
+                        ) : (
+                          <Badge variant="secondary">{contract.status}</Badge>
+                        )
+                      )}
                     </TableCell>
                     <TableCell className="text-right">
                       {canWrite && (
@@ -137,6 +142,10 @@ export default async function ContractsListPage({
           </TableBody>
         </Table>
       </div>
+
+      <p className="text-xs text-muted-foreground/60 text-center pt-4">
+        Contracts define the wage, structure, and active period. Only one "Running" contract per employee is permitted.
+      </p>
     </div>
   );
 }

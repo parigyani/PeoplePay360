@@ -74,6 +74,9 @@ model Employee {
   scheduleId   Int?
   schedule     WorkingSchedule? @relation("EmployeeSchedule", fields: [scheduleId], references: [id])
   status       String
+  phone        String?
+  workLocation String?
+  company      String?
 
   user        User?            @relation("UserEmployee")
   contracts   Contract[]       @relation("EmployeeContracts")
@@ -90,6 +93,9 @@ model WorkingSchedule {
   name        String
   type        String
   weeklyHours Float
+  company     String?
+  timezone    String?
+  isActive    Boolean  @default(true)
 
   patterns  WeeklyPattern[] @relation("SchedulePatterns")
   employees Employee[]      @relation("EmployeeSchedule")
@@ -113,6 +119,7 @@ model Contract {
   updatedAt   DateTime        @updatedAt
   employeeId  Int
   employee    Employee        @relation("EmployeeContracts", fields: [employeeId], references: [id])
+  code        String?         @unique
   department  String
   jobPosition String
   wage        Float
