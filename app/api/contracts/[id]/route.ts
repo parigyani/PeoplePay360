@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { can } from "@/lib/rbac";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import * as z from "zod";
 
 const contractSchema = z.object({
