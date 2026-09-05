@@ -174,7 +174,7 @@ export function PayrunWizard({ structures, employees }: { structures: Structure[
 
           <div className="mt-6 flex justify-between">
             <button onClick={() => setStep(1)} className="bg-gray-200 text-gray-800 px-4 py-2 rounded shadow hover:bg-gray-300">Back</button>
-            <button onClick={handleCreate} disabled={loading} className="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 disabled:opacity-50">
+            <button onClick={handleCreate} disabled={loading || selectedEmployees.size === 0} className="bg-green-600 text-white px-4 py-2 rounded shadow hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
               {loading ? "Creating..." : `Create Payrun (${selectedEmployees.size})`}
             </button>
           </div>

@@ -40,21 +40,34 @@ export function PayrunActions({ payrunId, status }: PayrunActionsProps) {
 
   return (
     <div className="flex flex-col gap-2 items-end">
-      {status === "DRAFT" && (
-        <Button onClick={() => handleAction("compute")} disabled={loading}>
-          {loading ? "Computing..." : "Compute"}
-        </Button>
-      )}
-      {status === "COMPUTED" && (
-        <Button onClick={() => handleAction("validate")} disabled={loading}>
-          {loading ? "Validating..." : "Validate"}
-        </Button>
-      )}
-      {status === "VALIDATED" && (
-        <Button onClick={() => handleAction("mark-paid")} disabled={loading}>
-          {loading ? "Processing..." : "Mark Paid"}
-        </Button>
-      )}
+      <div className="flex gap-2 items-center">
+        {(status === "DRAFT" || status === "COMPUTED") && (
+          <Button 
+            onClick={() => handleAction("compute")} 
+            disabled={loading}
+            variant={status === "COMPUTED" ? "secondary" : "default"}
+          >
+            {loading ? "Computing..." : (status === "DRAFT" ? "Compute" : "Recompute")}
+          </Button>
+        )}
+
+        {(status === "DRAFT" || status === "COMPUTED") && (
+          <div title={status === "DRAFT" ? "Compute the payrun first" : undefined}>
+            <Button 
+              onClick={() => handleAction("validate")} 
+              disabled={loading || status === "DRAFT"}
+            >
+              {loading ? "Validating..." : "Validate"}
+            </Button>
+          </div>
+        )}
+
+        {status === "VALIDATED" && (
+          <Button onClick={() => handleAction("mark-paid")} disabled={loading}>
+            {loading ? "Processing..." : "Mark Paid"}
+          </Button>
+        )}
+      </div>
       {error && <p className="text-red-500 text-sm mt-2 max-w-sm text-right bg-red-50 p-2 rounded border border-red-100">{error}</p>}
     </div>
   );
