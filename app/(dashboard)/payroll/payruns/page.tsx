@@ -12,7 +12,12 @@ export default async function PayrunsPage() {
 
   return (
     <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Payruns</h1>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Payruns</h1>
+        <a href="/payroll/payruns/new" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm">
+          + New Payrun
+        </a>
+      </div>
       <div className="bg-white shadow rounded-lg border border-gray-200">
         <table className="min-w-full divide-y divide-gray-200">
           <thead className="bg-gray-50">
