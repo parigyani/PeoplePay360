@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -15,6 +12,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -22,109 +21,160 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { DatePicker } from "@/components/ui/date-picker";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
-const requestSchema = z.object({
+const formSchema = z.object({
   employeeId: z.string().min(1, "Employee is required"),
   typeId: z.string().min(1, "Time Off Type is required"),
-  startDate: z.date({ required_error: "Start Date is required" }),
-  endDate: z.date({ required_error: "End Date is required" }),
-  duration: z.coerce.number().positive("Duration must be positive"),
-}).refine(
-  (data) => data.endDate >= data.startDate,
-  {
-    message: "End Date cannot be earlier than Start Date",
-    path: ["endDate"],
-  }
-);
+  startDate: z.string().min(1, "Start Date is required"),
+  endDate: z.string().min(1, "End Date is required"),
+  duration: z.coerce.number().min(0, "Must be positive"),
+  approverRole: z.string().optional(),
+  reason: z.string().optional(),
+});
 
-export type RequestFormValues = z.infer<typeof requestSchema>;
+type FormValues = z.infer<typeof formSchema>;
 
-interface RequestFormProps {
-  initialData?: RequestFormValues & { id?: number; status?: string };
+interface Props {
+  initialData?: any;
   employees: { id: number; name: string }[];
-  types: { id: number; name: string; unit: string }[];
+  types: { id: number; name: string }[];
+  canApprove: boolean;
 }
 
-export function RequestForm({ initialData, employees, types }: RequestFormProps) {
+export function RequestForm({ initialData, employees, types, canApprove }: Props) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [acting, setActing] = useState(false);
 
-  // If status is APPROVED or REFUSED, we shouldn't allow editing.
-  // The UI will probably just hide the edit button, but just in case:
-  const isReadOnly = initialData?.status === "APPROVED" || initialData?.status === "REFUSED";
+  const isViewMode = !!initialData;
 
-  const form = useForm<RequestFormValues>({
-    resolver: zodResolver(requestSchema),
-    defaultValues: initialData || {
-      employeeId: "",
-      typeId: "",
-      startDate: undefined,
-      endDate: undefined,
-      duration: 0,
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      employeeId: initialData?.employeeId?.toString() || "",
+      typeId: initialData?.typeId?.toString() || "",
+      startDate: initialData ? format(new Date(initialData.startDate), "yyyy-MM-dd") : "",
+      endDate: initialData ? format(new Date(initialData.endDate), "yyyy-MM-dd") : "",
+      duration: initialData?.duration || 0,
+      approverRole: initialData?.approverRole || "",
+      reason: initialData?.reason || "",
     },
   });
 
-  async function onSubmit(data: RequestFormValues) {
-    if (isReadOnly) return;
+  async function onSubmit(data: FormValues) {
+    if (isViewMode) return;
+    setIsSubmitting(true);
     try {
-      setLoading(true);
-      const url = initialData?.id
-        ? `/api/time-off/requests/${initialData.id}`
-        : "/api/time-off/requests";
-      const method = initialData?.id ? "PUT" : "POST";
+      const payload = {
+        ...data,
+        employeeId: parseInt(data.employeeId, 10),
+        typeId: parseInt(data.typeId, 10),
+        startDate: new Date(data.startDate).toISOString(),
+        endDate: new Date(data.endDate).toISOString(),
+      };
 
-      const res = await fetch(url, {
-        method,
+      const response = await fetch("/api/time-off/requests", {
+        method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...data, status: "PENDING" }), // always set to PENDING on edit/create
+        body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to save request");
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to create request");
       }
 
       router.push("/time-off/requests");
       router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to save request");
+    } catch (error: any) {
+      alert(error.message);
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handleAction(action: "approve" | "refuse") {
+    if (!initialData) return;
+    setActing(true);
+    try {
+      const response = await fetch(`/api/time-off/requests/${initialData.id}/approve`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || `Failed to ${action}`);
+      }
+
+      router.refresh();
+    } catch (error: any) {
+      alert(error.message);
+    } finally {
+      setActing(false);
     }
   }
 
   return (
-    <Card className="max-w-2xl mx-auto mt-8">
-      <CardHeader>
-        <CardTitle>{initialData ? "Edit Request" : "New Time Off Request"}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">
+            {initialData ? "Time Off Request Details" : "New Time Off Request"}
+          </h2>
+          {initialData && (
+            <p className="text-sm text-slate-400 mt-1">
+              Status: <span className={initialData.status === "Approved" ? "text-green-400 font-medium" : initialData.status === "Refused" ? "text-red-400 font-medium" : "text-orange-400 font-medium"}>{initialData.status}</span>
+            </p>
+          )}
+        </div>
+        
+        {initialData && canApprove && initialData.status === "To Approve" && (
+          <div className="flex gap-2">
+            <Button 
+              variant="outline" 
+              className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+              onClick={() => handleAction("refuse")}
+              disabled={acting}
+            >
+              Refuse
+            </Button>
+            <Button 
+              className="bg-green-600 hover:bg-green-700 text-white"
+              onClick={() => handleAction("approve")}
+              disabled={acting}
+            >
+              Approve
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-xl border border-white/10 bg-black/20">
+            {/* Left Column */}
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="employeeId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Employee</FormLabel>
-                    <Select
-                      disabled={isReadOnly}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isViewMode}>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Employee" />
+                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                          <SelectValue placeholder="Select employee" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {employees.map((emp) => (
-                          <SelectItem key={emp.id} value={emp.id.toString()}>
-                            {emp.name}
-                          </SelectItem>
+                        {employees.map(emp => (
+                          <SelectItem key={emp.id} value={emp.id.toString()}>{emp.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -139,21 +189,15 @@ export function RequestForm({ initialData, employees, types }: RequestFormProps)
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Time Off Type</FormLabel>
-                    <Select
-                      disabled={isReadOnly}
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
+                    <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isViewMode}>
                       <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select Type" />
+                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                          <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
-                        {types.map((t) => (
-                          <SelectItem key={t.id} value={t.id.toString()}>
-                            {t.name} ({t.unit})
-                          </SelectItem>
+                        {types.map(t => (
+                          <SelectItem key={t.id} value={t.id.toString()}>{t.name}</SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -166,13 +210,11 @@ export function RequestForm({ initialData, employees, types }: RequestFormProps)
                 control={form.control}
                 name="startDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col pt-2">
+                  <FormItem>
                     <FormLabel>Start Date</FormLabel>
-                    <DatePicker
-                      disabled={isReadOnly}
-                      date={field.value}
-                      setDate={field.onChange}
-                    />
+                    <FormControl>
+                      <Input type="date" {...field} disabled={isViewMode} className="bg-white/[0.03] border-white/[0.08]" />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -182,18 +224,19 @@ export function RequestForm({ initialData, employees, types }: RequestFormProps)
                 control={form.control}
                 name="endDate"
                 render={({ field }) => (
-                  <FormItem className="flex flex-col pt-2">
+                  <FormItem>
                     <FormLabel>End Date</FormLabel>
-                    <DatePicker
-                      disabled={isReadOnly}
-                      date={field.value}
-                      setDate={field.onChange}
-                    />
+                    <FormControl>
+                      <Input type="date" {...field} disabled={isViewMode} className="bg-white/[0.03] border-white/[0.08]" />
+                    </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+            </div>
 
+            {/* Right Column */}
+            <div className="space-y-4">
               <FormField
                 control={form.control}
                 name="duration"
@@ -201,38 +244,73 @@ export function RequestForm({ initialData, employees, types }: RequestFormProps)
                   <FormItem>
                     <FormLabel>Duration</FormLabel>
                     <FormControl>
-                      <Input 
-                        disabled={isReadOnly} 
-                        type="number" 
-                        step="0.5" 
-                        placeholder="e.g. 2.5" 
-                        {...field} 
-                      />
+                      <Input type="number" step="0.5" {...field} disabled={isViewMode} className="bg-white/[0.03] border-white/[0.08]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-            </div>
-            
-            {!isReadOnly && (
-              <div className="flex justify-end space-x-2 pt-4">
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => router.back()}
-                  disabled={loading}
-                >
-                  Cancel
-                </Button>
-                <Button type="submit" disabled={loading}>
-                  {loading ? "Saving..." : "Save Request"}
-                </Button>
+
+              <div className="space-y-2">
+                <Label>Status</Label>
+                <Input disabled value={initialData?.status || "To Approve"} className="bg-white/[0.03] border-white/[0.08] text-slate-400" />
               </div>
-            )}
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+
+              <FormField
+                control={form.control}
+                name="approverRole"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Approver</FormLabel>
+                    <FormControl>
+                      <Input placeholder="e.g. HR Manager" {...field} disabled={isViewMode} className="bg-white/[0.03] border-white/[0.08]" />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-2">
+                <Label>Allocation Used</Label>
+                <Input 
+                  disabled 
+                  value={initialData?.allocation ? `Allocation #${initialData.allocation.id} (${initialData.allocation.description || 'No label'})` : (initialData?.status === "Approved" ? "None (Not required)" : "Pending Approval")} 
+                  className="bg-white/[0.03] border-white/[0.08] text-slate-400" 
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="p-6 rounded-xl border border-white/10 bg-black/20">
+            <FormField
+              control={form.control}
+              name="reason"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Reason</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Optional reason for request..."
+                      {...field}
+                      disabled={isViewMode}
+                      className="h-24 bg-white/[0.03] border-white/[0.08] resize-none"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+          </div>
+
+          {!isViewMode && (
+            <div className="flex justify-end gap-3 pt-2">
+              <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
+                {isSubmitting ? "Submitting..." : "Submit Request"}
+              </Button>
+            </div>
+          )}
+        </form>
+      </Form>
+    </div>
   );
 }

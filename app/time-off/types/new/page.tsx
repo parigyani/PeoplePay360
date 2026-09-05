@@ -4,16 +4,22 @@ import { can } from "@/lib/rbac";
 import { redirect } from "next/navigation";
 import { TimeOffTypeForm } from "@/components/time-off/TimeOffTypeForm";
 
+export const dynamic = "force-dynamic";
+
 export default async function NewTimeOffTypePage() {
   const session = await getServerSession(authOptions);
-  
-  if (!session || !can((session.user as any).role, "timeoff:configure")) {
-    redirect("/time-off/types");
+  if (!session?.user) {
+    redirect("/login");
+  }
+
+  const role = (session.user as any).role;
+  if (!can(role, "timeoff:configure")) {
+    redirect("/time-off/requests");
   }
 
   return (
     <div className="container mx-auto py-10">
-      <TimeOffTypeForm />
+      <TimeOffTypeForm isViewMode={false} />
     </div>
   );
 }

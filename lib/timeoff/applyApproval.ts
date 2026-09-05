@@ -6,7 +6,6 @@ export async function applyApproval(requestId: string): Promise<void> {
     throw new Error("Invalid request ID");
   }
 
-  // Use a transaction so all reads and writes are consistent
   await prisma.$transaction(async (tx) => {
     // 1. Load the TimeOffRequest by id, including its related TimeOffType
     const request = await tx.timeOffRequest.findUnique({
@@ -18,19 +17,21 @@ export async function applyApproval(requestId: string): Promise<void> {
       throw new Error("TimeOffRequest not found");
     }
 
-    // 2. If the request's status is not PENDING, throw a clear error
-    if (request.status !== "PENDING") {
-      throw new Error(`Approval can only be applied to a PENDING request. Current status: ${request.status}`);
+    // 2. If the request's status is not "To Approve", throw a clear error
+    if (request.status !== "To Approve") {
+      throw new Error(`Approval can only be applied to a "To Approve" request. Current status: ${request.status}`);
     }
+
+    let appliedAllocationId: number | null = null;
 
     // 3. If requiresAllocation is true:
     if (request.type.requiresAllocation) {
-      // Find the matching Allocation for this employeeId + typeId that is currently valid
-      // (validFrom <= request.startDate, and validTo is null or >= request.startDate)
+      // a. Find the employee's currently valid, APPROVED Allocation for that type
       const allocations = await tx.allocation.findMany({
         where: {
           employeeId: request.employeeId,
           typeId: request.typeId,
+          status: "Approved", // MUST be approved to draw from
           validFrom: {
             lte: request.startDate,
           },
@@ -40,21 +41,22 @@ export async function applyApproval(requestId: string): Promise<void> {
           ],
         },
         orderBy: {
-          validFrom: 'asc', // take the oldest valid one first, or arbitrary if one exists
+          validFrom: 'asc', // take the oldest valid one first
         },
       });
 
-      const allocation = allocations[0]; // grab the first valid allocation
+      const allocation = allocations[0];
 
+      // b. If none found, throw a clear error
       if (!allocation) {
-        throw new Error("No valid Allocation found for this request. Cannot deduct balance.");
+        throw new Error("No approved and valid Allocation found for this request. Cannot deduct balance.");
       }
 
       if (allocation.remaining < request.duration) {
         throw new Error(`Insufficient allocation balance. Requested: ${request.duration}, Remaining: ${allocation.remaining}`);
       }
 
-      // Update the allocation's taken and remaining balances
+      // c. In a single transaction: increment Allocation.taken and decrement Allocation.remaining
       await tx.allocation.update({
         where: { id: allocation.id },
         data: {
@@ -62,13 +64,16 @@ export async function applyApproval(requestId: string): Promise<void> {
           remaining: { decrement: request.duration },
         },
       });
+
+      appliedAllocationId = allocation.id;
     }
 
-    // Set the TimeOffRequest's status to APPROVED
+    // 4. Set the Request's status to "Approved" and link the allocation if used
     await tx.timeOffRequest.update({
       where: { id: request.id },
       data: {
-        status: "APPROVED",
+        status: "Approved",
+        allocationId: appliedAllocationId,
       },
     });
   });

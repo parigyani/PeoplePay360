@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { can } from "@/lib/rbac";
-import { applyApproval } from "@/lib/timeoff/applyApproval";
+import { applyAllocationApproval } from "@/lib/timeoff/applyAllocationApproval";
 
 export async function POST(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -23,11 +23,11 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const action = body.action; // "approve" or "refuse"
 
     if (action === "approve") {
-      await applyApproval(idParam);
+      await applyAllocationApproval(idParam);
       return NextResponse.json({ success: true });
     } else if (action === "refuse") {
       const id = parseInt(idParam, 10);
-      await prisma.timeOffRequest.update({
+      await prisma.allocation.update({
         where: { id },
         data: { status: "Refused" },
       });
@@ -36,7 +36,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
 
     return NextResponse.json({ error: "Invalid action" }, { status: 400 });
   } catch (error: any) {
-    console.error("Failed to action request", error);
+    console.error("Failed to action allocation", error);
     return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }

@@ -145,38 +145,52 @@ model TimeOffType {
   unit               LeaveUnit
   requiresAllocation Boolean
   payrollIntegrated  Boolean
+  active             Boolean   @default(true)
+  approverRole       String?
+  payrollCode        String?
+  color              String?
+  notes              String?
 
   allocations Allocation[]     @relation("TypeAllocations")
   requests    TimeOffRequest[] @relation("TypeRequests")
 }
 
 model Allocation {
-  id         Int         @id @default(autoincrement())
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  employeeId Int
-  employee   Employee    @relation("EmployeeAllocations", fields: [employeeId], references: [id])
-  typeId     Int
-  type       TimeOffType @relation("TypeAllocations", fields: [typeId], references: [id])
-  allocated  Float
-  taken      Float
-  remaining  Float
-  validFrom  DateTime
-  validTo    DateTime?
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  employeeId   Int
+  employee     Employee    @relation("EmployeeAllocations", fields: [employeeId], references: [id])
+  typeId       Int
+  type         TimeOffType @relation("TypeAllocations", fields: [typeId], references: [id])
+  allocated    Float
+  taken        Float
+  remaining    Float
+  validFrom    DateTime
+  validTo      DateTime?
+  status       String      @default("To Approve")
+  description  String?
+  approverRole String?
+
+  requests     TimeOffRequest[] @relation("AllocationRequests")
 }
 
 model TimeOffRequest {
-  id         Int         @id @default(autoincrement())
-  createdAt  DateTime    @default(now())
-  updatedAt  DateTime    @updatedAt
-  employeeId Int
-  employee   Employee    @relation("EmployeeRequests", fields: [employeeId], references: [id])
-  typeId     Int
-  type       TimeOffType @relation("TypeRequests", fields: [typeId], references: [id])
-  startDate  DateTime
-  endDate    DateTime
-  duration   Float
-  status     String
+  id           Int         @id @default(autoincrement())
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+  employeeId   Int
+  employee     Employee    @relation("EmployeeRequests", fields: [employeeId], references: [id])
+  typeId       Int
+  type         TimeOffType @relation("TypeRequests", fields: [typeId], references: [id])
+  startDate    DateTime
+  endDate      DateTime
+  duration     Float
+  status       String
+  allocationId Int?
+  allocation   Allocation? @relation("AllocationRequests", fields: [allocationId], references: [id])
+  approverRole String?
+  reason       String?
 }
 
 model SalaryStructure {

@@ -1,49 +1,33 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { can } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
-import * as z from "zod";
 
-const requestSchema = z.object({
-  employeeId: z.string().min(1),
-  typeId: z.string().min(1),
-  startDate: z.coerce.date(),
-  endDate: z.coerce.date(),
-  duration: z.coerce.number().positive(),
-  status: z.string().default("PENDING"),
-}).refine(
-  (data) => data.endDate >= data.startDate,
-  { message: "End Date cannot be earlier than Start Date" }
-);
-
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session) {
-      return new NextResponse("Unauthorized", { status: 403 });
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const data = requestSchema.parse(body);
+    const body = await req.json();
 
-    const req = await prisma.timeOffRequest.create({
+    const created = await prisma.timeOffRequest.create({
       data: {
-        employeeId: parseInt(data.employeeId, 10),
-        typeId: parseInt(data.typeId, 10),
-        startDate: data.startDate,
-        endDate: data.endDate,
-        duration: data.duration,
-        status: "PENDING", // Always PENDING on creation
+        employeeId: body.employeeId,
+        typeId: body.typeId,
+        startDate: body.startDate,
+        endDate: body.endDate,
+        duration: body.duration,
+        status: "To Approve",
+        approverRole: body.approverRole || null,
+        reason: body.reason || null,
       },
     });
 
-    return NextResponse.json(req);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.issues), { status: 400 });
-    }
-    console.error(error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(created);
+  } catch (error: any) {
+    console.error("Failed to create request", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

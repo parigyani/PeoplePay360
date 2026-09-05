@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Form,
   FormControl,
@@ -15,6 +12,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -23,168 +21,292 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { TimeOffType } from "@prisma/client";
 
-const typeSchema = z.object({
+const formSchema = z.object({
   name: z.string().min(1, "Name is required"),
   unit: z.enum(["DAYS", "HOURS"]),
   requiresAllocation: z.boolean(),
-  payrollIntegrated: z.boolean(),
+  active: z.boolean(),
+  approverRole: z.string().optional().nullable(),
+  payrollCode: z.string().optional().nullable(),
+  color: z.string().optional().nullable(),
+  notes: z.string().optional().nullable(),
+  payrollIntegrated: z.boolean(), // hidden but required by schema
 });
 
-export type TimeOffTypeFormValues = z.infer<typeof typeSchema>;
+type FormValues = z.infer<typeof formSchema>;
 
-interface TimeOffTypeFormProps {
-  initialData?: TimeOffTypeFormValues & { id?: number };
+interface Props {
+  initialData?: TimeOffType | null;
+  onSuccess?: () => void;
+  isViewMode?: boolean;
 }
 
-export function TimeOffTypeForm({ initialData }: TimeOffTypeFormProps) {
+export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: Props) {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isEditable, setIsEditable] = useState(!isViewMode);
 
-  const form = useForm<TimeOffTypeFormValues>({
-    resolver: zodResolver(typeSchema),
-    defaultValues: initialData || {
-      name: "",
-      unit: "DAYS",
-      requiresAllocation: true,
-      payrollIntegrated: false,
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: initialData?.name || "",
+      unit: initialData?.unit || "DAYS",
+      requiresAllocation: initialData?.requiresAllocation ?? true,
+      active: initialData?.active ?? true,
+      approverRole: initialData?.approverRole || "",
+      payrollCode: initialData?.payrollCode || "",
+      color: initialData?.color || "#3b82f6",
+      notes: initialData?.notes || "",
+      payrollIntegrated: initialData?.payrollIntegrated ?? false,
     },
   });
 
-  async function onSubmit(data: TimeOffTypeFormValues) {
+  async function onSubmit(data: FormValues) {
+    if (!isEditable) return;
+    setIsSubmitting(true);
     try {
-      setLoading(true);
-      const url = initialData?.id
+      const url = initialData
         ? `/api/time-off/types/${initialData.id}`
-        : "/api/time-off/types";
-      const method = initialData?.id ? "PUT" : "POST";
+        : `/api/time-off/types`;
+      const method = initialData ? "PUT" : "POST";
 
-      const res = await fetch(url, {
+      const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to save time off type");
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || "Failed to save type");
       }
 
-      router.push("/time-off/types");
       router.refresh();
-    } catch (error) {
-      console.error(error);
-      alert("Failed to save time off type");
+      if (onSuccess) onSuccess();
+      else router.push("/time-off/types");
+    } catch (error: any) {
+      alert(error.message);
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
     }
   }
 
   return (
-    <Card className="max-w-xl mx-auto mt-8">
-      <CardHeader>
-        <CardTitle>{initialData ? "Edit Time Off Type" : "New Time Off Type"}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-            <FormField
-              control={form.control}
-              name="name"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Name</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Annual Leave" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold tracking-tight">
+          {initialData ? "Time Off Type Details" : "New Time Off Type"}
+        </h2>
+        {isViewMode && (
+          <Button
+            variant="outline"
+            onClick={() => setIsEditable(!isEditable)}
+            className="border-white/10"
+          >
+            {isEditable ? "Cancel Edit" : "EDIT"}
+          </Button>
+        )}
+      </div>
 
-            <FormField
-              control={form.control}
-              name="unit"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Unit</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-xl border border-white/10 bg-black/20">
+            {/* Left Column */}
+            <div className="space-y-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Type Name</FormLabel>
                     <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select Unit" />
-                      </SelectTrigger>
+                      <Input
+                        placeholder="Annual Leave"
+                        {...field}
+                        disabled={!isEditable}
+                        className="bg-white/[0.03] border-white/[0.08]"
+                      />
                     </FormControl>
-                    <SelectContent>
-                      <SelectItem value="DAYS">Days</SelectItem>
-                      <SelectItem value="HOURS">Hours</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="requiresAllocation"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Requires Allocation</FormLabel>
-                    <div className="text-sm text-muted-foreground">
-                      Does this time off deduct from an accrued balance?
-                    </div>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
+              <FormField
+                control={form.control}
+                name="unit"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Unit</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                      disabled={!isEditable}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                          <SelectValue placeholder="Select unit" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="DAYS">Days</SelectItem>
+                        <SelectItem value="HOURS">Hours</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
-            <FormField
-              control={form.control}
-              name="payrollIntegrated"
-              render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
-                  <div className="space-y-0.5">
-                    <FormLabel className="text-base">Payroll Integrated</FormLabel>
-                    <div className="text-sm text-muted-foreground">
-                      Should this time off be synced to the payroll system?
+              <FormField
+                control={form.control}
+                name="approverRole"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Approval</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value || undefined}
+                      disabled={!isEditable}
+                    >
+                      <FormControl>
+                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                          <SelectValue placeholder="Who approves this?" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="Manager">Manager</SelectItem>
+                        <SelectItem value="Officer">Officer</SelectItem>
+                        <SelectItem value="Admin">Admin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="payrollCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Payroll / Work Entry</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="e.g. AL-01"
+                        {...field}
+                        value={field.value || ""}
+                        disabled={!isEditable}
+                        className="bg-white/[0.03] border-white/[0.08]"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* Right Column */}
+            <div className="space-y-4">
+              <div className="flex gap-6">
+                <FormField
+                  control={form.control}
+                  name="requiresAllocation"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col gap-2 rounded-lg border border-white/10 p-4 w-full bg-white/[0.02]">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-sm">Requires Allocation</FormLabel>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={!isEditable}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="active"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col gap-2 rounded-lg border border-white/10 p-4 w-full bg-white/[0.02]">
+                      <div className="space-y-0.5">
+                        <FormLabel className="text-sm">Active</FormLabel>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          disabled={!isEditable}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="color"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Display Color</FormLabel>
+                    <div className="flex items-center gap-3">
+                      <FormControl>
+                        <Input
+                          type="color"
+                          {...field}
+                          value={field.value || "#3b82f6"}
+                          disabled={!isEditable}
+                          className="h-10 w-20 p-1 bg-white/[0.03] border-white/[0.08]"
+                        />
+                      </FormControl>
+                      <span className="text-sm text-slate-400 font-mono uppercase">{field.value}</span>
                     </div>
-                  </div>
-                  <FormControl>
-                    <Switch
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                  </FormControl>
-                </FormItem>
-              )}
-            />
-            
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => router.back()}
-                disabled={loading}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? "Saving..." : "Save"}
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="notes"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Configuration Notes</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder="Internal notes about this leave type..."
+                        {...field}
+                        value={field.value || ""}
+                        disabled={!isEditable}
+                        className="h-24 bg-white/[0.03] border-white/[0.08] resize-none"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+          </div>
+
+          {isEditable && (
+            <div className="flex justify-end gap-3 pt-2">
+              <Button type="submit" disabled={isSubmitting} className="bg-blue-600 hover:bg-blue-700">
+                {isSubmitting ? "Saving..." : "Save Time Off Type"}
               </Button>
             </div>
-          </form>
-        </Form>
-      </CardContent>
-    </Card>
+          )}
+        </form>
+      </Form>
+    </div>
   );
 }

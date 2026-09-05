@@ -1,37 +1,40 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { can } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
-import * as z from "zod";
+import { can } from "@/lib/rbac";
 
-const typeSchema = z.object({
-  name: z.string().min(1),
-  unit: z.enum(["DAYS", "HOURS"]),
-  requiresAllocation: z.boolean(),
-  payrollIntegrated: z.boolean(),
-});
-
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
     const session = await getServerSession(authOptions);
-    if (!session || !can((session.user as any).role, "timeoff:configure")) {
-      return new NextResponse("Unauthorized", { status: 403 });
+    if (!session?.user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const body = await request.json();
-    const data = typeSchema.parse(body);
+    const role = (session.user as any).role;
+    if (!can(role, "timeoff:configure")) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
 
-    const type = await prisma.timeOffType.create({
-      data,
+    const body = await req.json();
+
+    const created = await prisma.timeOffType.create({
+      data: {
+        name: body.name,
+        unit: body.unit,
+        requiresAllocation: body.requiresAllocation,
+        payrollIntegrated: body.payrollIntegrated || false,
+        active: body.active,
+        approverRole: body.approverRole || null,
+        payrollCode: body.payrollCode || null,
+        color: body.color || null,
+        notes: body.notes || null,
+      },
     });
 
-    return NextResponse.json(type);
-  } catch (error) {
-    if (error instanceof z.ZodError) {
-      return new NextResponse(JSON.stringify(error.issues), { status: 400 });
-    }
-    console.error(error);
-    return new NextResponse("Internal Error", { status: 500 });
+    return NextResponse.json(created);
+  } catch (error: any) {
+    console.error("Failed to create time off type", error);
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

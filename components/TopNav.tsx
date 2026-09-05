@@ -2,6 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { AttendanceWidget } from "./attendance/AttendanceWidget";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const NAV_ITEMS = [
   { label: "Employees", href: "/employees" },
@@ -38,19 +45,42 @@ export function TopNav() {
 
         {/* Nav links */}
         <div className="flex items-center gap-1">
-          {NAV_ITEMS.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`nav-link ${isActive(item.href) ? "nav-link-active" : ""}`}
-            >
-              {item.label}
-            </Link>
-          ))}
+          {NAV_ITEMS.map((item) =>
+            item.label === "Time Off" ? (
+              <DropdownMenu key={item.label}>
+                <DropdownMenuTrigger className={`nav-link ${isActive(item.href) ? "nav-link-active" : ""} flex items-center gap-1 focus:outline-none`}>
+                  {item.label} ▼
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-48 bg-[#1E2330] text-slate-200 border-white/10">
+                  <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
+                    <Link href="/time-off/dashboard" className="w-full">Dashboard</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
+                    <Link href="/time-off/requests" className="w-full">Time offs</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
+                    <Link href="/time-off/types" className="w-full">Time off Types</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild className="focus:bg-white/10 focus:text-white cursor-pointer">
+                    <Link href="/time-off/allocations" className="w-full">Allocations</Link>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`nav-link ${isActive(item.href) ? "nav-link-active" : ""}`}
+              >
+                {item.label}
+              </Link>
+            )
+          )}
         </div>
 
-        {/* Right side — status dot */}
-        <div className="ml-auto flex items-center gap-3">
+        {/* Right side — status dot and attendance widget */}
+        <div className="ml-auto flex items-center gap-4">
+          <AttendanceWidget />
           <div className="status-dot status-dot-active" title="System Online" />
         </div>
       </div>

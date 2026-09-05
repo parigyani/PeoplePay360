@@ -1,55 +1,45 @@
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { can } from "@/lib/rbac";
 import { prisma } from "@/lib/prisma";
-import { redirect, notFound } from "next/navigation";
+import { can } from "@/lib/rbac";
+import { notFound, redirect } from "next/navigation";
 import { AllocationForm } from "@/components/time-off/AllocationForm";
 
-export default async function EditAllocationPage({ params }: { params: { id: string } }) {
+export const dynamic = "force-dynamic";
+
+export default async function AllocationDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
-  
-  if (!session || !can((session.user as any).role, "timeoff:configure")) {
-    redirect("/time-off/allocations");
+  if (!session?.user) {
+    redirect("/login");
   }
 
-  const allocId = parseInt(params.id, 10);
-  if (isNaN(allocId)) {
+  const role = (session.user as any).role;
+  const canApprove = can(role, "timeoff:approve");
+
+  const idParam = (await params).id;
+  const id = parseInt(idParam, 10);
+  if (isNaN(id)) {
     notFound();
   }
 
   const allocation = await prisma.allocation.findUnique({
-    where: { id: allocId },
+    where: { id },
   });
 
   if (!allocation) {
     notFound();
   }
 
-  const [employees, types] = await Promise.all([
-    prisma.employee.findMany({ select: { id: true, name: true } }),
-    prisma.timeOffType.findMany({ 
-      where: { requiresAllocation: true },
-      select: { id: true, name: true } 
-    }),
-  ]);
-
-  const initialData = {
-    id: allocation.id,
-    employeeId: allocation.employeeId.toString(),
-    typeId: allocation.typeId.toString(),
-    allocated: allocation.allocated,
-    taken: allocation.taken,
-    remaining: allocation.remaining,
-    validFrom: allocation.validFrom,
-    validTo: allocation.validTo,
-  };
+  const employees = await prisma.employee.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } });
+  const types = await prisma.timeOffType.findMany({ select: { id: true, name: true }, orderBy: { name: 'asc' } });
 
   return (
     <div className="container mx-auto py-10">
       <AllocationForm 
-        initialData={initialData} 
+        initialData={allocation} 
         employees={employees} 
         types={types} 
+        canApprove={canApprove} 
       />
     </div>
   );
