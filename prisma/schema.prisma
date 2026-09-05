@@ -1,0 +1,237 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  EMPLOYEE
+  HR_MANAGER
+  HR_PAYROLL_USER
+  HR_PAYROLL_MANAGER
+  ADMIN
+}
+
+enum PayrunStatus {
+  DRAFT
+  COMPUTED
+  VALIDATED
+  PAID
+}
+
+enum PayslipStatus {
+  DRAFT
+  COMPUTED
+  WARNING
+  VALIDATED
+  PAID
+}
+
+enum LeaveUnit {
+  DAYS
+  HOURS
+}
+
+enum RuleCategory {
+  BASIC
+  ALLOWANCE
+  GROSS
+  DEDUCTION
+  NET
+}
+
+enum ComputeMethod {
+  FIXED
+  PERCENTAGE
+  FORMULA
+}
+
+model User {
+  id         Int       @id @default(autoincrement())
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  email      String    @unique
+  password   String
+  role       Role
+  employeeId Int?      @unique
+  employee   Employee? @relation("UserEmployee", fields: [employeeId], references: [id])
+}
+
+model Employee {
+  id           Int              @id @default(autoincrement())
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  name         String
+  department   String
+  jobPosition  String
+  managerId    Int?
+  manager      Employee?        @relation("EmployeeManager", fields: [managerId], references: [id])
+  subordinates Employee[]       @relation("EmployeeManager")
+  scheduleId   Int?
+  schedule     WorkingSchedule? @relation("EmployeeSchedule", fields: [scheduleId], references: [id])
+  status       String
+
+  user        User?            @relation("UserEmployee")
+  contracts   Contract[]       @relation("EmployeeContracts")
+  attendance  Attendance[]     @relation("EmployeeAttendance")
+  allocations Allocation[]     @relation("EmployeeAllocations")
+  requests    TimeOffRequest[] @relation("EmployeeRequests")
+  payslips    Payslip[]        @relation("EmployeePayslips")
+}
+
+model WorkingSchedule {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  name        String
+  type        String
+  weeklyHours Float
+
+  patterns  WeeklyPattern[] @relation("SchedulePatterns")
+  employees Employee[]      @relation("EmployeeSchedule")
+}
+
+model WeeklyPattern {
+  id         Int             @id @default(autoincrement())
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+  scheduleId Int
+  schedule   WorkingSchedule @relation("SchedulePatterns", fields: [scheduleId], references: [id])
+  day        String
+  startTime  String
+  endTime    String
+  breakMins  Int
+}
+
+model Contract {
+  id          Int             @id @default(autoincrement())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  employeeId  Int
+  employee    Employee        @relation("EmployeeContracts", fields: [employeeId], references: [id])
+  department  String
+  jobPosition String
+  wage        Float
+  startDate   DateTime
+  endDate     DateTime?
+  structureId Int
+  structure   SalaryStructure @relation("ContractStructure", fields: [structureId], references: [id])
+  status      String
+
+  payslips Payslip[] @relation("ContractPayslips")
+}
+
+model Attendance {
+  id          Int       @id @default(autoincrement())
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  employeeId  Int
+  employee    Employee  @relation("EmployeeAttendance", fields: [employeeId], references: [id])
+  checkIn     DateTime
+  checkOut    DateTime?
+  workedHours Float?
+  status      String
+}
+
+model TimeOffType {
+  id                 Int       @id @default(autoincrement())
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+  name               String
+  unit               LeaveUnit
+  requiresAllocation Boolean
+  payrollIntegrated  Boolean
+
+  allocations Allocation[]     @relation("TypeAllocations")
+  requests    TimeOffRequest[] @relation("TypeRequests")
+}
+
+model Allocation {
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  employeeId Int
+  employee   Employee    @relation("EmployeeAllocations", fields: [employeeId], references: [id])
+  typeId     Int
+  type       TimeOffType @relation("TypeAllocations", fields: [typeId], references: [id])
+  allocated  Float
+  taken      Float
+  remaining  Float
+  validFrom  DateTime
+  validTo    DateTime?
+}
+
+model TimeOffRequest {
+  id         Int         @id @default(autoincrement())
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  employeeId Int
+  employee   Employee    @relation("EmployeeRequests", fields: [employeeId], references: [id])
+  typeId     Int
+  type       TimeOffType @relation("TypeRequests", fields: [typeId], references: [id])
+  startDate  DateTime
+  endDate    DateTime
+  duration   Float
+  status     String
+}
+
+model SalaryStructure {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+
+  rules     SalaryRule[] @relation("StructureRules")
+  contracts Contract[]   @relation("ContractStructure")
+  payruns   Payrun[]     @relation("StructurePayruns")
+}
+
+model SalaryRule {
+  id          Int             @id @default(autoincrement())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  structureId Int
+  structure   SalaryStructure @relation("StructureRules", fields: [structureId], references: [id])
+  name        String
+  code        String
+  category    RuleCategory
+  sequence    Int
+  method      ComputeMethod
+  value       Float?
+  formula     String?
+}
+
+model Payrun {
+  id          Int             @id @default(autoincrement())
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  name        String
+  periodStart DateTime
+  periodEnd   DateTime
+  structureId Int
+  structure   SalaryStructure @relation("StructurePayruns", fields: [structureId], references: [id])
+  status      PayrunStatus
+
+  payslips Payslip[] @relation("PayrunPayslips")
+}
+
+model Payslip {
+  id         Int           @id @default(autoincrement())
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+  payrunId   Int
+  payrun     Payrun        @relation("PayrunPayslips", fields: [payrunId], references: [id])
+  employeeId Int
+  employee   Employee      @relation("EmployeePayslips", fields: [employeeId], references: [id])
+  contractId Int
+  contract   Contract      @relation("ContractPayslips", fields: [contractId], references: [id])
+  workedDays Float
+  lines      Json
+  gross      Float
+  net        Float
+  status     PayslipStatus
+  warnings   String[]
+}
