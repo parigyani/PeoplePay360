@@ -67,7 +67,7 @@ export async function POST(
       await tx.payrun.update({
         where: { id: payrunId },
         data: {
-          status: payrunHasWarnings ? "WARNING" : "COMPUTED" as any
+          status: "COMPUTED"
         }
       });
     });
