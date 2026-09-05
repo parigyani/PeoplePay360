@@ -48,6 +48,15 @@ async function main() {
 
   console.log('Created Employees:', emp1.name, emp2.name, emp3.name);
 
+  await prisma.attendance.createMany({
+    data: [
+      { employeeId: emp2.id, checkIn: new Date('2024-08-01T09:00:00Z'), checkOut: new Date('2024-08-01T17:00:00Z'), status: 'Present' },
+      { employeeId: emp2.id, checkIn: new Date('2024-08-02T09:00:00Z'), checkOut: new Date('2024-08-02T17:00:00Z'), status: 'Absent' },
+      { employeeId: emp3.id, checkIn: new Date('2024-08-01T09:00:00Z'), checkOut: new Date('2024-08-01T17:00:00Z'), status: 'Present' }
+    ]
+  });
+  console.log('Created Mock Attendance records');
+
   const schedule1 = await prisma.workingSchedule.create({
     data: {
       name: 'Standard 40h',
@@ -182,7 +191,18 @@ async function main() {
       status: 'Pending',
     },
   });
-  console.log('Created Allocations and pending TimeOffRequest');
+
+  await prisma.timeOffRequest.create({
+    data: {
+      employeeId: emp2.id,
+      typeId: toType1.id,
+      startDate: new Date('2024-08-10'),
+      endDate: new Date('2024-08-14'),
+      duration: 5,
+      status: 'Approved',
+    },
+  });
+  console.log('Created Allocations and TimeOffRequests (Pending and Approved)');
 
   const payrun = await prisma.payrun.create({
     data: {
