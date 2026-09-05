@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { PayrunActions } from "./PayrunActions";
 import { format } from "date-fns";
+import { SendPayslipsButton } from "@/components/payroll/SendPayslipsButton";
 
 export default async function PayrunDetailPage({
   params
@@ -38,7 +39,10 @@ export default async function PayrunDetailPage({
             Status: {payrun.status}
           </div>
         </div>
-        <PayrunActions payrunId={payrun.id} status={payrun.status} />
+        <div className="flex gap-2 items-center">
+          <PayrunActions payrunId={payrun.id} status={payrun.status} />
+          <SendPayslipsButton payrunId={payrun.id} />
+        </div>
       </div>
 
       <div className="border rounded-lg shadow-sm bg-card overflow-hidden">
@@ -67,8 +71,8 @@ export default async function PayrunDetailPage({
                     {payslip.status}
                   </span>
                 </td>
-                <td className="px-4 py-3 text-red-600 max-w-xs truncate" title={payslip.warnings.join(", ")}>
-                  {payslip.warnings.length > 0 ? payslip.warnings.join(", ") : "-"}
+                <td className="px-4 py-3 text-red-600 max-w-[200px] truncate" title={payslip.warnings.join(", ")}>
+                  {payslip.warnings.length > 0 ? payslip.warnings[0] : "—"}
                 </td>
               </tr>
             ))}
