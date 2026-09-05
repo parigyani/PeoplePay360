@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 
 export default function StructureFormPage({ params }: { params: Promise<{ id: string }> }) {
@@ -13,6 +14,7 @@ export default function StructureFormPage({ params }: { params: Promise<{ id: st
   const isNew = id === "new";
   
   const [name, setName] = useState("");
+  const [active, setActive] = useState(true);
   const [rules, setRules] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -23,6 +25,7 @@ export default function StructureFormPage({ params }: { params: Promise<{ id: st
         .then((data) => {
           if (data && !data.error) {
             setName(data.name);
+            setActive(data.active ?? true);
             setRules(data.rules || []);
           }
         });
@@ -46,7 +49,7 @@ export default function StructureFormPage({ params }: { params: Promise<{ id: st
     const url = isNew ? "/api/payroll/structures" : `/api/payroll/structures/${id}`;
     const method = isNew ? "POST" : "PUT";
     
-    const body = isNew ? { name } : { name, rules: rules.map(r => ({ id: r.id, sequence: r.sequence })) };
+    const body = isNew ? { name, active } : { name, active, rules: rules.map(r => ({ id: r.id, sequence: r.sequence })) };
     
     const res = await fetch(url, {
       method,
@@ -68,9 +71,19 @@ export default function StructureFormPage({ params }: { params: Promise<{ id: st
           <CardTitle>{isNew ? "Create Salary Structure" : "Edit Salary Structure"}</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="name">Structure Name</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Standard 2024" />
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="name">Structure Name</Label>
+              <Input id="name" value={name} onChange={(e) => setName(e.target.value)} placeholder="e.g. Standard 2024" />
+            </div>
+
+            <div className="flex items-center justify-between border rounded-md p-4">
+              <div className="space-y-0.5">
+                <Label htmlFor="active">Active Status</Label>
+                <div className="text-sm text-muted-foreground">Is this salary structure currently in use?</div>
+              </div>
+              <Switch id="active" checked={active} onCheckedChange={setActive} />
+            </div>
           </div>
 
           {!isNew && (

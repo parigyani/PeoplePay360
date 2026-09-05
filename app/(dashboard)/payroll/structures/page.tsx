@@ -45,7 +45,11 @@ export default function StructuresPage() {
                   <TableCell className="font-medium">{s.name}</TableCell>
                   <TableCell>{s._count?.rules || 0}</TableCell>
                   <TableCell>{s._count?.contracts || 0}</TableCell>
-                  <TableCell>{s._count?.contracts > 0 ? "In Use" : "Not In Use"}</TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${s.active ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
+                      {s.active ? "Active" : "Inactive"}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-right">
                     <Link href={`/payroll/structures/${s.id}`}>
                       <Button variant="outline" size="sm">Edit</Button>
