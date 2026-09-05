@@ -14,15 +14,16 @@ const typeSchema = z.object({
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session || !can((session.user as any).role, "timeoff:configure")) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const typeId = parseInt(params.id, 10);
+    const typeId = parseInt(id, 10);
     if (isNaN(typeId)) {
       return new NextResponse("Invalid ID", { status: 400 });
     }

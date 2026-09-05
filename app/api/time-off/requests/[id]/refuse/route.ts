@@ -6,15 +6,16 @@ import { prisma } from "@/lib/prisma";
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session || !can((session.user as any).role, "timeoff:approve")) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const requestId = parseInt(params.id, 10);
+    const requestId = parseInt(id, 10);
     if (isNaN(requestId)) {
       return new NextResponse("Invalid ID", { status: 400 });
     }

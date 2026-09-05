@@ -6,15 +6,16 @@ import { applyApproval } from "@/lib/timeoff/applyApproval";
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session || !can((session.user as any).role, "timeoff:approve")) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const requestId = params.id;
+    const requestId = id;
 
     // Calls the locked business logic
     await applyApproval(requestId);
