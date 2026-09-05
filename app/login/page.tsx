@@ -23,7 +23,8 @@ export default function LoginPage() {
     if (res?.error) {
       setError("Invalid email or password");
     } else {
-      router.push("/");
+      const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl") || "/employees";
+      router.push(callbackUrl);
       router.refresh();
     }
   };
