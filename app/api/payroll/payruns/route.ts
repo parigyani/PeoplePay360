@@ -2,7 +2,8 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { can, resolveActiveContract } from "@/lib/_stubs";
+import { can } from "@/lib/rbac";
+import { resolveActiveContract } from "@/lib/payroll/resolveActiveContract";
 
 export async function GET(request: Request) {
   try {

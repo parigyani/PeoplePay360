@@ -40,7 +40,8 @@ export default async function PayrunsPage() {
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payrun._count.payslips}</td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payrun.status}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
+                  <a href={`/payroll/payruns/${payrun.id}`} className="text-blue-600 hover:text-blue-900">View</a>
                   <SendPayslipsButton payrunId={payrun.id} />
                 </td>
               </tr>

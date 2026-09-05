@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { can } from "@/lib/_stubs";
+import { can } from "@/lib/rbac";
 
 export async function POST(
   request: Request,

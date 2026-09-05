@@ -3,7 +3,7 @@ import { PayrunWizard } from "@/components/payroll/PayrunWizard";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import { redirect } from "next/navigation";
-import { can } from "@/lib/_stubs";
+import { can } from "@/lib/rbac";
 
 export default async function NewPayrunPage() {
   const session = await getServerSession(authOptions);

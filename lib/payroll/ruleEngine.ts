@@ -1,6 +1,6 @@
 import { Payrun, SalaryRule } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { resolveActiveContract } from "@/lib/_stubs";
+import { resolveActiveContract } from "@/lib/payroll/resolveActiveContract";
 import { Parser } from "expr-eval";
 
 export async function computePayslip(
@@ -18,10 +18,19 @@ export async function computePayslip(
   let net = 0;
 
   // 1. Resolve Active Contract
-  const contract = await resolveActiveContract(employeeId, payrun.periodStart);
-  if (!contract) {
-    warnings.push("No active contract found for this period");
-    return { lines, gross: 0, net: 0, warnings };
+  let contract;
+  try {
+    contract = await resolveActiveContract(employeeId, payrun.periodStart);
+    if (!contract) {
+      warnings.push("No active contract found for this period");
+      return { lines, gross: 0, net: 0, warnings };
+    }
+  } catch (err: any) {
+    if (err.name === 'NoActiveContractError') {
+      warnings.push("No active contract found for this period");
+      return { lines, gross: 0, net: 0, warnings };
+    }
+    throw err;
   }
 
   // 2. Load SalaryRules
