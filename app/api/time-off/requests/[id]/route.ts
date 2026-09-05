@@ -12,6 +12,7 @@ const requestSchema = z.object({
   endDate: z.coerce.date(),
   duration: z.coerce.number().positive(),
   status: z.string().default("PENDING"),
+  reason: z.string().nullable().optional(),
 }).refine(
   (data) => data.endDate >= data.startDate,
   { message: "End Date cannot be earlier than Start Date" }
@@ -19,15 +20,17 @@ const requestSchema = z.object({
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const requestId = parseInt(params.id, 10);
+
+    const requestId = parseInt(id, 10);
     if (isNaN(requestId)) {
       return new NextResponse("Invalid ID", { status: 400 });
     }
@@ -53,6 +56,7 @@ export async function PUT(
         endDate: data.endDate,
         duration: data.duration,
         status: "PENDING", // Resets to PENDING just in case
+        reason: data.reason,
       },
     });
 

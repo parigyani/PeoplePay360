@@ -47,7 +47,7 @@ export async function GET(
       })
     );
 
-    return new NextResponse(pdfBuffer, {
+    return new NextResponse(new Uint8Array(pdfBuffer), {
       headers: {
         'Content-Type': 'application/pdf',
         'Content-Disposition': `inline; filename="payslip-${payslip.employee.name.replace(/\s+/g, '-')}-${payslip.payrun.name.replace(/\s+/g, '-')}.pdf"`,

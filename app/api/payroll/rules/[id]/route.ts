@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { can } from "@/lib/_stubs";
+import { can } from "@/lib/rbac";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 

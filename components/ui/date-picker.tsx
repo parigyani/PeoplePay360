@@ -16,13 +16,15 @@ import {
 interface DatePickerProps {
   date?: Date;
   setDate: (date?: Date) => void;
+  disabled?: boolean;
 }
 
-export function DatePicker({ date, setDate }: DatePickerProps) {
+export function DatePicker({ date, setDate, disabled }: DatePickerProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button
+          disabled={disabled}
           variant={"outline"}
           className={cn(
             "w-full justify-start text-left font-normal",
@@ -38,7 +40,7 @@ export function DatePicker({ date, setDate }: DatePickerProps) {
           mode="single"
           selected={date}
           onSelect={setDate}
-          initialFocus
+          
         />
       </PopoverContent>
     </Popover>

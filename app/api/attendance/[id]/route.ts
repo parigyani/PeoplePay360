@@ -19,15 +19,17 @@ const attendanceSchema = z.object({
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params;
   try {
     const session = await getServerSession(authOptions);
     if (!session || !can((session.user as any).role, "attendance:write")) {
       return new NextResponse("Unauthorized", { status: 403 });
     }
 
-    const attendanceId = parseInt(params.id, 10);
+
+    const attendanceId = parseInt(id, 10);
     if (isNaN(attendanceId)) {
       return new NextResponse("Invalid ID", { status: 400 });
     }

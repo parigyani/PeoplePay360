@@ -101,9 +101,9 @@ async function main() {
       name: 'Standard Structure',
       rules: {
         create: [
-          { name: 'Basic Salary', code: 'BASIC', category: RuleCategory.BASIC, sequence: 1, method: ComputeMethod.FIXED },
-          { name: 'House Rent Allowance', code: 'HRA', category: RuleCategory.ALLOWANCE, sequence: 2, method: ComputeMethod.PERCENTAGE, value: 20 },
-          { name: 'Provident Fund', code: 'PF', category: RuleCategory.DEDUCTION, sequence: 3, method: ComputeMethod.PERCENTAGE, value: 12 },
+          { name: 'Basic Salary', code: 'BASIC', category: RuleCategory.BASIC, sequence: 1, method: ComputeMethod.FORMULA, formula: 'WAGE' },
+          { name: 'House Rent Allowance', code: 'HRA', category: RuleCategory.ALLOWANCE, sequence: 2, method: ComputeMethod.PERCENTAGE, value: 20, formula: 'BASIC' },
+          { name: 'Provident Fund', code: 'PF', category: RuleCategory.DEDUCTION, sequence: 3, method: ComputeMethod.PERCENTAGE, value: 12, formula: 'BASIC' },
           { name: 'Gross Salary', code: 'GROSS', category: RuleCategory.GROSS, sequence: 4, method: ComputeMethod.FORMULA, formula: 'BASIC + HRA' },
           { name: 'Net Salary', code: 'NET', category: RuleCategory.NET, sequence: 5, method: ComputeMethod.FORMULA, formula: 'GROSS - PF' },
         ],
