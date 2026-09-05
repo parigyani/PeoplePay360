@@ -125,15 +125,16 @@ model Contract {
 }
 
 model Attendance {
-  id          Int       @id @default(autoincrement())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
-  employeeId  Int
-  employee    Employee  @relation("EmployeeAttendance", fields: [employeeId], references: [id])
-  checkIn     DateTime
-  checkOut    DateTime?
-  workedHours Float?
-  status      String
+  id            Int       @id @default(autoincrement())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  employeeId    Int
+  employee      Employee  @relation("EmployeeAttendance", fields: [employeeId], references: [id])
+  checkIn       DateTime
+  checkOut      DateTime?
+  workedHours   Float?
+  status        String
+  isManualEntry Boolean   @default(false)
 }
 
 model TimeOffType {
