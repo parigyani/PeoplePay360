@@ -30,14 +30,17 @@ export async function PUT(req: NextRequest, { params }: { params: Promise<{ id: 
 
   try {
     const body = await req.json();
-    const { name, rules } = body;
+    const { name, rules, active } = body;
     
     const updateTasks = [];
-    if (name) {
+    if (name !== undefined || active !== undefined) {
+      const dataToUpdate: any = {};
+      if (name !== undefined) dataToUpdate.name = name;
+      if (active !== undefined) dataToUpdate.active = active;
       updateTasks.push(
         prisma.salaryStructure.update({
           where: { id: parseInt(id, 10) },
-          data: { name }
+          data: dataToUpdate
         })
       );
     }

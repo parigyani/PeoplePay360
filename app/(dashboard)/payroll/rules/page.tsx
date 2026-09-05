@@ -72,7 +72,11 @@ export default function RulesPage() {
                   <TableCell className="font-medium">{r.name}</TableCell>
                   <TableCell><span className="font-mono text-sm">{r.code}</span></TableCell>
                   <TableCell>{r.category}</TableCell>
-                  <TableCell>{r.method}</TableCell>
+                  <TableCell>
+                    {r.method === "FIXED" ? "Fixed Amount" :
+                     r.method === "PERCENTAGE" ? "Percentage of Wage" :
+                     r.method === "FORMULA" ? "Python Code" : r.method}
+                  </TableCell>
                   <TableCell className="text-right">
                     <Link href={`/payroll/rules/${r.id}`}>
                       <Button variant="outline" size="sm">Edit</Button>

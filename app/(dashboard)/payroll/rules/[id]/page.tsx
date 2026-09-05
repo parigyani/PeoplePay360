@@ -32,6 +32,7 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
   const [structures, setStructures] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
+  const [quantity, setQuantity] = useState(1);
 
   const form = useForm<RuleFormValues>({
     resolver: zodResolver(ruleSchema),
@@ -69,6 +70,7 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
               value: data.value,
               formula: data.formula || "",
             });
+            setQuantity(1);
           }
         });
     }
@@ -79,7 +81,12 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
     setServerError("");
     
     const payload = {
-      ...data,
+      structureId: data.structureId,
+      name: data.name,
+      code: data.code,
+      category: data.category,
+      sequence: data.sequence,
+      method: data.method,
       value: (data.method === "FIXED" || data.method === "PERCENTAGE") ? data.value : null,
       formula: data.method === "FORMULA" ? data.formula : null,
     };
@@ -103,8 +110,9 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
   };
 
   return (
-    <div className="p-6 space-y-6 max-w-2xl mx-auto">
-      <Card>
+    <>
+      <div className="p-6 space-y-6 max-w-2xl mx-auto">
+        <Card>
         <CardHeader>
           <CardTitle>{isNew ? "Create Salary Rule" : "Edit Salary Rule"}</CardTitle>
         </CardHeader>
@@ -195,18 +203,18 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
                     </FormControl>
                     <SelectContent>
                       <SelectItem value="FIXED">Fixed Amount</SelectItem>
-                      <SelectItem value="PERCENTAGE">Percentage</SelectItem>
-                      <SelectItem value="FORMULA">Formula</SelectItem>
+                      <SelectItem value="PERCENTAGE">Percentage of Wage</SelectItem>
+                      <SelectItem value="FORMULA">Python Code</SelectItem>
                     </SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>
               )} />
 
-              {(methodValue === "FIXED" || methodValue === "PERCENTAGE") && (
+              {methodValue === "FIXED" && (
                 <FormField control={form.control} name="value" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{methodValue === "FIXED" ? "Amount" : "Percentage (%)"}</FormLabel>
+                    <FormLabel>Amount</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" {...field} value={field.value || ""} />
                     </FormControl>
@@ -215,14 +223,35 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
                 )} />
               )}
 
+              {methodValue === "PERCENTAGE" && (
+                <div className="grid grid-cols-2 gap-4">
+                  <FormField control={form.control} name="value" render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Percentage (%)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" {...field} value={field.value || ""} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )} />
+                  <div className="space-y-2">
+                    <FormLabel>Quantity</FormLabel>
+                    <FormControl>
+                      <Input type="number" step="0.01" value={quantity} onChange={e => setQuantity(parseFloat(e.target.value) || 1)} />
+                    </FormControl>
+                    <FormDescription>Multiplier (e.g., worked days)</FormDescription>
+                  </div>
+                </div>
+              )}
+
               {methodValue === "FORMULA" && (
                 <FormField control={form.control} name="formula" render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Formula</FormLabel>
+                    <FormLabel>Python Code</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. GROSS - PF - TAX" {...field} value={field.value || ""} />
+                      <Input placeholder="e.g. result = categories['BASIC'] * 0.1" {...field} value={field.value || ""} />
                     </FormControl>
-                    <FormDescription>Use codes of preceding rules.</FormDescription>
+                    <FormDescription>Use predefined variables like categories, contract, worked_days.</FormDescription>
                     <FormMessage />
                   </FormItem>
                 )} />
@@ -239,5 +268,32 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
         </CardContent>
       </Card>
     </div>
+      
+      <Card className="mt-8">
+        <CardHeader>
+          <CardTitle className="text-lg">Computation options from the source</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm">Fixed Amount</h4>
+              <p className="text-xs text-muted-foreground">A flat amount added or deducted from the payrun. Example: a fixed allowance of $500.</p>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm">Percentage of Wage</h4>
+              <p className="text-xs text-muted-foreground">Calculated as a percentage of the contract's base wage, optionally multiplied by a quantity.</p>
+            </div>
+            <div className="space-y-2">
+              <h4 className="font-semibold text-sm">Python Code</h4>
+              <p className="text-xs text-muted-foreground">Advanced formula evaluation.</p>
+              <code className="block bg-muted/50 p-2 rounded text-xs text-muted-foreground mt-2 border border-border">
+                Example expression:<br/>
+                result = categories['BASIC'] * 0.1
+              </code>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+    </>
   );
 }

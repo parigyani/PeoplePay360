@@ -23,11 +23,11 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    const { name } = body;
+    const { name, active } = body;
     if (!name) return NextResponse.json({ error: "Name is required" }, { status: 400 });
 
     const structure = await prisma.salaryStructure.create({
-      data: { name }
+      data: { name, active: active ?? true }
     });
 
     return NextResponse.json(structure, { status: 201 });

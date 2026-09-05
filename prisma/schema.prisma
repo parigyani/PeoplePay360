@@ -206,6 +206,7 @@ model SalaryStructure {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   name      String
+  active    Boolean  @default(true)
 
   rules     SalaryRule[] @relation("StructureRules")
   contracts Contract[]   @relation("ContractStructure")

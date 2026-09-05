@@ -1,59 +1,113 @@
 import { prisma } from '@/lib/prisma';
 import { SendPayslipsButton } from '@/components/payroll/SendPayslipsButton';
+import { PayrunsFilters } from '@/components/payroll/PayrunsFilters';
+import { Prisma } from '@prisma/client';
+import Link from 'next/link';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 
-export default async function PayrunsPage() {
+export default async function PayrunsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; year?: string }>;
+}) {
+  const { q, year } = await searchParams;
+
+  const where: Prisma.PayrunWhereInput = {};
+  if (q) {
+    where.name = { contains: q, mode: 'insensitive' };
+  }
+  if (year) {
+    const yearNum = parseInt(year, 10);
+    if (!isNaN(yearNum)) {
+      const startOfYear = new Date(yearNum, 0, 1);
+      const endOfYear = new Date(yearNum, 11, 31, 23, 59, 59);
+      where.periodStart = {
+        gte: startOfYear,
+        lte: endOfYear
+      };
+    }
+  }
+
   const payruns = await prisma.payrun.findMany({
+    where,
     include: {
       _count: {
         select: { payslips: true }
+      },
+      payslips: {
+        select: {
+          status: true,
+          warnings: true,
+        }
       }
-    }
+    },
+    orderBy: { createdAt: 'desc' }
   });
 
   return (
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">Payruns</h1>
-        <a href="/payroll/payruns/new" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-md font-medium text-sm">
-          + New Payrun
-        </a>
+        <Link href="/payroll/payruns/new">
+          <Button>+ New Payrun</Button>
+        </Link>
       </div>
-      <div className="bg-white shadow rounded-lg border border-gray-200">
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Period</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Payslips</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {payruns.map(payrun => (
-              <tr key={payrun.id}>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payrun.id}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{payrun.name}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {new Date(payrun.periodStart).toLocaleDateString()} - {new Date(payrun.periodEnd).toLocaleDateString()}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payrun._count.payslips}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{payrun.status}</td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium flex gap-2">
-                  <a href={`/payroll/payruns/${payrun.id}`} className="text-blue-600 hover:text-blue-900">View</a>
-                  <SendPayslipsButton payrunId={payrun.id} />
-                </td>
-              </tr>
-            ))}
-            {payruns.length === 0 && (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center text-gray-500">No payruns found</td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      
+      <PayrunsFilters />
+
+      <Card>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Period</TableHead>
+                <TableHead>Payslips</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {payruns.map(payrun => {
+                const warningsCount = payrun.payslips.filter(p => p.status === 'WARNING' || (Array.isArray(p.warnings) && p.warnings.length > 0)).length;
+
+                return (
+                  <TableRow key={payrun.id}>
+                    <TableCell className="font-medium">{payrun.name}</TableCell>
+                    <TableCell>
+                      {new Date(payrun.periodStart).toLocaleDateString()} - {new Date(payrun.periodEnd).toLocaleDateString()}
+                    </TableCell>
+                    <TableCell>{payrun._count.payslips}</TableCell>
+                    <TableCell>
+                      <div className="font-medium">{payrun.status}</div>
+                      {warningsCount > 0 ? (
+                        <div className="text-xs font-semibold text-destructive mt-1">{warningsCount} {warningsCount === 1 ? 'warning' : 'warnings'}</div>
+                      ) : (
+                        <div className="text-xs text-muted-foreground mt-1">No warnings</div>
+                      )}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex gap-3 items-center">
+                        <Link href={`/payroll/payruns/${payrun.id}`}>
+                          <Button variant="outline" size="sm">View</Button>
+                        </Link>
+                        <SendPayslipsButton payrunId={payrun.id} />
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+              {payruns.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">No payruns found</TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
