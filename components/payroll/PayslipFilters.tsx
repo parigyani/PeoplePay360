@@ -2,6 +2,8 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useState } from "react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 export function PayslipFilters() {
   const router = useRouter();
@@ -21,29 +23,26 @@ export function PayslipFilters() {
     <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 mb-6 items-end sm:items-center">
       <div className="w-full sm:w-auto">
         <label className="block text-xs font-medium text-gray-500 mb-1">Employee Name</label>
-        <input 
+        <Input 
           type="text" 
           placeholder="Search employee..." 
           value={q} 
           onChange={e => setQ(e.target.value)} 
-          className="border border-gray-300 p-2 rounded-md w-full sm:w-64 text-sm" 
+          className="w-full sm:w-64" 
         />
       </div>
       <div className="w-full sm:w-auto">
         <label className="block text-xs font-medium text-gray-500 mb-1">Period (Month)</label>
-        <input 
+        <Input 
           type="month" 
           value={period} 
           onChange={e => setPeriod(e.target.value)} 
-          className="border border-gray-300 p-2 rounded-md w-full sm:w-48 text-sm" 
+          className="w-full sm:w-48" 
         />
       </div>
-      <button 
-        type="submit" 
-        className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-md font-medium text-sm hover:bg-blue-700 transition-colors"
-      >
+      <Button type="submit" className="w-full sm:w-auto">
         Filter
-      </button>
+      </Button>
     </form>
   );
 }

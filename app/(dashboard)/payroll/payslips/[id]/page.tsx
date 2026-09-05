@@ -2,7 +2,8 @@ import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { PrintPayslipButton } from '@/components/payroll/PrintPayslipButton';
 import { PayrunActions } from '@/app/(dashboard)/payroll/payruns/[id]/PayrunActions';
-
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 export default async function PayslipDetailPage({
   params,
 }: {
@@ -47,59 +48,69 @@ export default async function PayslipDetailPage({
       )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="bg-white p-5 shadow rounded-lg border border-gray-200 space-y-3">
-          <h3 className="text-lg font-semibold border-b pb-2 mb-3">Employee Details</h3>
-          <div className="flex justify-between"><span className="text-gray-500">Employee:</span> <span className="font-medium">{payslip.employee.name}</span></div>
-          <div className="flex justify-between"><span className="text-gray-500">Department:</span> <span className="font-medium">{payslip.employee.department}</span></div>
-          <div className="flex justify-between"><span className="text-gray-500">Worked Days:</span> <span className="font-medium">{payslip.workedDays}</span></div>
-        </div>
+        <Card>
+          <CardHeader className="border-b pb-2 mb-3">
+            <CardTitle className="text-lg">Employee Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between"><span className="text-muted-foreground">Employee:</span> <span className="font-medium">{payslip.employee.name}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Department:</span> <span className="font-medium">{payslip.employee.department}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Worked Days:</span> <span className="font-medium">{payslip.workedDays}</span></div>
+          </CardContent>
+        </Card>
         
-        <div className="bg-white p-5 shadow rounded-lg border border-gray-200 space-y-3">
-          <h3 className="text-lg font-semibold border-b pb-2 mb-3">Payrun Details</h3>
-          <div className="flex justify-between"><span className="text-gray-500">Pay Run:</span> <span className="font-medium">{payslip.payrun.name}</span></div>
-          <div className="flex justify-between"><span className="text-gray-500">Period:</span> <span className="font-medium">{periodStr}</span></div>
-          <div className="flex justify-between"><span className="text-gray-500">Structure:</span> <span className="font-medium">{payslip.payrun.structure?.name || '—'}</span></div>
-          <div className="flex justify-between"><span className="text-gray-500">Status:</span> 
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              payslip.status === 'PAID' ? 'bg-green-100 text-green-800' :
-              payslip.status === 'VALIDATED' ? 'bg-blue-100 text-blue-800' :
-              payslip.status === 'WARNING' ? 'bg-red-100 text-red-800' :
-              payslip.status === 'COMPUTED' ? 'bg-yellow-100 text-yellow-800' :
-              'bg-gray-100 text-gray-800'
-            }`}>
-              {payslip.status}
-            </span>
-          </div>
-        </div>
+        <Card>
+          <CardHeader className="border-b pb-2 mb-3">
+            <CardTitle className="text-lg">Payrun Details</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex justify-between"><span className="text-muted-foreground">Pay Run:</span> <span className="font-medium">{payslip.payrun.name}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Period:</span> <span className="font-medium">{periodStr}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Structure:</span> <span className="font-medium">{payslip.payrun.structure?.name || '—'}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Status:</span> 
+              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                payslip.status === 'PAID' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
+                payslip.status === 'VALIDATED' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
+                payslip.status === 'WARNING' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
+                payslip.status === 'COMPUTED' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+              }`}>
+                {payslip.status}
+              </span>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="bg-white shadow rounded-lg border border-gray-200 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-200 bg-gray-50">
-          <h3 className="text-lg font-semibold">Salary Computation</h3>
-        </div>
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-white">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Rule Name</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Amount</th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-100">
-            {lines.map((line, idx) => (
-              <tr key={idx}>
-                <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-500 font-mono">{line.code}</td>
-                <td className="px-6 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{line.name}</td>
-                <td className="px-6 py-3 whitespace-nowrap text-sm text-gray-900 text-right">${Number(line.amount).toFixed(2)}</td>
-              </tr>
-            ))}
-            <tr className="bg-gray-50">
-              <td colSpan={2} className="px-6 py-4 whitespace-nowrap text-sm font-bold text-gray-900 text-right uppercase">Net Salary</td>
-              <td className="px-6 py-4 whitespace-nowrap text-lg font-bold text-green-700 text-right">${payslip.net.toFixed(2)}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <Card>
+        <CardHeader className="bg-muted">
+          <CardTitle className="text-lg">Salary Computation</CardTitle>
+        </CardHeader>
+        <CardContent className="p-0">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Code</TableHead>
+                <TableHead>Rule Name</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {lines.map((line, idx) => (
+                <TableRow key={idx}>
+                  <TableCell className="font-mono text-muted-foreground">{line.code}</TableCell>
+                  <TableCell className="font-medium">{line.name}</TableCell>
+                  <TableCell className="text-right">${Number(line.amount).toFixed(2)}</TableCell>
+                </TableRow>
+              ))}
+              <TableRow className="bg-muted/50">
+                <TableCell colSpan={2} className="font-bold text-right uppercase">Net Salary</TableCell>
+                <TableCell className="text-lg font-bold text-green-600 dark:text-green-500 text-right">${payslip.net.toFixed(2)}</TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   );
 }
