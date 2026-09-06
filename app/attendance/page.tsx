@@ -74,6 +74,25 @@ export default async function AttendanceListPage({
     }
   });
 
+  // Group by Employee -> Month
+  type GroupedAttendances = {
+    [employeeName: string]: {
+      [monthStr: string]: typeof attendances;
+    };
+  };
+
+  const grouped: GroupedAttendances = {};
+
+  attendances.forEach((record) => {
+    const empName = record.employee.name;
+    const monthStr = format(new Date(record.checkIn), "MMMM yyyy");
+    
+    if (!grouped[empName]) grouped[empName] = {};
+    if (!grouped[empName][monthStr]) grouped[empName][monthStr] = [];
+    
+    grouped[empName][monthStr].push(record);
+  });
+
   return (
     <div className="container mx-auto py-10 space-y-6">
       <div className="flex justify-between items-center">
@@ -87,75 +106,93 @@ export default async function AttendanceListPage({
 
       <AttendanceListFilters employeeName={employeeName} />
 
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Employee Name</TableHead>
-              <TableHead>Check In</TableHead>
-              <TableHead>Check Out</TableHead>
-              <TableHead>Worked Hours</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {attendances.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="text-center h-24">
-                  No attendance records found.
-                </TableCell>
-              </TableRow>
-            ) : (
-              attendances.map((record) => {
-                let displayHours = "-";
-                if (record.workedHours !== null) {
-                  displayHours = record.workedHours.toFixed(2);
-                } else if (record.checkIn && record.checkOut) {
-                  // Compute dynamically if missing
-                  const diff = record.checkOut.getTime() - record.checkIn.getTime();
-                  displayHours = (diff / (1000 * 60 * 60)).toFixed(2);
-                }
+      <div className="space-y-12">
+        {Object.keys(grouped).length === 0 ? (
+          <div className="rounded-md border p-12 text-center text-muted-foreground">
+            No attendance records found.
+          </div>
+        ) : (
+          Object.entries(grouped).map(([empName, months]) => (
+            <div key={empName} className="space-y-6 bg-white/[0.01] border border-white/[0.05] p-6 rounded-xl">
+              <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
+                <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm">
+                  {empName.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)}
+                </span>
+                {empName}
+              </h2>
+              
+              <div className="space-y-8">
+                {Object.entries(months).map(([monthStr, records]) => (
+                  <div key={monthStr} className="space-y-3">
+                    <h3 className="text-lg font-semibold text-primary/80 border-b border-white/[0.05] pb-2">
+                      {monthStr}
+                    </h3>
+                    <div className="rounded-md border border-white/[0.06] overflow-hidden">
+                      <Table>
+                        <TableHeader className="bg-white/[0.02]">
+                          <TableRow className="border-white/[0.06] hover:bg-transparent">
+                            <TableHead>Check In</TableHead>
+                            <TableHead>Check Out</TableHead>
+                            <TableHead>Worked Hours</TableHead>
+                            <TableHead>Status</TableHead>
+                            <TableHead className="text-right">Actions</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {records.map((record) => {
+                            let displayHours = "-";
+                            if (record.workedHours !== null) {
+                              displayHours = record.workedHours.toFixed(2);
+                            } else if (record.checkIn && record.checkOut) {
+                              // Compute dynamically if missing
+                              const diff = record.checkOut.getTime() - record.checkIn.getTime();
+                              displayHours = (diff / (1000 * 60 * 60)).toFixed(2);
+                            }
 
-                return (
-                  <TableRow key={record.id}>
-                    <TableCell className="font-medium">
-                      {record.employee.name}
-                    </TableCell>
-                    <TableCell>{format(new Date(record.checkIn), "PPP p")}</TableCell>
-                    <TableCell>
-                      {record.checkOut
-                        ? format(new Date(record.checkOut), "PPP p")
-                        : "-"}
-                    </TableCell>
-                    <TableCell>
-                      {displayHours}
-                    </TableCell>
-                    <TableCell>
-                      <div className="flex items-center gap-2">
-                        <Badge variant="outline">{record.status}</Badge>
-                        {record.isManualEntry && (
-                          <Badge variant="default" className="bg-amber-600 hover:bg-amber-700">
-                            Manual Correction
-                          </Badge>
-                        )}
-                      </div>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {canWrite && (
-                        <Link href={`/attendance/${record.id}`}>
-                          <Button variant="outline" size="sm">
-                            Edit
-                          </Button>
-                        </Link>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })
-            )}
-          </TableBody>
-        </Table>
+                            return (
+                              <TableRow key={record.id} className="border-white/[0.04] hover:bg-white/[0.02]">
+                                <TableCell>{format(new Date(record.checkIn), "PPP p")}</TableCell>
+                                <TableCell>
+                                  {record.checkOut
+                                    ? format(new Date(record.checkOut), "PPP p")
+                                    : "-"}
+                                </TableCell>
+                                <TableCell>
+                                  {displayHours}
+                                </TableCell>
+                                <TableCell>
+                                  <div className="flex items-center gap-2">
+                                    <Badge variant="outline" className="bg-white/[0.03] border-white/[0.1]">
+                                      {record.status}
+                                    </Badge>
+                                    {record.isManualEntry && (
+                                      <Badge variant="default" className="bg-amber-600 hover:bg-amber-700">
+                                        Manual Correction
+                                      </Badge>
+                                    )}
+                                  </div>
+                                </TableCell>
+                                <TableCell className="text-right">
+                                  {canWrite && (
+                                    <Link href={`/attendance/${record.id}`}>
+                                      <Button variant="outline" size="sm" className="bg-white/[0.02] border-white/[0.1] hover:bg-white/[0.05]">
+                                        Edit
+                                      </Button>
+                                    </Link>
+                                  )}
+                                </TableCell>
+                              </TableRow>
+                            );
+                          })}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+        )}
       </div>
     </div>
   );
