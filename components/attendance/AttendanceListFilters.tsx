@@ -4,6 +4,13 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { X, Search, CalendarDays } from "lucide-react";
 import { useState } from "react";
 
@@ -89,16 +96,27 @@ export function AttendanceListFilters({ employeeName }: Props) {
           </Badge>
         )}
         
-        <div className="flex items-center gap-2 border rounded-md px-2 bg-background ml-auto">
-          <label htmlFor="monthFilter" className="text-sm text-muted-foreground whitespace-nowrap">Month:</label>
-          <input
-            id="monthFilter"
-            type="month"
-            className="bg-transparent border-none focus:outline-none text-sm p-1"
-            value={searchParams.get("month") || ""}
-            onChange={(e) => updateParam("month", e.target.value || null)}
-          />
-        </div>
+        <Select 
+          value={searchParams.get("month") || ""} 
+          onValueChange={(val) => updateParam("month", val || null)}
+        >
+          <SelectTrigger className="w-[180px] bg-background">
+            <SelectValue placeholder="Select Month" />
+          </SelectTrigger>
+          <SelectContent>
+            {Array.from({ length: 12 }).map((_, i) => {
+              const d = new Date();
+              d.setMonth(d.getMonth() - i);
+              const val = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+              const label = d.toLocaleString('default', { month: 'long', year: 'numeric' });
+              return (
+                <SelectItem key={val} value={val}>
+                  {label}
+                </SelectItem>
+              );
+            })}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
