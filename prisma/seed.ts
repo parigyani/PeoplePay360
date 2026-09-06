@@ -6,16 +6,6 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting seed...');
 
-  const adminPassword = await bcrypt.hash('admin123', 10);
-  console.log('Admin plaintext password: admin123');
-  const adminUser = await prisma.user.create({
-    data: {
-      email: 'admin@peoplepay360.com',
-      password: adminPassword,
-      role: Role.ADMIN,
-    },
-  });
-  console.log('Created Admin User:', adminUser.email);
 
   const emp1 = await prisma.employee.create({
     data: {
@@ -234,6 +224,52 @@ async function main() {
     },
   });
   console.log('Created Payrun and fake Payslip');
+
+  const defaultPassword = await bcrypt.hash('password123', 10);
+  
+  await prisma.user.upsert({
+    where: { email: 'admin@peoplepay360.com' },
+    update: {},
+    create: {
+      email: 'admin@peoplepay360.com',
+      password: defaultPassword,
+      role: Role.ADMIN,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'employee@peoplepay360.com' },
+    update: {},
+    create: {
+      email: 'employee@peoplepay360.com',
+      password: defaultPassword,
+      role: Role.EMPLOYEE,
+      employeeId: emp2.id,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'hrmanager@peoplepay360.com' },
+    update: {},
+    create: {
+      email: 'hrmanager@peoplepay360.com',
+      password: defaultPassword,
+      role: Role.HR_MANAGER,
+      employeeId: emp1.id,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: 'payrollmanager@peoplepay360.com' },
+    update: {},
+    create: {
+      email: 'payrollmanager@peoplepay360.com',
+      password: defaultPassword,
+      role: Role.HR_PAYROLL_MANAGER,
+    },
+  });
+
+  console.log('Created/Upserted 4 RBAC Demo Users (password: password123)');
 
   console.log('Seeding finished successfully.');
 }
