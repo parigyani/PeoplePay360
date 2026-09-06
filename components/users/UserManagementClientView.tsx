@@ -20,6 +20,7 @@ import {
 import {
   Select,
   SelectContent,
+
   SelectItem,
   SelectTrigger,
   SelectValue,
@@ -28,11 +29,11 @@ import { Search, ShieldAlert, Plus, Check } from "lucide-react";
 import { Role } from "@prisma/client";
 import Link from "next/link";
 
+
 const ROLE_LABELS: Record<Role, string> = {
   [Role.EMPLOYEE]: "Employee",
   [Role.HR_MANAGER]: "HR Manager",
-  [Role.HR_PAYROLL_USER]: "HR Payroll User",
-  [Role.HR_PAYROLL_MANAGER]: "HR Payroll Admin",
+  [Role.HR_PAYROLL_MANAGER]: "Payroll Manager",
   [Role.ADMIN]: "Admin",
 };
 
@@ -115,7 +116,6 @@ export function UserManagementClientView({
       [Role.ADMIN]: "AD",
       [Role.EMPLOYEE]: "EM",
       [Role.HR_MANAGER]: "HRM",
-      [Role.HR_PAYROLL_USER]: "HRP",
       [Role.HR_PAYROLL_MANAGER]: "HRPA",
     };
     return `${roleMap[u.role] || "U"}${u.id}`;
@@ -151,7 +151,7 @@ export function UserManagementClientView({
 
   const handleEmployeeChange = (employeeIdStr: string) => {
     form.setValue("employeeId", employeeIdStr);
-    
+
     // Auto-fill email if it's a new user and email is empty
     if (!selectedUser && !form.getValues("email")) {
       const emp = employees.find(e => e.id.toString() === employeeIdStr);
@@ -166,7 +166,7 @@ export function UserManagementClientView({
     setIsSubmitting(true);
     setFormError(null);
     setTempPassword(null);
-    
+
     try {
       const payload = {
         ...data,
@@ -269,11 +269,10 @@ export function UserManagementClientView({
                   filteredUsers.map((u) => (
                     <TableRow
                       key={u.id}
-                      className={`cursor-pointer transition-colors ${
-                        selectedUser?.id === u.id
+                      className={`cursor-pointer transition-colors ${selectedUser?.id === u.id
                           ? "bg-primary/10 border-l-2 border-l-primary"
                           : "border-white/[0.04] hover:bg-white/[0.03] border-l-2 border-l-transparent"
-                      }`}
+                        }`}
                       onClick={() => handleSelectUser(u)}
                     >
                       <TableCell className="font-medium text-foreground">
@@ -354,8 +353,8 @@ export function UserManagementClientView({
           {!selectedUser && (
             <div className="flex items-center gap-4 pt-1">
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   checked={form.watch("isNewEmployee") === true}
                   onChange={() => {
                     form.setValue("isNewEmployee", true);
@@ -366,8 +365,8 @@ export function UserManagementClientView({
                 Create New Employee
               </label>
               <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   checked={form.watch("isNewEmployee") === false}
                   onChange={() => {
                     form.setValue("isNewEmployee", false);
@@ -436,9 +435,8 @@ export function UserManagementClientView({
               {Object.entries(ROLE_LABELS).map(([val, label]) => (
                 <label
                   key={val}
-                  className={`flex items-center gap-2 text-sm p-1.5 rounded transition-colors ${
-                    isEditingSelf ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/[0.03]"
-                  }`}
+                  className={`flex items-center gap-2 text-sm p-1.5 rounded transition-colors ${isEditingSelf ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-white/[0.03]"
+                    }`}
                 >
                   <input
                     type="radio"
@@ -465,22 +463,20 @@ export function UserManagementClientView({
               <button
                 type="button"
                 onClick={() => form.setValue("isActive", true)}
-                className={`flex-1 py-1.5 rounded text-sm font-medium border transition-colors ${
-                  form.watch("isActive")
+                className={`flex-1 py-1.5 rounded text-sm font-medium border transition-colors ${form.watch("isActive")
                     ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
                     : "bg-white/[0.02] border-white/[0.06] text-muted-foreground hover:bg-white/[0.05]"
-                }`}
+                  }`}
               >
                 Active
               </button>
               <button
                 type="button"
                 onClick={() => form.setValue("isActive", false)}
-                className={`flex-1 py-1.5 rounded text-sm font-medium border transition-colors ${
-                  !form.watch("isActive")
+                className={`flex-1 py-1.5 rounded text-sm font-medium border transition-colors ${!form.watch("isActive")
                     ? "bg-zinc-500/20 border-zinc-500/40 text-zinc-300"
                     : "bg-white/[0.02] border-white/[0.06] text-muted-foreground hover:bg-white/[0.05]"
-                }`}
+                  }`}
               >
                 Inactive
               </button>
@@ -496,8 +492,8 @@ export function UserManagementClientView({
               {isSubmitting
                 ? "Saving..."
                 : selectedUser
-                ? "Save Access"
-                : "Create User"}
+                  ? "Save Access"
+                  : "Create User"}
             </Button>
           </div>
         </form>

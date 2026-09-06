@@ -12,18 +12,6 @@ const PERMISSIONS: Record<Role, string[]> = {
     "schedule:read", "schedule:write",
     "timeoff:approve", "timeoff:configure"
   ],
-  [Role.HR_PAYROLL_USER]: [
-    "own_records:read", "attendance:submit", "timeoff:submit",
-    "employee:read", "employee:write",
-    "contract:read", "contract:write",
-    "attendance:read", "attendance:write",
-    "schedule:read", "schedule:write",
-    "timeoff:approve",
-    "payrun:read", "payrun:write", "payrun:compute", "payrun:validate", "payrun:mark-paid",
-    "payslip:read", "payslip:write",
-    "structure:read",
-    "rule:read"
-  ],
   [Role.HR_PAYROLL_MANAGER]: [
     "own_records:read", "attendance:submit", "timeoff:submit",
     "employee:read", "employee:write",
