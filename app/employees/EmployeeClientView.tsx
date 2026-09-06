@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { EmployeeKanban } from "@/components/employees/EmployeeKanban";
 import { EmployeeList } from "@/components/employees/EmployeeList";
 import { EmployeeForm } from "@/components/employees/EmployeeForm";
@@ -67,7 +67,19 @@ export function EmployeeClientView({
   canEdit,
 }: EmployeeClientViewProps) {
   const router = useRouter();
-  const [activeView, setActiveView] = useState<"kanban" | "list">("kanban");
+  const searchParams = useSearchParams();
+  const viewParam = searchParams.get("view");
+  
+  const [activeView, setActiveView] = useState<"kanban" | "list">(
+    viewParam === "list" ? "list" : "kanban"
+  );
+  
+  useEffect(() => {
+    if (viewParam === "list" || viewParam === "kanban") {
+      setActiveView(viewParam);
+    }
+  }, [viewParam]);
+
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 

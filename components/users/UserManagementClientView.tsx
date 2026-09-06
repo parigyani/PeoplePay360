@@ -187,7 +187,7 @@ export function UserManagementClientView({
     }
   };
 
-  const isEditingSelf = selectedUser?.id.toString() === currentUserId;
+  const isEditingSelf = !!selectedUser && selectedUser.id.toString() === currentUserId;
 
   return (
     <div className="flex gap-8 h-[calc(100vh-8rem)]">

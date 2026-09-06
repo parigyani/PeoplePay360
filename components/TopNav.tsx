@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AttendanceWidget } from "./attendance/AttendanceWidget";
-import { useSession } from "next-auth/react";
+import { useSession, signOut } from "next-auth/react";
 import { can } from "@/lib/rbac";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown } from "lucide-react";
@@ -138,6 +138,17 @@ export function TopNav() {
         {/* Right side — status dot and attendance widget */}
         <div className="ml-auto flex items-center gap-4">
           <AttendanceWidget />
+          <div className="flex items-center gap-2 border-l border-white/[0.08] pl-4">
+            <span className="text-xs text-muted-foreground hidden md:inline-block">
+              {session?.user?.email}
+            </span>
+            <button
+              onClick={() => signOut({ callbackUrl: "/login" })}
+              className="text-xs font-medium text-destructive hover:text-destructive-foreground transition-colors bg-destructive/10 hover:bg-destructive px-2 py-1 rounded"
+            >
+              Sign Out
+            </button>
+          </div>
           <div className="status-dot status-dot-active" title="System Online" />
         </div>
       </div>
