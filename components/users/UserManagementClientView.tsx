@@ -42,7 +42,7 @@ export interface SerializedUser {
   role: Role;
   isActive: boolean;
   employeeId: number | null;
-  employee: { id: number; name: string } | null;
+  employee: { id: number; name: string; jobPosition?: string } | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -105,6 +105,21 @@ export function UserManagementClientView({
     const matchesRole = roleFilter === "ALL" || u.role === roleFilter;
     return matchesSearch && matchesRole;
   });
+
+  const generateUserId = (u: SerializedUser) => {
+    if (u.employee && u.employee.jobPosition) {
+      const initials = u.employee.jobPosition.split(' ').filter(w => w.length > 0).map(w => w[0]).join('').toUpperCase();
+      return `${initials}${u.employee.id}`;
+    }
+    const roleMap: Record<Role, string> = {
+      [Role.ADMIN]: "AD",
+      [Role.EMPLOYEE]: "EM",
+      [Role.HR_MANAGER]: "HRM",
+      [Role.HR_PAYROLL_USER]: "HRP",
+      [Role.HR_PAYROLL_MANAGER]: "HRPA",
+    };
+    return `${roleMap[u.role] || "U"}${u.id}`;
+  };
 
   const handleCreateNew = () => {
     setSelectedUser(null);
@@ -236,7 +251,7 @@ export function UserManagementClientView({
             <Table>
               <TableHeader className="sticky top-0 bg-[hsl(224,71%,4%)] z-10 shadow-sm border-b border-white/[0.06]">
                 <TableRow className="border-none hover:bg-transparent">
-                  <TableHead className="text-muted-foreground/70">User</TableHead>
+                  <TableHead className="text-muted-foreground/70">User ID</TableHead>
                   <TableHead className="text-muted-foreground/70">Employee</TableHead>
                   <TableHead className="text-muted-foreground/70">Work Email</TableHead>
                   <TableHead className="text-muted-foreground/70">Role</TableHead>
@@ -262,7 +277,7 @@ export function UserManagementClientView({
                       onClick={() => handleSelectUser(u)}
                     >
                       <TableCell className="font-medium text-foreground">
-                        {u.employee?.name || "Unknown"}
+                        {generateUserId(u)}
                       </TableCell>
                       <TableCell>
                         {u.employee ? (

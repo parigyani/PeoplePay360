@@ -28,6 +28,7 @@ export default async function UsersPage() {
         select: {
           id: true,
           name: true,
+          jobPosition: true,
         },
       },
     },

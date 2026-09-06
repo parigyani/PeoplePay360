@@ -131,13 +131,28 @@ export function EmployeeForm({ managers, schedules, onSuccess }: EmployeeFormPro
             render={({ field }) => (
               <FormItem>
                 <FormLabel>Job Position</FormLabel>
-                <FormControl>
-                  <Input
-                    placeholder="Software Engineer"
-                    {...field}
-                    className="bg-white/[0.03] border-white/[0.08]"
-                  />
-                </FormControl>
+                <Select
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                >
+                  <FormControl>
+                    <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                      <SelectValue placeholder="Select a position" />
+                    </SelectTrigger>
+                  </FormControl>
+                  <SelectContent>
+                    <SelectItem value="Software Engineer">Software Engineer</SelectItem>
+                    <SelectItem value="Senior Software Engineer">Senior Software Engineer</SelectItem>
+                    <SelectItem value="QA Engineer">QA Engineer</SelectItem>
+                    <SelectItem value="Product Manager">Product Manager</SelectItem>
+                    <SelectItem value="HR Manager">HR Manager</SelectItem>
+                    <SelectItem value="HR Specialist">HR Specialist</SelectItem>
+                    <SelectItem value="Sales Executive">Sales Executive</SelectItem>
+                    <SelectItem value="Marketing Specialist">Marketing Specialist</SelectItem>
+                    <SelectItem value="Designer">Designer</SelectItem>
+                    <SelectItem value="Data Scientist">Data Scientist</SelectItem>
+                  </SelectContent>
+                </Select>
                 <FormMessage />
               </FormItem>
             )}

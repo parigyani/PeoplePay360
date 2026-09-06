@@ -61,7 +61,7 @@ export async function POST(req: Request) {
         password: hashedPassword,
       },
       include: {
-        employee: { select: { id: true, name: true } },
+        employee: { select: { id: true, name: true, jobPosition: true } },
       },
     });
 

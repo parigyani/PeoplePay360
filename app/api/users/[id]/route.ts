@@ -70,7 +70,7 @@ export async function PATCH(
         isActive: isActive !== undefined ? isActive : undefined,
       },
       include: {
-        employee: { select: { id: true, name: true } },
+        employee: { select: { id: true, name: true, jobPosition: true } },
       },
     });
 
