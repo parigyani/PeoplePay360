@@ -3,7 +3,7 @@ import { authOptions } from "@/lib/auth";
 import { can } from "@/lib/rbac";
 import prisma from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
-import { AttendanceForm } from "@/components/attendance/AttendanceForm";
+import { AttendanceDetailView } from "@/components/attendance/AttendanceDetailView";
 
 export default async function EditAttendancePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
@@ -12,14 +12,19 @@ export default async function EditAttendancePage({ params }: { params: Promise<{
     redirect("/attendance");
   }
 
-  const resolvedParams = await params;
-  const attendanceId = parseInt(resolvedParams.id, 10);
+  const p = await params;
+  const attendanceId = parseInt(p.id, 10);
   if (isNaN(attendanceId)) {
     notFound();
   }
 
   const attendance = await prisma.attendance.findUnique({
     where: { id: attendanceId },
+    include: {
+      employee: {
+        include: { manager: true, schedule: true }
+      }
+    }
   });
 
   if (!attendance) {
@@ -39,9 +44,10 @@ export default async function EditAttendancePage({ params }: { params: Promise<{
 
   return (
     <div className="container mx-auto py-10">
-      <AttendanceForm 
+      <AttendanceDetailView 
         initialData={initialData}
-        employees={employees} 
+        employees={employees}
+        employeeDetails={attendance.employee}
       />
     </div>
   );

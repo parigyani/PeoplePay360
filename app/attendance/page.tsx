@@ -14,32 +14,55 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { AttendanceListFilters } from "@/components/attendance/AttendanceListFilters";
 
 export default async function AttendanceListPage({
   searchParams,
 }: {
-  searchParams: Promise<{ employeeId?: string }>;
+  searchParams: Promise<{ employeeId?: string; search?: string; date?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session) return null;
 
+  const params = await searchParams;
+
   const role = (session.user as any).role;
   const canWrite = can(role, "attendance:write");
 
-  const resolvedSearchParams = await searchParams;
-
-  // Non-privileged users (like EMPLOYEE) can only see their own attendance
-  // unless they are explicitly looking at someone else and have HR access.
-  // We'll trust the middleware/rbac to block whole pages, but here we enforce view boundaries:
   let targetEmployeeId: number | undefined = undefined;
+  let employeeName: string | undefined = undefined;
   
   if (role === "EMPLOYEE") {
     targetEmployeeId = (session.user as any).employeeId;
-  } else if (resolvedSearchParams.employeeId) {
-    targetEmployeeId = parseInt(resolvedSearchParams.employeeId, 10);
+  } else if (params.employeeId) {
+    targetEmployeeId = parseInt(params.employeeId, 10);
   }
 
-  const whereClause = targetEmployeeId ? { employeeId: targetEmployeeId } : {};
+  const whereClause: any = {};
+  
+  if (targetEmployeeId) {
+    whereClause.employeeId = targetEmployeeId;
+    const emp = await prisma.employee.findUnique({ where: { id: targetEmployeeId }, select: { name: true }});
+    if (emp) employeeName = emp.name;
+  }
+
+  if (params.search) {
+    whereClause.employee = {
+      name: { contains: params.search, mode: "insensitive" }
+    };
+  }
+
+  if (params.date) {
+    const startOfDay = new Date(params.date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(params.date);
+    endOfDay.setHours(23, 59, 59, 999);
+    
+    whereClause.checkIn = {
+      gte: startOfDay,
+      lte: endOfDay
+    };
+  }
 
   const attendances = await prisma.attendance.findMany({
     where: whereClause,
@@ -62,6 +85,8 @@ export default async function AttendanceListPage({
         )}
       </div>
 
+      <AttendanceListFilters employeeName={employeeName} />
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -82,41 +107,52 @@ export default async function AttendanceListPage({
                 </TableCell>
               </TableRow>
             ) : (
-              attendances.map((record) => (
-                <TableRow key={record.id}>
-                  <TableCell className="font-medium">
-                    {record.employee.name}
-                  </TableCell>
-                  <TableCell>{format(new Date(record.checkIn), "PPP p")}</TableCell>
-                  <TableCell>
-                    {record.checkOut
-                      ? format(new Date(record.checkOut), "PPP p")
-                      : "-"}
-                  </TableCell>
-                  <TableCell>
-                    {record.workedHours !== null ? record.workedHours.toFixed(2) : "-"}
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex items-center gap-2">
-                      <Badge variant="outline">{record.status}</Badge>
-                      {record.isManualEntry && (
-                        <Badge variant="default" className="bg-amber-600 hover:bg-amber-700">
-                          Manual Correction
-                        </Badge>
+              attendances.map((record) => {
+                let displayHours = "-";
+                if (record.workedHours !== null) {
+                  displayHours = record.workedHours.toFixed(2);
+                } else if (record.checkIn && record.checkOut) {
+                  // Compute dynamically if missing
+                  const diff = record.checkOut.getTime() - record.checkIn.getTime();
+                  displayHours = (diff / (1000 * 60 * 60)).toFixed(2);
+                }
+
+                return (
+                  <TableRow key={record.id}>
+                    <TableCell className="font-medium">
+                      {record.employee.name}
+                    </TableCell>
+                    <TableCell>{format(new Date(record.checkIn), "PPP p")}</TableCell>
+                    <TableCell>
+                      {record.checkOut
+                        ? format(new Date(record.checkOut), "PPP p")
+                        : "-"}
+                    </TableCell>
+                    <TableCell>
+                      {displayHours}
+                    </TableCell>
+                    <TableCell>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline">{record.status}</Badge>
+                        {record.isManualEntry && (
+                          <Badge variant="default" className="bg-amber-600 hover:bg-amber-700">
+                            Manual Correction
+                          </Badge>
+                        )}
+                      </div>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {canWrite && (
+                        <Link href={`/attendance/${record.id}`}>
+                          <Button variant="outline" size="sm">
+                            Edit
+                          </Button>
+                        </Link>
                       )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {canWrite && (
-                      <Link href={`/attendance/${record.id}`}>
-                        <Button variant="outline" size="sm">
-                          Edit
-                        </Button>
-                      </Link>
-                    )}
-                  </TableCell>
-                </TableRow>
-              ))
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
