@@ -38,27 +38,55 @@ async function main() {
 
   console.log('Created Employees:', emp1.name, emp2.name, emp3.name);
 
+  function generateAttendancesForMonth(employeeId: number, year: number, monthIndex: number) {
+    const records = [];
+    const date = new Date(Date.UTC(year, monthIndex, 1));
+    while (date.getUTCMonth() === monthIndex) {
+      const dayOfWeek = date.getUTCDay();
+      // Skip weekends (0 = Sunday, 6 = Saturday)
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        // 9:00 AM to 5:00 PM UTC
+        const checkIn = new Date(date);
+        checkIn.setUTCHours(9, 0, 0, 0);
+        
+        const checkOut = new Date(date);
+        checkOut.setUTCHours(17, 0, 0, 0);
+
+        const rand = Math.random();
+        let status = 'Present';
+        if (rand > 0.95) status = 'Absent';
+        else if (rand > 0.85) status = 'Late';
+
+        if (status === 'Absent') {
+          records.push({ employeeId, checkIn, status });
+        } else if (status === 'Late') {
+          checkIn.setUTCMinutes(Math.floor(Math.random() * 60) + 10);
+          records.push({ employeeId, checkIn, checkOut, status });
+        } else {
+          records.push({ employeeId, checkIn, checkOut, status });
+        }
+      }
+      date.setUTCDate(date.getUTCDate() + 1);
+    }
+    return records;
+  }
+
+  const attendanceData = [
+    ...generateAttendancesForMonth(emp2.id, 2024, 7), // August 2024
+    ...generateAttendancesForMonth(emp3.id, 2024, 7),
+    ...generateAttendancesForMonth(emp2.id, 2026, 6), // July 2026
+    ...generateAttendancesForMonth(emp3.id, 2026, 6),
+    ...generateAttendancesForMonth(emp2.id, 2026, 7), // August 2026
+    ...generateAttendancesForMonth(emp3.id, 2026, 7),
+    ...generateAttendancesForMonth(emp2.id, 2026, 8), // Sept 2026
+    ...generateAttendancesForMonth(emp3.id, 2026, 8),
+  ];
+
+  // We should clear old attendances for cleaner testing if we keep running seed
+  await prisma.attendance.deleteMany({});
+  
   await prisma.attendance.createMany({
-    data: [
-      { employeeId: emp2.id, checkIn: new Date('2024-08-01T09:00:00Z'), checkOut: new Date('2024-08-01T17:00:00Z'), status: 'Present' },
-      { employeeId: emp2.id, checkIn: new Date('2024-08-02T09:00:00Z'), checkOut: new Date('2024-08-02T17:00:00Z'), status: 'Absent' },
-      { employeeId: emp3.id, checkIn: new Date('2024-08-01T09:00:00Z'), checkOut: new Date('2024-08-01T17:00:00Z'), status: 'Present' },
-      
-      // July 2026
-      { employeeId: emp2.id, checkIn: new Date('2026-07-15T09:00:00Z'), checkOut: new Date('2026-07-15T17:15:00Z'), status: 'Present' },
-      { employeeId: emp2.id, checkIn: new Date('2026-07-16T09:10:00Z'), checkOut: new Date('2026-07-16T17:00:00Z'), status: 'Late' },
-      { employeeId: emp3.id, checkIn: new Date('2026-07-15T08:55:00Z'), checkOut: new Date('2026-07-15T17:00:00Z'), status: 'Present' },
-
-      // August 2026
-      { employeeId: emp2.id, checkIn: new Date('2026-08-10T09:00:00Z'), checkOut: new Date('2026-08-10T17:00:00Z'), status: 'Present' },
-      { employeeId: emp2.id, checkIn: new Date('2026-08-11T09:00:00Z'), checkOut: new Date('2026-08-11T17:00:00Z'), status: 'Present' },
-      { employeeId: emp3.id, checkIn: new Date('2026-08-10T09:00:00Z'), checkOut: new Date('2026-08-10T17:00:00Z'), status: 'Present' },
-
-      // September 2026
-      { employeeId: emp2.id, checkIn: new Date('2026-09-01T09:00:00Z'), checkOut: new Date('2026-09-01T17:00:00Z'), status: 'Present' },
-      { employeeId: emp2.id, checkIn: new Date('2026-09-02T09:00:00Z'), checkOut: new Date('2026-09-02T17:00:00Z'), status: 'Present' },
-      { employeeId: emp3.id, checkIn: new Date('2026-09-01T09:00:00Z'), checkOut: new Date('2026-09-01T17:00:00Z'), status: 'Present' }
-    ]
+    data: attendanceData
   });
   console.log('Created Mock Attendance records');
 
