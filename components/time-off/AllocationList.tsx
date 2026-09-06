@@ -26,21 +26,23 @@ export function AllocationList({ allocations, canApprove }: { allocations: any[]
         )}
       </div>
 
-      <div className="flex w-full max-w-sm items-center space-x-2">
-        <Input 
-          type="search" 
-          placeholder="Search employee or type..." 
-          value={search} 
-          onChange={e => setSearch(e.target.value)} 
-          className="bg-[#1E2330] border-white/10 text-white"
-        />
-      </div>
+      {canApprove && (
+        <div className="flex w-full max-w-sm items-center space-x-2">
+          <Input 
+            type="search" 
+            placeholder="Search employee or type..." 
+            value={search} 
+            onChange={e => setSearch(e.target.value)} 
+            className="bg-[#1E2330] border-white/10 text-white"
+          />
+        </div>
+      )}
 
       <div className="rounded-md border border-[#2D3342] overflow-hidden">
         <Table>
           <TableHeader className="bg-[#1E2330]">
             <TableRow className="border-b-[#2D3342] hover:bg-transparent">
-              <TableHead className="text-slate-400 font-medium">Employee</TableHead>
+              {canApprove && <TableHead className="text-slate-400 font-medium">Employee</TableHead>}
               <TableHead className="text-slate-400 font-medium">Time Off Type</TableHead>
               <TableHead className="text-right text-slate-400 font-medium">Allocated</TableHead>
               <TableHead className="text-right text-slate-400 font-medium">Taken</TableHead>
@@ -52,14 +54,14 @@ export function AllocationList({ allocations, canApprove }: { allocations: any[]
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24 text-slate-400">
+                <TableCell colSpan={canApprove ? 7 : 6} className="text-center h-24 text-slate-400">
                   No allocations found.
                 </TableCell>
               </TableRow>
             ) : (
               filtered.map((allocation) => (
                 <TableRow key={allocation.id} className="border-b-[#2D3342] hover:bg-[#1E2330]/50 transition-colors">
-                  <TableCell className="font-medium text-slate-100">{allocation.employee.name}</TableCell>
+                  {canApprove && <TableCell className="font-medium text-slate-100">{allocation.employee.name}</TableCell>}
                   <TableCell className="text-slate-300">
                     <div className="flex items-center gap-2">
                       {allocation.type.color && (

@@ -14,9 +14,13 @@ export default async function AllocationsPage() {
   }
 
   const role = (session.user as any).role;
-  const canApprove = can(role, "timeoff:approve");
+  const currentEmployeeId = (session.user as any).employeeId;
+  const canApprove = can(role, "timeoff:approve") || can(role, "timeoff:configure");
+
+  const whereClause = canApprove ? undefined : { employeeId: currentEmployeeId || -1 };
 
   const allocations = await prisma.allocation.findMany({
+    where: whereClause,
     include: {
       employee: { select: { name: true } },
       type: { select: { name: true, color: true } },
