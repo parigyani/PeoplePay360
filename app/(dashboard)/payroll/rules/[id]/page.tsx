@@ -32,7 +32,6 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
   const [structures, setStructures] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [serverError, setServerError] = useState("");
-  const [quantity, setQuantity] = useState(1);
 
   const form = useForm<RuleFormValues>({
     resolver: zodResolver(ruleSchema),
@@ -70,7 +69,6 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
               value: data.value,
               formula: data.formula || "",
             });
-            setQuantity(1);
           }
         });
     }
@@ -224,24 +222,15 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
               )}
 
               {methodValue === "PERCENTAGE" && (
-                <div className="grid grid-cols-2 gap-4">
-                  <FormField control={form.control} name="value" render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Percentage (%)</FormLabel>
-                      <FormControl>
-                        <Input type="number" step="0.01" {...field} value={field.value || ""} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )} />
-                  <div className="space-y-2">
-                    <FormLabel>Quantity</FormLabel>
+                <FormField control={form.control} name="value" render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Percentage (%)</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.01" value={quantity} onChange={e => setQuantity(parseFloat(e.target.value) || 1)} />
+                      <Input type="number" step="0.01" {...field} value={field.value || ""} />
                     </FormControl>
-                    <FormDescription>Multiplier (e.g., worked days)</FormDescription>
-                  </div>
-                </div>
+                    <FormMessage />
+                  </FormItem>
+                )} />
               )}
 
               {methodValue === "FORMULA" && (
@@ -281,7 +270,7 @@ export default function RuleFormPage({ params }: { params: Promise<{ id: string 
             </div>
             <div className="space-y-2">
               <h4 className="font-semibold text-sm">Percentage of Wage</h4>
-              <p className="text-xs text-muted-foreground">Calculated as a percentage of the contract's base wage, optionally multiplied by a quantity.</p>
+              <p className="text-xs text-muted-foreground">Calculated as a percentage of the contract's base wage.</p>
             </div>
             <div className="space-y-2">
               <h4 className="font-semibold text-sm">Python Code</h4>
