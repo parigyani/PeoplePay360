@@ -15,8 +15,8 @@ const NAV_ITEMS = [
     href: "/employees", 
     permission: "employee:read",
     subItems: [
-      { label: "Kanban View", href: "/employees" },
-      { label: "List View", href: "/employees?view=list" }
+      { label: "Employees", href: "/employees" },
+      { label: "Working Schedule", href: "/schedules" }
     ]
   },
   { 

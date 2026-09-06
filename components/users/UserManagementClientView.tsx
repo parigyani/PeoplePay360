@@ -48,7 +48,7 @@ export interface SerializedUser {
 }
 
 const userSchema = z.object({
-  isNewEmployee: z.boolean().default(false),
+  isNewEmployee: z.boolean(),
   employeeId: z.string().optional(),
   newEmployeeName: z.string().optional(),
   email: z.string().email("Invalid email address"),
