@@ -205,18 +205,18 @@ export function UserManagementClientView({
   const isEditingSelf = !!selectedUser && selectedUser.id.toString() === currentUserId;
 
   return (
-    <div className="flex gap-8 h-[calc(100vh-8rem)]">
+    <div className="flex gap-8 min-h-[calc(100vh-8rem)] container mx-auto max-w-7xl">
       {/* Left Panel: Table */}
       <div className="flex-1 flex flex-col min-w-0 space-y-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold tracking-tight">User Management</h1>
+          <h1 className="text-3xl font-extrabold tracking-tight">User Management</h1>
           <Badge variant="destructive" className="bg-destructive/20 text-destructive border-destructive/30 hover:bg-destructive/20">
             ADMIN ONLY
           </Badge>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button onClick={handleCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground">
+          <Button onClick={handleCreateNew} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20">
             <Plus className="mr-1.5 h-4 w-4" />
             New User
           </Button>
@@ -227,12 +227,12 @@ export function UserManagementClientView({
               placeholder="Search users, employees or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-white/[0.03] border-white/[0.08]"
+              className="pl-9 bg-white/[0.02] border-white/[0.06] shadow-inner"
             />
           </div>
 
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-[200px] bg-white/[0.03] border-white/[0.08]">
+            <SelectTrigger className="w-[200px] bg-white/[0.02] border-white/[0.06] shadow-inner">
               <SelectValue placeholder="Role Filter" />
             </SelectTrigger>
             <SelectContent>
@@ -246,16 +246,16 @@ export function UserManagementClientView({
           </Select>
         </div>
 
-        <div className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden flex flex-col">
+        <div className="flex-1 premium-card flex flex-col">
           <div className="flex-1 overflow-auto">
             <Table>
-              <TableHeader className="sticky top-0 bg-[hsl(224,71%,4%)] z-10 shadow-sm border-b border-white/[0.06]">
+              <TableHeader className="sticky top-0 bg-zinc-900/90 backdrop-blur-sm z-10 shadow-sm border-b border-white/[0.06]">
                 <TableRow className="border-none hover:bg-transparent">
-                  <TableHead className="text-muted-foreground/70">User ID</TableHead>
-                  <TableHead className="text-muted-foreground/70">Employee</TableHead>
-                  <TableHead className="text-muted-foreground/70">Work Email</TableHead>
-                  <TableHead className="text-muted-foreground/70">Role</TableHead>
-                  <TableHead className="text-muted-foreground/70">Status</TableHead>
+                  <TableHead className="text-muted-foreground/80 font-medium">User ID</TableHead>
+                  <TableHead className="text-muted-foreground/80 font-medium">Employee</TableHead>
+                  <TableHead className="text-muted-foreground/80 font-medium">Work Email</TableHead>
+                  <TableHead className="text-muted-foreground/80 font-medium">Role</TableHead>
+                  <TableHead className="text-muted-foreground/80 font-medium">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -271,7 +271,7 @@ export function UserManagementClientView({
                       key={u.id}
                       className={`cursor-pointer transition-colors ${selectedUser?.id === u.id
                           ? "bg-primary/10 border-l-2 border-l-primary"
-                          : "border-white/[0.04] hover:bg-white/[0.03] border-l-2 border-l-transparent"
+                          : "border-white/[0.04] hover:bg-white/[0.02] border-l-2 border-l-transparent"
                         }`}
                       onClick={() => handleSelectUser(u)}
                     >
@@ -282,7 +282,7 @@ export function UserManagementClientView({
                         {u.employee ? (
                           <Link
                             href={`/employees/${u.employeeId}`}
-                            className="text-primary hover:underline text-sm"
+                            className="text-primary hover:underline text-sm font-medium"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {u.employee.name}
@@ -293,12 +293,12 @@ export function UserManagementClientView({
                       </TableCell>
                       <TableCell className="text-muted-foreground">{u.email}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="bg-white/[0.03] border-white/[0.1] font-normal">
+                        <Badge variant="outline" className="bg-white/[0.02] border-white/[0.08] font-normal text-muted-foreground">
                           {ROLE_LABELS[u.role]}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1.5">
+                        <div className="flex items-center gap-2">
                           <span className={`status-dot ${u.isActive ? "status-dot-active" : "status-dot-inactive"}`} />
                           <span className={`text-sm font-medium ${u.isActive ? "text-status-active" : "text-status-inactive"}`}>
                             {u.isActive ? "Active" : "Inactive"}
@@ -313,14 +313,14 @@ export function UserManagementClientView({
           </div>
         </div>
 
-        <div className="text-xs text-muted-foreground/60 flex flex-col gap-1">
-          <p>💡 Select a user to edit access, or create a new user.</p>
-          <p>ℹ️ User accounts are separate from Employee records, but should be linked to an employee for access and ownership.</p>
+        <div className="text-xs text-muted-foreground/60 flex flex-col gap-1.5 pt-2">
+          <p className="flex items-center gap-1.5"><span className="text-lg">💡</span> Select a user to edit access, or create a new user.</p>
+          <p className="flex items-center gap-1.5"><span className="text-lg">ℹ️</span> User accounts are separate from Employee records, but should be linked to an employee for access and ownership.</p>
         </div>
       </div>
 
       {/* Right Panel: Form */}
-      <div className="w-[400px] shrink-0 border border-white/[0.08] bg-white/[0.02] rounded-2xl p-6 flex flex-col shadow-xl">
+      <div className="w-[420px] shrink-0 premium-card p-8 flex flex-col h-fit sticky top-24">
         <div className="mb-6">
           <div className="text-xs font-semibold tracking-wide text-primary mb-1 uppercase">
             {selectedUser ? "Context: Edit User" : "Open on New User"}

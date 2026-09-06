@@ -6,7 +6,7 @@ import { AttendanceWidget } from "./attendance/AttendanceWidget";
 import { useSession, signOut } from "next-auth/react";
 import { can } from "@/lib/rbac";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Command } from "lucide-react";
 
 const NAV_ITEMS = [
   { label: "Users", href: "/users", permission: "user:manage" },
@@ -85,13 +85,14 @@ export function TopNav() {
   });
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-white/[0.06] bg-[hsl(224,71%,4%)]/95 backdrop-blur-md">
-      <div className="flex h-14 items-center px-6">
+    <nav className="sticky top-0 z-50 w-full glass-panel">
+      <div className="flex h-16 items-center px-6 container mx-auto max-w-7xl">
         {/* Logo */}
-        <Link href="/users" className="flex items-center gap-2 mr-8">
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary font-bold text-sm">
-            HR
+        <Link href="/users" className="flex items-center gap-2 mr-10">
+          <div className="bg-primary/20 p-1.5 rounded-lg text-blue-400">
+            <Command className="w-5 h-5" />
           </div>
+          <span className="font-bold text-lg tracking-tight">PeoplePay<span className="text-blue-400">360</span></span>
         </Link>
 
         {/* Nav links */}

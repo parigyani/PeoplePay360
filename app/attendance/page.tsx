@@ -104,12 +104,12 @@ export default async function AttendanceListPage({
   });
 
   return (
-    <div className="container mx-auto py-10 space-y-6">
+    <div className="container mx-auto py-10 space-y-6 max-w-7xl">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold tracking-tight">Attendance Records</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">Attendance Records</h1>
         {canWrite && (
           <Link href="/attendance/new">
-            <Button>Add Manual Entry</Button>
+            <Button className="shadow-md shadow-primary/20">Add Manual Entry</Button>
           </Link>
         )}
       </div>
@@ -118,31 +118,31 @@ export default async function AttendanceListPage({
 
       <div className="space-y-12">
         {Object.keys(grouped).length === 0 ? (
-          <div className="rounded-md border p-12 text-center text-muted-foreground">
+          <div className="rounded-xl border border-white/[0.05] p-12 text-center text-muted-foreground glass-card">
             No attendance records found.
           </div>
         ) : (
           Object.entries(grouped).map(([empName, months]) => (
-            <details key={empName} className="group bg-white/[0.01] border border-white/[0.05] rounded-xl overflow-hidden" open>
-              <summary className="text-2xl font-bold tracking-tight flex items-center gap-2 cursor-pointer p-6 bg-white/[0.01] hover:bg-white/[0.03] transition-colors list-none [&::-webkit-details-marker]:hidden">
-                <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm shrink-0">
+            <details key={empName} className="group premium-card" open>
+              <summary className="text-2xl font-bold tracking-tight flex items-center gap-3 cursor-pointer p-6 bg-white/[0.01] hover:bg-white/[0.03] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white flex items-center justify-center text-sm shrink-0 shadow-lg">
                   {empName.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)}
                 </span>
-                <span className="flex-1">{empName}</span>
-                <div className="ml-auto text-muted-foreground transition-transform duration-200 group-open:rotate-180">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <span className="flex-1 text-foreground/90">{empName}</span>
+                <div className="ml-auto text-muted-foreground transition-transform duration-300 group-open:rotate-180 bg-white/5 p-2 rounded-full">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </div>
               </summary>
               
-              <div className="space-y-8 p-6 border-t border-white/[0.05] bg-background/50">
+              <div className="space-y-8 p-6 border-t border-white/[0.05] bg-black/20">
                 {Object.entries(months).map(([monthStr, records]) => (
-                  <div key={monthStr} className="space-y-3">
-                    <h3 className="text-lg font-semibold text-primary/80 border-b border-white/[0.05] pb-2">
+                  <div key={monthStr} className="space-y-4">
+                    <h3 className="text-lg font-semibold text-primary/90 border-b border-white/[0.05] pb-2">
                       {monthStr}
                     </h3>
-                    <div className="rounded-md border border-white/[0.06] overflow-hidden">
+                    <div className="rounded-xl border border-white/[0.06] overflow-hidden shadow-inner bg-white/[0.01]">
                       <Table>
                         <TableHeader className="bg-white/[0.02]">
                           <TableRow className="border-white/[0.06] hover:bg-transparent">

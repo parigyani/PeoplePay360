@@ -68,13 +68,13 @@ export function EmployeeKanban({ employees, onClick }: EmployeeKanbanProps) {
             {deptEmployees.map((employee) => (
               <div
                 key={employee.id}
-                className="kanban-card glass-card rounded-xl p-4 cursor-pointer"
+                className="kanban-card premium-card p-5 cursor-pointer"
                 onClick={() => onClick(employee.id)}
               >
-                <div className="flex items-start gap-3">
+                <div className="flex items-start gap-4">
                   {/* Avatar */}
                   <div
-                    className="h-10 w-10 flex items-center justify-center rounded-md border border-purple-500/30 bg-purple-500/10 text-purple-400 font-bold text-xs shrink-0"
+                    className={`h-11 w-11 flex items-center justify-center rounded-xl bg-gradient-to-br ${getAvatarColor(employee.name)} text-white font-bold text-sm shrink-0 shadow-lg`}
                   >
                     {getInitials(employee.name)}
                   </div>

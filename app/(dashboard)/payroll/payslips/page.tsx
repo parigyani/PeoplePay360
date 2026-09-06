@@ -38,24 +38,24 @@ export default async function PayslipsPage({
   });
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-bold mb-6">Payslips</h1>
+    <div className="container mx-auto py-10 space-y-6 max-w-7xl px-6">
+      <h1 className="text-3xl font-extrabold tracking-tight mb-2">Payslips</h1>
       
       <PayslipFilters />
 
-      <Card>
+      <Card className="premium-card">
         <CardContent className="p-0">
           <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Employee</TableHead>
-                <TableHead>Warning</TableHead>
-                <TableHead>Period</TableHead>
-                <TableHead>Basic</TableHead>
-                <TableHead>Gross</TableHead>
-                <TableHead>Net</TableHead>
-                <TableHead>Structure</TableHead>
-                <TableHead>Status</TableHead>
+            <TableHeader className="bg-zinc-900/90 backdrop-blur-sm border-b border-white/[0.06]">
+              <TableRow className="border-none hover:bg-transparent">
+                <TableHead className="font-medium text-muted-foreground/80">Employee</TableHead>
+                <TableHead className="font-medium text-muted-foreground/80">Warning</TableHead>
+                <TableHead className="font-medium text-muted-foreground/80">Period</TableHead>
+                <TableHead className="font-medium text-muted-foreground/80">Basic</TableHead>
+                <TableHead className="font-medium text-muted-foreground/80">Gross</TableHead>
+                <TableHead className="font-medium text-muted-foreground/80">Net</TableHead>
+                <TableHead className="font-medium text-muted-foreground/80">Structure</TableHead>
+                <TableHead className="font-medium text-muted-foreground/80">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -67,26 +67,26 @@ export default async function PayslipsPage({
                 const periodStr = `${payslip.payrun.periodStart.toLocaleDateString()} – ${payslip.payrun.periodEnd.toLocaleDateString()}`;
 
                 return (
-                  <TableRow key={payslip.id} className="cursor-pointer relative">
-                    <TableCell className="font-medium">
+                  <TableRow key={payslip.id} className="cursor-pointer relative border-white/[0.04] hover:bg-white/[0.02]">
+                    <TableCell className="font-semibold text-foreground">
                       <Link href={`/payroll/payslips/${payslip.id}`} className="absolute inset-0 z-10">
                         <span className="sr-only">View Payslip {payslip.id}</span>
                       </Link>
                       {payslip.employee.name}
                     </TableCell>
                     <TableCell className="text-destructive truncate max-w-[150px]" title={firstWarning}>{firstWarning}</TableCell>
-                    <TableCell>{periodStr}</TableCell>
-                    <TableCell>{basicAmount}</TableCell>
-                    <TableCell>${payslip.gross.toFixed(2)}</TableCell>
-                    <TableCell className="font-semibold">${payslip.net.toFixed(2)}</TableCell>
-                    <TableCell>{payslip.payrun.structure?.name || '—'}</TableCell>
+                    <TableCell className="text-muted-foreground">{periodStr}</TableCell>
+                    <TableCell className="text-muted-foreground">{basicAmount}</TableCell>
+                    <TableCell className="text-muted-foreground">${payslip.gross.toFixed(2)}</TableCell>
+                    <TableCell className="font-bold text-foreground">${payslip.net.toFixed(2)}</TableCell>
+                    <TableCell className="text-muted-foreground">{payslip.payrun.structure?.name || '—'}</TableCell>
                     <TableCell>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        payslip.status === 'PAID' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' :
-                        payslip.status === 'VALIDATED' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400' :
-                        payslip.status === 'WARNING' ? 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' :
-                        payslip.status === 'COMPUTED' ? 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' :
-                        'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300'
+                      <span className={`px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider ${
+                        payslip.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                        payslip.status === 'VALIDATED' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                        payslip.status === 'WARNING' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                        payslip.status === 'COMPUTED' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
+                        'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'
                       }`}>
                         {payslip.status}
                       </span>
@@ -96,7 +96,7 @@ export default async function PayslipsPage({
               })}
               {payslips.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={8} className="text-center text-muted-foreground py-8">No payslips found</TableCell>
+                  <TableCell colSpan={8} className="text-center text-muted-foreground py-12">No payslips found</TableCell>
                 </TableRow>
               )}
             </TableBody>

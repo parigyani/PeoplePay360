@@ -99,10 +99,10 @@ export function EmployeeClientView({
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 container mx-auto max-w-7xl">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Employees</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">Employees</h1>
         <p className="text-sm text-muted-foreground mt-1">
           {subtextMap[activeView]}
         </p>
@@ -113,7 +113,7 @@ export function EmployeeClientView({
         {canEdit && (
           <Button
             onClick={() => setIsDialogOpen(true)}
-            className="bg-primary hover:bg-primary/90"
+            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20"
           >
             <Plus className="mr-1.5 h-4 w-4" />
             NEW
@@ -126,7 +126,7 @@ export function EmployeeClientView({
             placeholder="Search employees..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-white/[0.03] border-white/[0.08]"
+            className="pl-9 bg-white/[0.02] border-white/[0.06] shadow-inner"
           />
         </div>
 
