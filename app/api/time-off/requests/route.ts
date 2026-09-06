@@ -11,15 +11,34 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    if (!can((session.user as any).role, "timeoff:submit")) {
+    const userRole = (session.user as any).role;
+    if (!can(userRole, "timeoff:submit")) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 
     const body = await req.json();
+    let targetEmployeeId = body.employeeId;
+    const canConfigure = can(userRole, "timeoff:configure") || can(userRole, "timeoff:approve");
+
+    if (!canConfigure) {
+      const sessionEmployeeId = (session.user as any).employeeId;
+      if (!sessionEmployeeId) {
+        return NextResponse.json({ error: "No associated employee account" }, { status: 400 });
+      }
+      targetEmployeeId = sessionEmployeeId;
+    } else {
+      if (!targetEmployeeId) {
+        return NextResponse.json({ error: "employeeId is required" }, { status: 400 });
+      }
+      const employee = await prisma.employee.findUnique({ where: { id: parseInt(targetEmployeeId, 10) || targetEmployeeId } });
+      if (!employee) {
+        return NextResponse.json({ error: "Employee not found" }, { status: 400 });
+      }
+    }
 
     const created = await prisma.timeOffRequest.create({
       data: {
-        employeeId: body.employeeId,
+        employeeId: targetEmployeeId,
         typeId: body.typeId,
         startDate: body.startDate,
         endDate: body.endDate,
