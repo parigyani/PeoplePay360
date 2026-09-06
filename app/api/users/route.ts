@@ -15,9 +15,18 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { employeeId, email, role, isActive } = body;
+    const { employeeId, isNewEmployee, newEmployeeName, email, role, isActive } = body;
 
-    if (!employeeId || !email || !role) {
+    let finalEmployeeId = employeeId ? parseInt(employeeId, 10) : null;
+
+    if (isNewEmployee && newEmployeeName) {
+      const newEmp = await prisma.employee.create({
+        data: { name: newEmployeeName, department: "TBD", jobPosition: "TBD", status: "ACTIVE" }
+      });
+      finalEmployeeId = newEmp.id;
+    }
+
+    if (!finalEmployeeId || !email || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
@@ -32,7 +41,7 @@ export async function POST(req: Request) {
 
     // Check if employee already has a user
     const existingEmployeeUser = await prisma.user.findUnique({
-      where: { employeeId },
+      where: { employeeId: finalEmployeeId },
     });
 
     if (existingEmployeeUser) {
@@ -45,7 +54,7 @@ export async function POST(req: Request) {
 
     const user = await prisma.user.create({
       data: {
-        employeeId,
+        employeeId: finalEmployeeId,
         email,
         role,
         isActive: isActive ?? true,

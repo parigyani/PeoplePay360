@@ -48,11 +48,22 @@ export interface SerializedUser {
 }
 
 const userSchema = z.object({
-  employeeId: z.string().min(1, "Employee is required"),
+  isNewEmployee: z.boolean().default(false),
+  employeeId: z.string().optional(),
+  newEmployeeName: z.string().optional(),
   email: z.string().email("Invalid email address"),
   role: z.nativeEnum(Role),
   isActive: z.boolean(),
-});
+}).refine(
+  (data) => {
+    if (data.isNewEmployee) return !!data.newEmployeeName && data.newEmployeeName.trim().length > 0;
+    return !!data.employeeId && data.employeeId.length > 0;
+  },
+  {
+    message: "Employee selection or name is required",
+    path: ["employeeId"],
+  }
+);
 
 type UserFormValues = z.infer<typeof userSchema>;
 
@@ -78,7 +89,9 @@ export function UserManagementClientView({
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
     defaultValues: {
+      isNewEmployee: false,
       employeeId: "",
+      newEmployeeName: "",
       email: "",
       role: Role.EMPLOYEE,
       isActive: true,
@@ -98,7 +111,9 @@ export function UserManagementClientView({
     setTempPassword(null);
     setFormError(null);
     form.reset({
+      isNewEmployee: true,
       employeeId: "",
+      newEmployeeName: "",
       email: "",
       role: Role.EMPLOYEE,
       isActive: true,
@@ -110,7 +125,9 @@ export function UserManagementClientView({
     setTempPassword(null);
     setFormError(null);
     form.reset({
+      isNewEmployee: false,
       employeeId: user.employeeId?.toString() || "",
+      newEmployeeName: "",
       email: user.email,
       role: user.role,
       isActive: user.isActive,
@@ -138,7 +155,7 @@ export function UserManagementClientView({
     try {
       const payload = {
         ...data,
-        employeeId: parseInt(data.employeeId, 10),
+        employeeId: data.employeeId ? parseInt(data.employeeId, 10) : undefined,
       };
 
       const url = selectedUser ? `/api/users/${selectedUser.id}` : "/api/users";
@@ -319,23 +336,67 @@ export function UserManagementClientView({
         )}
 
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 flex-1">
+          {!selectedUser && (
+            <div className="flex items-center gap-4 pt-1">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input 
+                  type="radio" 
+                  checked={form.watch("isNewEmployee") === true}
+                  onChange={() => {
+                    form.setValue("isNewEmployee", true);
+                    form.setValue("employeeId", "");
+                  }}
+                  className="accent-primary"
+                />
+                Create New Employee
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input 
+                  type="radio" 
+                  checked={form.watch("isNewEmployee") === false}
+                  onChange={() => {
+                    form.setValue("isNewEmployee", false);
+                    form.setValue("newEmployeeName", "");
+                  }}
+                  className="accent-primary"
+                />
+                Link Existing
+              </label>
+            </div>
+          )}
+
           <div className="space-y-1.5">
-            <Label>Employee *</Label>
-            <Select
-              value={form.watch("employeeId")}
-              onValueChange={handleEmployeeChange}
-            >
-              <SelectTrigger className="bg-white/[0.03] border-white/[0.1]">
-                <SelectValue placeholder="Select Employee" />
-              </SelectTrigger>
-              <SelectContent>
-                {employees.map((emp) => (
-                  <SelectItem key={emp.id} value={emp.id.toString()}>
-                    {emp.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <Label>{form.watch("isNewEmployee") ? "New Employee Name *" : "Employee *"}</Label>
+            {form.watch("isNewEmployee") ? (
+              <Input
+                placeholder="John Doe"
+                {...form.register("newEmployeeName")}
+                onChange={(e) => {
+                  form.register("newEmployeeName").onChange(e);
+                  if (!selectedUser && !form.getValues("email") && e.target.value) {
+                    const generatedEmail = e.target.value.toLowerCase().replace(/\s+/g, ".") + "@company.com";
+                    form.setValue("email", generatedEmail);
+                  }
+                }}
+                className="bg-white/[0.03] border-white/[0.1]"
+              />
+            ) : (
+              <Select
+                value={form.watch("employeeId")}
+                onValueChange={handleEmployeeChange}
+              >
+                <SelectTrigger className="bg-white/[0.03] border-white/[0.1]">
+                  <SelectValue placeholder="Select Employee" />
+                </SelectTrigger>
+                <SelectContent>
+                  {employees.map((emp) => (
+                    <SelectItem key={emp.id} value={emp.id.toString()}>
+                      {emp.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
             {form.formState.errors.employeeId && (
               <p className="text-xs text-destructive">{form.formState.errors.employeeId.message}</p>
             )}
