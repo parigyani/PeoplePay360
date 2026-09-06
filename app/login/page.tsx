@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { Building2, Command, Lock, Mail, ArrowRight } from "lucide-react";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -40,79 +41,131 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex h-screen items-center justify-center bg-[hsl(224,71%,4%)]">
-      <div className="w-full max-w-md bg-[hsl(224,71%,4%)] border border-white/[0.1] rounded-2xl shadow-2xl overflow-hidden relative">
-        {/* Header Bar */}
-        <div className="bg-white/[0.02] border-b border-white/[0.1] px-8 py-4">
-          <span className="text-xs font-semibold tracking-wide text-muted-foreground uppercase">HR Portal</span>
+    <div className="flex min-h-screen">
+      {/* Left Panel - Branding/Decor */}
+      <div className="hidden lg:flex w-1/2 flex-col justify-between bg-zinc-950 text-white p-12 relative overflow-hidden">
+        {/* Background Gradients/Mesh */}
+        <div className="absolute top-0 left-0 w-full h-full opacity-40 pointer-events-none">
+          <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-indigo-600 blur-[120px]" />
+          <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600 blur-[120px]" />
         </div>
         
-        <div className="p-8">
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold tracking-tight text-foreground mb-2">
+        <div className="relative z-10 flex items-center gap-2 font-bold text-2xl tracking-tight">
+          <div className="bg-primary/20 p-2 rounded-xl text-blue-400">
+            <Command className="w-6 h-6" />
+          </div>
+          PeoplePay<span className="text-blue-400">360</span>
+        </div>
+
+        <div className="relative z-10 space-y-6 max-w-lg">
+          <h1 className="text-5xl font-extrabold tracking-tight leading-[1.1]">
+            Modern HR & Payroll <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">
+              Simplified.
+            </span>
+          </h1>
+          <p className="text-lg text-zinc-400 leading-relaxed">
+            Manage your employees, track attendance, and process payroll with confidence using our comprehensive enterprise platform.
+          </p>
+        </div>
+
+        <div className="relative z-10 flex items-center gap-4 text-sm font-medium text-zinc-500">
+          <Building2 className="w-5 h-5" />
+          © 2026 PeoplePay360 Inc. All rights reserved.
+        </div>
+      </div>
+
+      {/* Right Panel - Login Form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-8 bg-[hsl(224,71%,4%)] sm:p-12 relative">
+        <div className="absolute top-8 left-8 lg:hidden flex items-center gap-2 font-bold text-xl tracking-tight text-white">
+          <div className="bg-primary/20 p-1.5 rounded-lg text-blue-500">
+            <Command className="w-5 h-5" />
+          </div>
+          PeoplePay<span className="text-blue-500">360</span>
+        </div>
+
+        <div className="w-full max-w-md space-y-10 animate-in fade-in slide-in-from-bottom-8 duration-700">
+          <div className="space-y-3">
+            <h2 className="text-3xl font-bold tracking-tight text-white">
               Welcome back
-            </h1>
-            <p className="text-sm text-muted-foreground">
-              Sign in to continue to your workspace.
+            </h2>
+            <p className="text-sm text-zinc-400">
+              Please enter your details to sign in to your workspace.
             </p>
           </div>
 
-          {error && (
-            <div className="mb-6 p-3 rounded-md bg-destructive/15 border border-destructive/30 text-destructive text-sm font-medium">
-              {error}
-            </div>
-          )}
-
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="space-y-2">
-              <Label htmlFor="email" className="text-foreground">Work Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="name@company.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-transparent border-white/[0.15] text-foreground focus-visible:ring-blue-600"
-              />
-            </div>
+            {error && (
+              <div className="p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium flex items-center gap-3">
+                <div className="w-2 h-2 rounded-full bg-destructive animate-pulse" />
+                {error}
+              </div>
+            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="password" className="text-foreground">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="bg-transparent border-white/[0.15] text-foreground focus-visible:ring-blue-600"
-              />
-              <div className="flex justify-end pt-1">
-                <Link 
-                  href="#" 
-                  className="text-xs text-blue-500 hover:text-blue-400 transition-colors"
-                >
-                  Forgot password?
-                </Link>
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-zinc-300">Email Address</Label>
+                <div className="relative group">
+                  <Mail className="absolute left-3.5 top-3 h-5 w-5 text-zinc-500 group-focus-within:text-blue-400 transition-colors" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="name@company.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="pl-11 h-12 bg-white/[0.03] border-white/[0.1] text-white placeholder:text-zinc-600 focus-visible:ring-blue-500 focus-visible:border-blue-500 transition-all rounded-xl shadow-inner"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <Label htmlFor="password" className="text-zinc-300">Password</Label>
+                  <Link 
+                    href="#" 
+                    className="text-sm font-medium text-blue-500 hover:text-blue-400 transition-colors"
+                  >
+                    Forgot password?
+                  </Link>
+                </div>
+                <div className="relative group">
+                  <Lock className="absolute left-3.5 top-3 h-5 w-5 text-zinc-500 group-focus-within:text-blue-400 transition-colors" />
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="pl-11 h-12 bg-white/[0.03] border-white/[0.1] text-white placeholder:text-zinc-600 focus-visible:ring-blue-500 focus-visible:border-blue-500 transition-all rounded-xl shadow-inner"
+                  />
+                </div>
               </div>
             </div>
 
             <Button 
               type="submit" 
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium"
+              className="w-full h-12 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-semibold text-base shadow-[0_0_20px_rgba(37,99,235,0.2)] transition-all group overflow-hidden relative"
               disabled={isLoading}
             >
-              {isLoading ? "Signing in..." : "Sign In"}
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out" />
+              <span className="relative flex items-center justify-center gap-2">
+                {isLoading ? (
+                  "Signing in..."
+                ) : (
+                  <>
+                    Sign In
+                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </span>
             </Button>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-white/[0.1]">
-            <p className="text-center text-sm text-muted-foreground">
-              Accounts are created by an administrator.
-            </p>
-            <p className="text-center text-xs text-muted-foreground/60 mt-2">
-              After sign-in, show only the modules and actions allowed by the user&apos;s assigned role.
+          <div className="pt-8 text-center border-t border-white/[0.05]">
+            <p className="text-sm text-zinc-500">
+              Don&apos;t have an account? <Link href="#" className="font-medium text-white hover:text-blue-400 transition-colors">Contact Administrator</Link>
             </p>
           </div>
         </div>
