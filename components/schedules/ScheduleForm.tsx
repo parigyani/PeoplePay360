@@ -172,7 +172,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                       <Input
                         {...field}
                         placeholder="e.g. 40 Hours / Week"
-                        className="bg-white/[0.03] border-white/[0.1] focus-visible:ring-primary"
+                        className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary"
                       />
                     </FormControl>
                     <FormMessage />
@@ -191,7 +191,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                       defaultValue={field.value}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-white/[0.03] border-white/[0.1]">
+                        <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                       </FormControl>
@@ -217,7 +217,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                       <Input
                         {...field}
                         placeholder="Company Name"
-                        className="bg-white/[0.03] border-white/[0.1] focus-visible:ring-primary"
+                        className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary"
                       />
                     </FormControl>
                     <FormMessage />
@@ -236,7 +236,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                       <Input
                         {...field}
                         placeholder="UTC"
-                        className="bg-white/[0.03] border-white/[0.1] focus-visible:ring-primary"
+                        className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary"
                       />
                     </FormControl>
                     <FormMessage />
@@ -250,7 +250,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                 name="isActive"
                 render={({ field }) => (
                   <FormItem className="flex flex-col justify-end pb-2">
-                    <div className="flex items-center gap-3 bg-white/[0.02] border border-white/[0.05] p-3 rounded-lg">
+                    <div className="flex items-center gap-3 bg-background/[0.02] border border-white/[0.05] p-3 rounded-lg">
                       <span className="text-sm text-muted-foreground/80">Status</span>
                       <div className="flex-1" />
                       <button
@@ -273,7 +273,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
 
             {/* Live Computed Display */}
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white/[0.02] border border-white/[0.05] p-6 rounded-xl flex items-center justify-between">
+              <div className="bg-background/[0.02] border border-white/[0.05] p-6 rounded-xl flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-medium text-foreground">Weekly Hours</h3>
                   <p className="text-sm text-muted-foreground">Live computed from pattern rows below</p>
@@ -283,7 +283,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                 </div>
               </div>
               
-              <div className="bg-white/[0.02] border border-white/[0.05] p-6 rounded-xl flex items-center justify-between">
+              <div className="bg-background/[0.02] border border-white/[0.05] p-6 rounded-xl flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-medium text-foreground">Days / Week</h3>
                   <p className="text-sm text-muted-foreground">Derived from scheduled days</p>
@@ -302,7 +302,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                   type="button"
                   variant="outline"
                   size="sm"
-                  className="bg-white/[0.03] border-white/[0.1]"
+                  className="bg-background/[0.03] border-white/[0.1]"
                   onClick={() => append({ day: "Monday", startTime: "09:00", endTime: "17:00", breakMins: 60 })}
                 >
                   <Plus className="w-4 h-4 mr-2" /> Add Row
@@ -315,8 +315,8 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                 </p>
               )}
 
-              <div className="border border-white/[0.08] rounded-xl overflow-hidden bg-white/[0.01]">
-                <div className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4 p-4 border-b border-white/[0.08] bg-white/[0.02] text-sm font-medium text-muted-foreground">
+              <div className="border border-white/[0.08] rounded-xl overflow-hidden bg-background/[0.01]">
+                <div className="grid grid-cols-[1fr_1fr_1fr_1fr_auto] gap-4 p-4 border-b border-white/[0.08] bg-background/[0.02] text-sm font-medium text-muted-foreground">
                   <div>Day</div>
                   <div>Start Time</div>
                   <div>End Time</div>
@@ -334,7 +334,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                           <FormItem>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger className="bg-white/[0.03] border-white/[0.1]">
+                                <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
                                   <SelectValue />
                                 </SelectTrigger>
                               </FormControl>
@@ -358,7 +358,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                               <Input 
                                 type="time" 
                                 {...field} 
-                                className="bg-white/[0.03] border-white/[0.1]" 
+                                className="bg-background/[0.03] border-white/[0.1]" 
                               />
                             </FormControl>
                             <FormMessage />
@@ -375,7 +375,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                               <Input 
                                 type="time" 
                                 {...field} 
-                                className="bg-white/[0.03] border-white/[0.1]" 
+                                className="bg-background/[0.03] border-white/[0.1]" 
                               />
                             </FormControl>
                             <FormMessage />
@@ -393,7 +393,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
                                 type="number" 
                                 min={0}
                                 {...field} 
-                                className="bg-white/[0.03] border-white/[0.1]" 
+                                className="bg-background/[0.03] border-white/[0.1]" 
                               />
                             </FormControl>
                             <FormMessage />
@@ -426,7 +426,7 @@ export function ScheduleForm({ initialData, onSuccess }: ScheduleFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                className="bg-white/[0.03] border-white/[0.1]"
+                className="bg-background/[0.03] border-white/[0.1]"
                 onClick={() => {
                   if (onSuccess) onSuccess();
                   else router.back();

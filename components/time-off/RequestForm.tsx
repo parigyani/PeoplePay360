@@ -128,7 +128,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
             {initialData ? "Time Off Request Details" : "New Time Off Request"}
           </h2>
           {initialData && (
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Status: <span className={initialData.status === "Approved" ? "text-green-400 font-medium" : initialData.status === "Refused" ? "text-red-400 font-medium" : "text-orange-400 font-medium"}>{initialData.status}</span>
             </p>
           )}
@@ -157,7 +157,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-xl border border-white/10 bg-black/20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-xl border border-white/10 bg-secondary">
             {/* Left Column */}
             <div className="space-y-4">
               <FormField
@@ -168,7 +168,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
                     <FormLabel>Employee</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isViewMode}>
                       <FormControl>
-                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                        <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                           <SelectValue placeholder="Select employee" />
                         </SelectTrigger>
                       </FormControl>
@@ -191,7 +191,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
                     <FormLabel>Time Off Type</FormLabel>
                     <Select onValueChange={field.onChange} defaultValue={field.value} disabled={isViewMode}>
                       <FormControl>
-                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                        <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                       </FormControl>
@@ -213,7 +213,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
                   <FormItem>
                     <FormLabel>Start Date</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} disabled={isViewMode} className="bg-white/[0.03] border-white/[0.08]" />
+                      <Input type="date" {...field} disabled={isViewMode} className="bg-background/[0.03] border-white/[0.08]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -227,7 +227,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
                   <FormItem>
                     <FormLabel>End Date</FormLabel>
                     <FormControl>
-                      <Input type="date" {...field} disabled={isViewMode} className="bg-white/[0.03] border-white/[0.08]" />
+                      <Input type="date" {...field} disabled={isViewMode} className="bg-background/[0.03] border-white/[0.08]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -244,7 +244,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
                   <FormItem>
                     <FormLabel>Duration</FormLabel>
                     <FormControl>
-                      <Input type="number" step="0.5" {...field} disabled={isViewMode} className="bg-white/[0.03] border-white/[0.08]" />
+                      <Input type="number" step="0.5" {...field} disabled={isViewMode} className="bg-background/[0.03] border-white/[0.08]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -253,7 +253,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
 
               <div className="space-y-2">
                 <Label>Status</Label>
-                <Input disabled value={initialData?.status || "To Approve"} className="bg-white/[0.03] border-white/[0.08] text-slate-400" />
+                <Input disabled value={initialData?.status || "To Approve"} className="bg-background/[0.03] border-white/[0.08] text-muted-foreground" />
               </div>
 
               <FormField
@@ -263,7 +263,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
                   <FormItem>
                     <FormLabel>Approver</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. HR Manager" {...field} disabled={isViewMode} className="bg-white/[0.03] border-white/[0.08]" />
+                      <Input placeholder="e.g. HR Manager" {...field} disabled={isViewMode} className="bg-background/[0.03] border-white/[0.08]" />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -275,13 +275,13 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
                 <Input 
                   disabled 
                   value={initialData?.allocation ? `Allocation #${initialData.allocation.id} (${initialData.allocation.description || 'No label'})` : (initialData?.status === "Approved" ? "None (Not required)" : "Pending Approval")} 
-                  className="bg-white/[0.03] border-white/[0.08] text-slate-400" 
+                  className="bg-background/[0.03] border-white/[0.08] text-muted-foreground" 
                 />
               </div>
             </div>
           </div>
 
-          <div className="p-6 rounded-xl border border-white/10 bg-black/20">
+          <div className="p-6 rounded-xl border border-white/10 bg-secondary">
             <FormField
               control={form.control}
               name="reason"
@@ -293,7 +293,7 @@ export function RequestForm({ initialData, employees, types, canApprove }: Props
                       placeholder="Optional reason for request..."
                       {...field}
                       disabled={isViewMode}
-                      className="h-24 bg-white/[0.03] border-white/[0.08] resize-none"
+                      className="h-24 bg-background/[0.03] border-white/[0.08] resize-none"
                     />
                   </FormControl>
                   <FormMessage />

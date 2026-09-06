@@ -7,6 +7,7 @@ import { useSession, signOut } from "next-auth/react";
 import { can } from "@/lib/rbac";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { ChevronDown, Command } from "lucide-react";
+import { ThemeToggle } from "./ThemeToggle";
 
 const NAV_ITEMS = [
   { label: "Users", href: "/users", permission: "user:manage" },
@@ -85,14 +86,14 @@ export function TopNav() {
   });
 
   return (
-    <nav className="sticky top-0 z-50 w-full glass-panel">
+    <nav className="sticky top-0 z-50 w-full bg-background border-b border-border">
       <div className="flex h-16 items-center px-6 container mx-auto max-w-7xl">
         {/* Logo */}
         <Link href="/users" className="flex items-center gap-2 mr-10">
-          <div className="bg-primary/20 p-1.5 rounded-lg text-blue-400">
+          <div className="bg-primary/10 p-1.5 rounded-lg text-primary">
             <Command className="w-5 h-5" />
           </div>
-          <span className="font-bold text-lg tracking-tight">PeoplePay<span className="text-blue-400">360</span></span>
+          <span className="font-bold text-lg tracking-tight text-foreground">PeoplePay<span className="text-primary">360</span></span>
         </Link>
 
         {/* Nav links */}
@@ -106,7 +107,7 @@ export function TopNav() {
                       {item.label} <ChevronDown className="w-3 h-3 opacity-70" />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-48 p-1 bg-[hsl(224,71%,4%)] border-white/[0.08] text-foreground" align="start">
+                  <PopoverContent className="w-48 p-1 bg-popover border-border text-popover-foreground shadow-lg" align="start">
                     {item.subItems.map((sub) => {
                       // Filter sub-items by permission if defined
                       if (sub.permission && !can(role, sub.permission)) return null;
@@ -114,7 +115,7 @@ export function TopNav() {
                         <Link
                           key={sub.href}
                           href={sub.href}
-                          className="block px-3 py-2 text-sm rounded-md hover:bg-white/[0.04] transition-colors"
+                          className="block px-3 py-2 text-sm rounded-md hover:bg-muted transition-colors"
                         >
                           {sub.label}
                         </Link>
@@ -139,13 +140,14 @@ export function TopNav() {
         {/* Right side — status dot and attendance widget */}
         <div className="ml-auto flex items-center gap-4">
           <AttendanceWidget />
-          <div className="flex items-center gap-2 border-l border-white/[0.08] pl-4">
+          <ThemeToggle />
+          <div className="flex items-center gap-2 border-l border-border pl-4">
             <span className="text-xs text-muted-foreground hidden md:inline-block">
               {session?.user?.email}
             </span>
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
-              className="text-xs font-medium text-destructive hover:text-destructive-foreground transition-colors bg-destructive/10 hover:bg-destructive px-2 py-1 rounded"
+              className="text-xs font-medium text-destructive hover:bg-destructive/10 px-2 py-1 rounded transition-colors"
             >
               Sign Out
             </button>

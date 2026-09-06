@@ -164,7 +164,7 @@ export function ContractForm({ initialData, employees, structures }: ContractFor
               />
 
               <div className="col-span-1 md:col-span-2 mt-2">
-                <div className="rounded-md border border-white/[0.08] bg-white/[0.02] p-4 text-sm text-muted-foreground">
+                <div className="rounded-md border border-white/[0.08] bg-background/[0.02] p-4 text-sm text-muted-foreground">
                   <strong>Note:</strong> The assigned Salary Structure defines the pay components (Basic, HRA, etc.) computed during payroll. Changing this will only affect future payruns.
                 </div>
               </div>

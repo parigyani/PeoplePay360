@@ -45,7 +45,7 @@ export function EmployeeKanban({ employees, onClick }: EmployeeKanbanProps) {
 
   if (Object.keys(departments).length === 0) {
     return (
-      <div className="text-center text-muted-foreground w-full py-16 border border-dashed border-white/[0.08] rounded-xl">
+      <div className="text-center text-muted-foreground w-full py-16 border border-dashed border-border rounded-xl">
         No employees found.
       </div>
     );
@@ -57,8 +57,8 @@ export function EmployeeKanban({ employees, onClick }: EmployeeKanbanProps) {
         <div key={dept} className="space-y-3">
           {/* Department header */}
           <div className="flex items-center justify-between px-1">
-            <h3 className="text-sm font-semibold text-foreground/80">{dept}</h3>
-            <Badge variant="secondary" className="bg-white/[0.06] text-xs">
+            <h3 className="text-sm font-semibold text-foreground">{dept}</h3>
+            <Badge variant="secondary" className="bg-secondary text-secondary-foreground text-xs hover:bg-secondary/80">
               {deptEmployees.length}
             </Badge>
           </div>
@@ -74,7 +74,7 @@ export function EmployeeKanban({ employees, onClick }: EmployeeKanbanProps) {
                 <div className="flex items-start gap-4">
                   {/* Avatar */}
                   <div
-                    className={`h-11 w-11 flex items-center justify-center rounded-xl bg-gradient-to-br ${getAvatarColor(employee.name)} text-white font-bold text-sm shrink-0 shadow-lg`}
+                    className={`h-11 w-11 flex items-center justify-center rounded-xl bg-gradient-to-br ${getAvatarColor(employee.name)} text-white font-bold text-sm shrink-0 shadow-sm`}
                   >
                     {getInitials(employee.name)}
                   </div>
@@ -87,7 +87,7 @@ export function EmployeeKanban({ employees, onClick }: EmployeeKanbanProps) {
                     <p className="text-xs text-muted-foreground truncate mt-0.5">
                       {employee.jobPosition}
                     </p>
-                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground/60 truncate mt-1">
+                    <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70 truncate mt-1">
                       {employee.department}
                     </p>
 

@@ -61,43 +61,43 @@ export function RequestList({ requests, canApprove, currentEmployeeId }: { reque
             placeholder="Search employee or type..." 
             value={search} 
             onChange={e => setSearch(e.target.value)} 
-            className="bg-[#1E2330] border-white/10 text-white"
+            className="bg-popover border-white/10 text-white"
           />
         </div>
         
         {currentEmployeeId && canApprove && (
           <div className="flex items-center space-x-2">
             <Switch id="my-team" checked={myTeamOnly} onCheckedChange={setMyTeamOnly} />
-            <Label htmlFor="my-team" className="text-slate-300">My Team</Label>
+            <Label htmlFor="my-team" className="text-muted-foreground">My Team</Label>
           </div>
         )}
       </div>
 
-      <div className="rounded-md border border-[#2D3342] overflow-hidden">
+      <div className="rounded-md border border-border overflow-hidden">
         <Table>
-          <TableHeader className="bg-[#1E2330]">
+          <TableHeader className="bg-popover">
             <TableRow className="border-b-[#2D3342] hover:bg-transparent">
-              <TableHead className="text-slate-400 font-medium">Employee</TableHead>
-              <TableHead className="text-slate-400 font-medium">Type</TableHead>
-              <TableHead className="text-slate-400 font-medium">Start</TableHead>
-              <TableHead className="text-slate-400 font-medium">End</TableHead>
-              <TableHead className="text-right text-slate-400 font-medium">Duration</TableHead>
-              <TableHead className="text-slate-400 font-medium">Status</TableHead>
-              <TableHead className="text-right text-slate-400 font-medium">Actions</TableHead>
+              <TableHead className="text-muted-foreground font-medium">Employee</TableHead>
+              <TableHead className="text-muted-foreground font-medium">Type</TableHead>
+              <TableHead className="text-muted-foreground font-medium">Start</TableHead>
+              <TableHead className="text-muted-foreground font-medium">End</TableHead>
+              <TableHead className="text-right text-muted-foreground font-medium">Duration</TableHead>
+              <TableHead className="text-muted-foreground font-medium">Status</TableHead>
+              <TableHead className="text-right text-muted-foreground font-medium">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="text-center h-24 text-slate-400">
+                <TableCell colSpan={7} className="text-center h-24 text-muted-foreground">
                   No requests found.
                 </TableCell>
               </TableRow>
             ) : (
               filtered.map((r) => (
-                <TableRow key={r.id} className="border-b-[#2D3342] hover:bg-[#1E2330]/50 transition-colors">
-                  <TableCell className="font-medium text-slate-100">{r.employee.name}</TableCell>
-                  <TableCell className="text-slate-300">
+                <TableRow key={r.id} className="border-b-[#2D3342] hover:bg-popover/50 transition-colors">
+                  <TableCell className="font-medium text-popover-foreground">{r.employee.name}</TableCell>
+                  <TableCell className="text-muted-foreground">
                     <div className="flex items-center gap-2">
                       {r.type.color && (
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: r.type.color }} />
@@ -105,9 +105,9 @@ export function RequestList({ requests, canApprove, currentEmployeeId }: { reque
                       {r.type.name}
                     </div>
                   </TableCell>
-                  <TableCell className="text-slate-300">{format(new Date(r.startDate), "MMM d, yyyy")}</TableCell>
-                  <TableCell className="text-slate-300">{format(new Date(r.endDate), "MMM d, yyyy")}</TableCell>
-                  <TableCell className="text-right text-slate-300">{r.duration}</TableCell>
+                  <TableCell className="text-muted-foreground">{format(new Date(r.startDate), "MMM d, yyyy")}</TableCell>
+                  <TableCell className="text-muted-foreground">{format(new Date(r.endDate), "MMM d, yyyy")}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">{r.duration}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={
                       r.status === "Approved" 

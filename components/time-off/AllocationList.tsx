@@ -21,7 +21,7 @@ export function AllocationList({ allocations, canApprove }: { allocations: any[]
         <h1 className="text-3xl font-bold tracking-tight">Time Off Allocations</h1>
         {canApprove && (
           <Link href="/time-off/allocations/new">
-            <Button className="bg-blue-600 hover:bg-blue-700">NEW</Button>
+            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">NEW</Button>
           </Link>
         )}
       </div>
@@ -33,36 +33,36 @@ export function AllocationList({ allocations, canApprove }: { allocations: any[]
             placeholder="Search employee or type..." 
             value={search} 
             onChange={e => setSearch(e.target.value)} 
-            className="bg-[#1E2330] border-white/10 text-white"
+            className="bg-background border-border text-foreground placeholder:text-muted-foreground"
           />
         </div>
       )}
 
-      <div className="rounded-md border border-[#2D3342] overflow-hidden">
+      <div className="rounded-md border border-border overflow-hidden">
         <Table>
-          <TableHeader className="bg-[#1E2330]">
-            <TableRow className="border-b-[#2D3342] hover:bg-transparent">
-              {canApprove && <TableHead className="text-slate-400 font-medium">Employee</TableHead>}
-              <TableHead className="text-slate-400 font-medium">Time Off Type</TableHead>
-              <TableHead className="text-right text-slate-400 font-medium">Allocated</TableHead>
-              <TableHead className="text-right text-slate-400 font-medium">Taken</TableHead>
-              <TableHead className="text-right text-slate-400 font-medium">Remaining</TableHead>
-              <TableHead className="text-slate-400 font-medium">Status</TableHead>
-              <TableHead className="text-right text-slate-400 font-medium">Actions</TableHead>
+          <TableHeader className="bg-muted/50">
+            <TableRow className="border-border hover:bg-transparent">
+              {canApprove && <TableHead className="text-muted-foreground font-medium">Employee</TableHead>}
+              <TableHead className="text-muted-foreground font-medium">Time Off Type</TableHead>
+              <TableHead className="text-right text-muted-foreground font-medium">Allocated</TableHead>
+              <TableHead className="text-right text-muted-foreground font-medium">Taken</TableHead>
+              <TableHead className="text-right text-muted-foreground font-medium">Remaining</TableHead>
+              <TableHead className="text-muted-foreground font-medium">Status</TableHead>
+              <TableHead className="text-right text-muted-foreground font-medium">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {filtered.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={canApprove ? 7 : 6} className="text-center h-24 text-slate-400">
+                <TableCell colSpan={canApprove ? 7 : 6} className="text-center h-24 text-muted-foreground">
                   No allocations found.
                 </TableCell>
               </TableRow>
             ) : (
               filtered.map((allocation) => (
-                <TableRow key={allocation.id} className="border-b-[#2D3342] hover:bg-[#1E2330]/50 transition-colors">
-                  {canApprove && <TableCell className="font-medium text-slate-100">{allocation.employee.name}</TableCell>}
-                  <TableCell className="text-slate-300">
+                <TableRow key={allocation.id} className="border-border hover:bg-muted/50 transition-colors">
+                  {canApprove && <TableCell className="font-medium text-foreground">{allocation.employee.name}</TableCell>}
+                  <TableCell className="text-muted-foreground">
                     <div className="flex items-center gap-2">
                       {allocation.type.color && (
                         <div className="w-2 h-2 rounded-full" style={{ backgroundColor: allocation.type.color }} />
@@ -70,21 +70,21 @@ export function AllocationList({ allocations, canApprove }: { allocations: any[]
                       {allocation.type.name}
                     </div>
                   </TableCell>
-                  <TableCell className="text-right text-slate-300">{allocation.allocated}</TableCell>
-                  <TableCell className="text-right text-slate-300">{allocation.taken}</TableCell>
-                  <TableCell className="text-right text-slate-300 font-bold">{allocation.remaining}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">{allocation.allocated}</TableCell>
+                  <TableCell className="text-right text-muted-foreground">{allocation.taken}</TableCell>
+                  <TableCell className="text-right text-muted-foreground font-bold">{allocation.remaining}</TableCell>
                   <TableCell>
                     <Badge variant="outline" className={
                       allocation.status === "Approved" 
-                        ? "border-green-500/50 text-green-400 bg-green-500/10" 
-                        : "border-orange-500/50 text-orange-400 bg-orange-500/10"
+                        ? "border-emerald-500/50 text-emerald-600 bg-emerald-500/10" 
+                        : "border-amber-500/50 text-amber-600 bg-amber-500/10"
                     }>
                       {allocation.status}
                     </Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <Link href={`/time-off/allocations/${allocation.id}`}>
-                      <Button variant="ghost" size="sm" className="text-blue-400 hover:text-blue-300 hover:bg-blue-400/10">
+                      <Button variant="ghost" size="sm" className="text-primary hover:text-primary/90 hover:bg-primary/10">
                         View
                       </Button>
                     </Link>

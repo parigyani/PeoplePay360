@@ -54,23 +54,23 @@ export default async function PayslipsPage({
 
   return (
     <div className="container mx-auto py-10 space-y-6 max-w-7xl px-6">
-      <h1 className="text-3xl font-extrabold tracking-tight mb-2">Payslips</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight mb-2 text-foreground">Payslips</h1>
       
       <PayslipFilters />
 
       <Card className="premium-card">
         <CardContent className="p-0">
           <Table>
-            <TableHeader className="bg-zinc-900/90 backdrop-blur-sm border-b border-white/[0.06]">
+            <TableHeader className="bg-muted/50 border-b border-border">
               <TableRow className="border-none hover:bg-transparent">
-                <TableHead className="font-medium text-muted-foreground/80">Employee</TableHead>
-                <TableHead className="font-medium text-muted-foreground/80">Warning</TableHead>
-                <TableHead className="font-medium text-muted-foreground/80">Period</TableHead>
-                <TableHead className="font-medium text-muted-foreground/80">Basic</TableHead>
-                <TableHead className="font-medium text-muted-foreground/80">Gross</TableHead>
-                <TableHead className="font-medium text-muted-foreground/80">Net</TableHead>
-                <TableHead className="font-medium text-muted-foreground/80">Structure</TableHead>
-                <TableHead className="font-medium text-muted-foreground/80">Status</TableHead>
+                <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Employee</TableHead>
+                <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Warning</TableHead>
+                <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Period</TableHead>
+                <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Basic</TableHead>
+                <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Gross</TableHead>
+                <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Net</TableHead>
+                <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Structure</TableHead>
+                <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Status</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -82,7 +82,7 @@ export default async function PayslipsPage({
                 const periodStr = `${payslip.payrun.periodStart.toLocaleDateString()} – ${payslip.payrun.periodEnd.toLocaleDateString()}`;
 
                 return (
-                  <TableRow key={payslip.id} className="cursor-pointer relative border-white/[0.04] hover:bg-white/[0.02]">
+                  <TableRow key={payslip.id} className="cursor-pointer relative border-border hover:bg-muted/50">
                     <TableCell className="font-semibold text-foreground">
                       <Link href={`/payroll/payslips/${payslip.id}`} className="absolute inset-0 z-10">
                         <span className="sr-only">View Payslip {payslip.id}</span>
@@ -97,11 +97,11 @@ export default async function PayslipsPage({
                     <TableCell className="text-muted-foreground">{payslip.payrun.structure?.name || '—'}</TableCell>
                     <TableCell>
                       <span className={`px-2.5 py-1 rounded-md text-xs font-semibold uppercase tracking-wider ${
-                        payslip.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                        payslip.status === 'VALIDATED' ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                        payslip.status === 'WARNING' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                        payslip.status === 'COMPUTED' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/20' :
-                        'bg-zinc-500/10 text-zinc-400 border border-zinc-500/20'
+                        payslip.status === 'PAID' ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' :
+                        payslip.status === 'VALIDATED' ? 'bg-blue-500/10 text-blue-600 border border-blue-500/20' :
+                        payslip.status === 'WARNING' ? 'bg-red-500/10 text-red-600 border border-red-500/20' :
+                        payslip.status === 'COMPUTED' ? 'bg-amber-500/10 text-amber-600 border border-amber-500/20' :
+                        'bg-secondary text-secondary-foreground border border-border'
                       }`}>
                         {payslip.status}
                       </span>

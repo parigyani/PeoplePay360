@@ -29,7 +29,7 @@ export function PayslipFilters() {
   return (
     <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 mb-6 items-end sm:items-center">
       <div className="w-full sm:w-auto">
-        <label className="block text-xs font-medium text-gray-500 mb-1">Employee Name</label>
+        <label className="block text-xs font-medium text-muted-foreground mb-1">Employee Name</label>
         <Input 
           type="text" 
           placeholder="Search employee..." 
@@ -39,7 +39,7 @@ export function PayslipFilters() {
         />
       </div>
       <div className="w-full sm:w-auto">
-        <label className="block text-xs font-medium text-gray-500 mb-1">Period (Month)</label>
+        <label className="block text-xs font-medium text-muted-foreground mb-1">Period (Month)</label>
         <Select 
           value={period} 
           onValueChange={(val) => setPeriod(val)}

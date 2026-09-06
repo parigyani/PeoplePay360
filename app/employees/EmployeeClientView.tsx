@@ -113,7 +113,7 @@ export function EmployeeClientView({
         {canEdit && (
           <Button
             onClick={() => setIsDialogOpen(true)}
-            className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-md shadow-primary/20"
+            className="bg-blue-600 hover:bg-blue-700 text-white shadow-sm"
           >
             <Plus className="mr-1.5 h-4 w-4" />
             NEW
@@ -126,16 +126,16 @@ export function EmployeeClientView({
             placeholder="Search employees..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9 bg-white/[0.02] border-white/[0.06] shadow-inner"
+            className="pl-9 bg-background border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-primary focus-visible:border-primary shadow-sm"
           />
         </div>
 
-        <div className="ml-auto flex items-center rounded-lg border border-white/[0.08] bg-white/[0.03] p-0.5">
+        <div className="ml-auto flex items-center rounded-lg border border-border bg-muted p-0.5">
           <button
             onClick={() => setActiveView("kanban")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeView === "kanban"
-                ? "bg-primary/20 text-primary"
+                ? "bg-background text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -146,7 +146,7 @@ export function EmployeeClientView({
             onClick={() => setActiveView("list")}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-all ${
               activeView === "list"
-                ? "bg-primary/20 text-primary"
+                ? "bg-background text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground"
             }`}
           >
@@ -170,7 +170,7 @@ export function EmployeeClientView({
       )}
 
       {/* Footer hint */}
-      <p className="text-xs text-muted-foreground/60 pt-4 text-center">
+      <p className="text-xs text-muted-foreground pt-4 text-center">
         {activeView === "kanban" 
           ? "Useful note: Kanban is good for browsing; clicking a card should open the same Employee Form used everywhere else."
           : "the list view is the main entry point for opening a specific employee record quickly"}
@@ -178,7 +178,7 @@ export function EmployeeClientView({
 
       {/* Create Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-[hsl(224,71%,4%)] border-white/[0.08]">
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto bg-background border-border">
           <DialogHeader>
             <DialogTitle>Create Employee</DialogTitle>
           </DialogHeader>

@@ -142,7 +142,7 @@ export function EmployeeDetailView({
           {canEdit && (
             <Button 
               variant={isEditing ? "outline" : "default"} 
-              className={isEditing ? "bg-white/[0.03] hover:bg-white/[0.08]" : "bg-primary hover:bg-primary/90"}
+              className={isEditing ? "bg-background/[0.03] hover:bg-background/[0.08]" : "bg-primary hover:bg-primary/90"}
               onClick={() => {
                 if (isEditing) form.reset();
                 setIsEditing(!isEditing);
@@ -172,7 +172,7 @@ export function EmployeeDetailView({
       {/* Main Content */}
       <div className="glass-card rounded-2xl p-6 shadow-xl overflow-hidden">
         <Tabs defaultValue="work" className="w-full">
-          <TabsList className="bg-white/[0.03] border-white/[0.08] mb-8">
+          <TabsList className="bg-background/[0.03] border-white/[0.08] mb-8">
             <TabsTrigger value="work" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Work Information</TabsTrigger>
             <TabsTrigger value="private">Private Information</TabsTrigger>
           </TabsList>
@@ -191,7 +191,7 @@ export function EmployeeDetailView({
                           <FormLabel className="text-muted-foreground/80">Department</FormLabel>
                           {isEditing ? (
                             <FormControl>
-                              <Input {...field} className="bg-white/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                              <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
                             </FormControl>
                           ) : (
                             <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">{field.value}</div>
@@ -210,7 +210,7 @@ export function EmployeeDetailView({
                           {isEditing ? (
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger className="bg-white/[0.03] border-white/[0.1]">
+                                <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
                                   <SelectValue placeholder="Select a manager" />
                                 </SelectTrigger>
                               </FormControl>
@@ -240,7 +240,7 @@ export function EmployeeDetailView({
                           {isEditing ? (
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger className="bg-white/[0.03] border-white/[0.1]">
+                                <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
                                   <SelectValue placeholder="Select schedule" />
                                 </SelectTrigger>
                               </FormControl>
@@ -271,7 +271,7 @@ export function EmployeeDetailView({
                           <FormLabel className="text-muted-foreground/80">Company</FormLabel>
                           {isEditing ? (
                             <FormControl>
-                              <Input {...field} className="bg-white/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                              <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
                             </FormControl>
                           ) : (
                             <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
@@ -294,7 +294,7 @@ export function EmployeeDetailView({
                           <FormLabel className="text-muted-foreground/80">Job Position</FormLabel>
                           {isEditing ? (
                             <FormControl>
-                              <Input {...field} className="bg-white/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                              <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
                             </FormControl>
                           ) : (
                             <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">{field.value}</div>
@@ -312,7 +312,7 @@ export function EmployeeDetailView({
                           <FormLabel className="text-muted-foreground/80">Work Location</FormLabel>
                           {isEditing ? (
                             <FormControl>
-                              <Input {...field} className="bg-white/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                              <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
                             </FormControl>
                           ) : (
                             <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
@@ -333,7 +333,7 @@ export function EmployeeDetailView({
                           {isEditing ? (
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
-                                <SelectTrigger className="bg-white/[0.03] border-white/[0.1]">
+                                <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
                                   <SelectValue placeholder="Select status" />
                                 </SelectTrigger>
                               </FormControl>
@@ -388,7 +388,7 @@ export function EmployeeDetailView({
                       <FormLabel className="text-muted-foreground/80">Phone</FormLabel>
                       {isEditing ? (
                         <FormControl>
-                          <Input {...field} className="bg-white/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                          <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
                         </FormControl>
                       ) : (
                         <div className="font-medium text-foreground pb-2 border-b border-white/[0.04]">

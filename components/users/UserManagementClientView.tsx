@@ -205,34 +205,34 @@ export function UserManagementClientView({
   const isEditingSelf = !!selectedUser && selectedUser.id.toString() === currentUserId;
 
   return (
-    <div className="flex gap-8 min-h-[calc(100vh-8rem)] container mx-auto max-w-7xl bg-[#070913] p-6 rounded-3xl">
+    <div className="flex gap-8 min-h-[calc(100vh-8rem)] container mx-auto max-w-7xl pt-6">
       {/* Left Panel: Table */}
       <div className="flex-1 flex flex-col min-w-0 space-y-6">
         <div className="flex items-center gap-3">
-          <h1 className="text-3xl text-slate-50 font-semibold tracking-wide">User Management</h1>
-          <Badge variant="destructive" className="bg-fuchsia-950/70 text-fuchsia-300 border border-fuchsia-500/50 shadow-[0_0_8px_rgba(217,70,239,0.3)] hover:bg-fuchsia-950/70">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground">User Management</h1>
+          <Badge variant="destructive" className="bg-destructive/10 text-destructive border-destructive/20 hover:bg-destructive/20 shadow-none">
             ADMIN ONLY
           </Badge>
         </div>
 
         <div className="flex items-center gap-3">
-          <Button onClick={handleCreateNew} className="bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-medium shadow-[0_0_15px_rgba(6,182,212,0.4)] border-0">
+          <Button onClick={handleCreateNew} className="font-medium shadow-sm">
             <Plus className="mr-1.5 h-4 w-4" />
             New User
           </Button>
 
           <div className="relative flex-1 max-w-sm">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-cyan-500/70" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search users, employees or email..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 bg-[#0b1021] border border-cyan-500/30 text-slate-100 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+              className="pl-9 bg-background border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-primary focus-visible:border-primary"
             />
           </div>
 
           <Select value={roleFilter} onValueChange={setRoleFilter}>
-            <SelectTrigger className="w-[200px] bg-[#0b1021] border border-cyan-500/30 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400">
+            <SelectTrigger className="w-[200px] bg-background border-border text-foreground focus:ring-primary focus:border-primary">
               <SelectValue placeholder="Role Filter" />
             </SelectTrigger>
             <SelectContent>
@@ -246,19 +246,19 @@ export function UserManagementClientView({
           </Select>
         </div>
 
-        <div className="flex-1 rounded-xl bg-[#0d1224]/90 backdrop-blur-md border border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.15)] flex flex-col">
+        <div className="flex-1 premium-card flex flex-col">
           <div className="flex-1 overflow-auto">
-            <Table className="divide-y divide-cyan-500/20">
-              <TableHeader className="sticky top-0 bg-[#131b35] z-10 shadow-sm border-b border-cyan-500/20">
+            <Table>
+              <TableHeader className="sticky top-0 bg-muted/50 z-10 shadow-sm border-b border-border">
                 <TableRow className="border-none hover:bg-transparent">
-                  <TableHead className="text-cyan-300 uppercase tracking-wider text-xs font-semibold">User ID</TableHead>
-                  <TableHead className="text-cyan-300 uppercase tracking-wider text-xs font-semibold">Employee</TableHead>
-                  <TableHead className="text-cyan-300 uppercase tracking-wider text-xs font-semibold">Work Email</TableHead>
-                  <TableHead className="text-cyan-300 uppercase tracking-wider text-xs font-semibold">Role</TableHead>
-                  <TableHead className="text-cyan-300 uppercase tracking-wider text-xs font-semibold">Status</TableHead>
+                  <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">User ID</TableHead>
+                  <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Employee</TableHead>
+                  <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Work Email</TableHead>
+                  <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Role</TableHead>
+                  <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Status</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
+              <TableBody className="divide-y divide-border">
                 {filteredUsers.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center text-muted-foreground">
@@ -267,40 +267,40 @@ export function UserManagementClientView({
                   </TableRow>
                 ) : (
                   filteredUsers.map((u) => (
-                    <TableRow
+                      <TableRow
                       key={u.id}
-                      className={`cursor-pointer transition-colors border-b border-cyan-500/20 ${selectedUser?.id === u.id
-                          ? "bg-cyan-900/30 border-l-2 border-l-cyan-400"
-                          : "hover:bg-cyan-900/10 border-l-2 border-l-transparent"
+                      className={`cursor-pointer transition-colors border-none ${selectedUser?.id === u.id
+                          ? "bg-primary/10 border-l-2 border-l-primary"
+                          : "hover:bg-muted border-l-2 border-l-transparent"
                         }`}
                       onClick={() => handleSelectUser(u)}
                     >
-                      <TableCell className="font-medium text-cyan-400">
+                      <TableCell className="font-medium text-foreground">
                         {generateUserId(u)}
                       </TableCell>
                       <TableCell>
                         {u.employee ? (
                           <Link
                             href={`/employees/${u.employeeId}`}
-                            className="text-cyan-400 hover:text-cyan-300 font-medium text-sm"
+                            className="text-primary hover:text-primary/80 font-medium text-sm"
                             onClick={(e) => e.stopPropagation()}
                           >
                             {u.employee.name}
                           </Link>
                         ) : (
-                          <span className="text-slate-500">-</span>
+                          <span className="text-muted-foreground">-</span>
                         )}
                       </TableCell>
-                      <TableCell className="text-slate-300">{u.email}</TableCell>
+                      <TableCell className="text-foreground">{u.email}</TableCell>
                       <TableCell>
-                        <Badge variant="outline" className="bg-[#0b1021] border border-cyan-500/30 text-cyan-200/70 font-normal">
+                        <Badge variant="outline" className="bg-secondary border-border text-secondary-foreground font-normal">
                           {ROLE_LABELS[u.role]}
                         </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
-                          <span className={`h-2 w-2 rounded-full ${u.isActive ? "bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)]" : "bg-zinc-600"}`} />
-                          <span className={`text-sm font-medium ${u.isActive ? "text-emerald-300" : "text-zinc-500"}`}>
+                          <span className={`status-dot ${u.isActive ? "status-dot-active" : "status-dot-inactive"}`} />
+                          <span className={`text-sm font-medium ${u.isActive ? "text-emerald-600" : "text-muted-foreground"}`}>
                             {u.isActive ? "Active" : "Inactive"}
                           </span>
                         </div>
@@ -313,37 +313,37 @@ export function UserManagementClientView({
           </div>
         </div>
 
-        <div className="text-xs text-cyan-200/70 flex flex-col gap-1.5 pt-2">
+        <div className="text-xs text-muted-foreground flex flex-col gap-1.5 pt-2">
           <p className="flex items-center gap-1.5"><span className="text-lg">💡</span> Select a user to edit access, or create a new user.</p>
           <p className="flex items-center gap-1.5"><span className="text-lg">ℹ️</span> User accounts are separate from Employee records, but should be linked to an employee for access and ownership.</p>
         </div>
       </div>
 
       {/* Right Panel: Form */}
-      <div className="w-[420px] shrink-0 rounded-2xl bg-[#0d1224]/90 backdrop-blur-md border border-cyan-500/40 shadow-[0_0_20px_rgba(6,182,212,0.15)] p-8 flex flex-col h-fit sticky top-24">
+      <div className="w-[420px] shrink-0 premium-card p-8 flex flex-col h-fit sticky top-24">
         <div className="mb-6">
-          <div className="text-xs font-semibold tracking-wide text-cyan-400 mb-1 uppercase">
+          <div className="text-xs font-semibold tracking-wide text-primary mb-1 uppercase">
             {selectedUser ? "Context: Edit User" : "Open on New User"}
           </div>
-          <h2 className="text-xl text-slate-50 font-semibold tracking-wide">
+          <h2 className="text-xl text-foreground font-bold tracking-tight">
             {selectedUser ? "Edit User Access" : "Create User"}
           </h2>
         </div>
 
         {formError && (
-          <div className="mb-6 p-3 rounded-md bg-destructive/15 border border-destructive/30 text-destructive text-sm font-medium flex gap-2 items-start">
+          <div className="mb-6 p-3 rounded-md bg-red-50 border border-red-200 text-red-600 text-sm font-medium flex gap-2 items-start">
             <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5" />
             <p>{formError}</p>
           </div>
         )}
 
         {tempPassword && (
-          <div className="mb-6 p-4 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-sm">
+          <div className="mb-6 p-4 rounded-md bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-sm">
             <div className="flex items-center gap-2 font-semibold mb-1">
               <Check className="h-4 w-4" /> User Created Successfully
             </div>
-            <p className="mb-2">Please securely share this temporary password with the user. It will only be shown once.</p>
-            <div className="p-2 bg-emerald-950 rounded border border-emerald-500/30 font-mono text-center tracking-widest text-emerald-400 select-all">
+            <p className="mb-2 text-emerald-600/90">Please securely share this temporary password with the user. It will only be shown once.</p>
+            <div className="p-2 bg-background rounded border border-emerald-500/20 font-mono text-center tracking-widest select-all font-medium shadow-sm">
               {tempPassword}
             </div>
           </div>
@@ -352,7 +352,7 @@ export function UserManagementClientView({
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 flex-1">
           {!selectedUser && (
             <div className="flex items-center gap-4 pt-1">
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <label className="flex items-center gap-2 text-sm cursor-pointer text-foreground">
                 <input
                   type="radio"
                   checked={form.watch("isNewEmployee") === true}
@@ -364,7 +364,7 @@ export function UserManagementClientView({
                 />
                 Create New Employee
               </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <label className="flex items-center gap-2 text-sm cursor-pointer text-foreground">
                 <input
                   type="radio"
                   checked={form.watch("isNewEmployee") === false}
@@ -380,7 +380,7 @@ export function UserManagementClientView({
           )}
 
           <div className="space-y-1.5">
-            <Label className="text-slate-300">{form.watch("isNewEmployee") ? "New Employee Name *" : "Employee *"}</Label>
+            <Label className="text-foreground">{form.watch("isNewEmployee") ? "New Employee Name *" : "Employee *"}</Label>
             {form.watch("isNewEmployee") ? (
               <Input
                 placeholder="John Doe"
@@ -392,14 +392,14 @@ export function UserManagementClientView({
                     form.setValue("email", generatedEmail);
                   }
                 }}
-                className="bg-[#0b1021] border border-cyan-500/30 text-slate-100 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+                className="bg-background border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-primary focus-visible:border-primary"
               />
             ) : (
               <Select
                 value={form.watch("employeeId")}
                 onValueChange={handleEmployeeChange}
               >
-                <SelectTrigger className="bg-[#0b1021] border border-cyan-500/30 text-slate-100 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400">
+                <SelectTrigger className="bg-background border-border text-foreground focus:ring-primary focus:border-primary">
                   <SelectValue placeholder="Select Employee" />
                 </SelectTrigger>
                 <SelectContent>
@@ -417,12 +417,12 @@ export function UserManagementClientView({
           </div>
 
           <div className="space-y-1.5">
-            <Label className="text-slate-300">Work Email *</Label>
+            <Label className="text-foreground">Work Email *</Label>
             <Input
               type="email"
               {...form.register("email")}
               placeholder="name@company.com"
-              className="bg-[#0b1021] border border-cyan-500/30 text-slate-100 placeholder:text-slate-400 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
+              className="bg-background border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-primary focus-visible:border-primary"
             />
             {form.formState.errors.email && (
               <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
@@ -430,17 +430,17 @@ export function UserManagementClientView({
           </div>
 
           <div className="space-y-2.5 pt-2">
-            <Label className="text-slate-300">Roles *</Label>
-            <div className="space-y-2 p-3 border border-cyan-500/30 rounded-lg bg-[#0b1021]">
+            <Label className="text-foreground">Roles *</Label>
+            <div className="space-y-2 p-3 border border-border rounded-lg bg-muted/50">
               {Object.entries(ROLE_LABELS).map(([val, label]) => (
                 <label
                   key={val}
-                  className={`flex items-center gap-2 text-sm text-slate-100 p-1.5 rounded transition-colors ${isEditingSelf ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-cyan-500/10"
+                  className={`flex items-center gap-2 text-sm text-foreground p-1.5 rounded transition-colors ${isEditingSelf ? "opacity-50 cursor-not-allowed" : "cursor-pointer hover:bg-muted"
                     }`}
                 >
                   <input
                     type="radio"
-                    className="accent-cyan-500 w-4 h-4"
+                    className="accent-primary w-4 h-4"
                     value={val}
                     checked={form.watch("role") === val}
                     onChange={() => form.setValue("role", val as Role)}
@@ -451,21 +451,21 @@ export function UserManagementClientView({
               ))}
             </div>
             {isEditingSelf && (
-              <p className="text-xs text-amber-500/80">
+              <p className="text-xs text-amber-600">
                 You cannot change your own role.
               </p>
             )}
           </div>
 
           <div className="space-y-1.5 pt-2">
-            <Label className="text-slate-300">Account Status</Label>
+            <Label className="text-foreground">Account Status</Label>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => form.setValue("isActive", true)}
                 className={`flex-1 py-1.5 rounded text-sm font-medium border transition-colors ${form.watch("isActive")
-                    ? "bg-emerald-400/20 border-emerald-400/50 text-emerald-300 shadow-[0_0_8px_rgba(52,211,153,0.3)]"
-                    : "bg-[#0b1021] border-cyan-500/30 text-slate-400 hover:bg-cyan-500/10"
+                    ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600"
+                    : "bg-background border-border text-muted-foreground hover:bg-muted/50"
                   }`}
               >
                 Active
@@ -474,8 +474,8 @@ export function UserManagementClientView({
                 type="button"
                 onClick={() => form.setValue("isActive", false)}
                 className={`flex-1 py-1.5 rounded text-sm font-medium border transition-colors ${!form.watch("isActive")
-                    ? "bg-zinc-700/50 border-zinc-500 text-zinc-300"
-                    : "bg-[#0b1021] border-cyan-500/30 text-slate-400 hover:bg-cyan-500/10"
+                    ? "bg-muted border-border text-foreground"
+                    : "bg-background border-border text-muted-foreground hover:bg-muted/50"
                   }`}
               >
                 Inactive
@@ -486,7 +486,7 @@ export function UserManagementClientView({
           <div className="pt-6 mt-auto">
             <Button
               type="submit"
-              className="w-full bg-gradient-to-r from-cyan-500 to-indigo-600 hover:from-cyan-400 hover:to-indigo-500 text-white font-medium shadow-[0_0_15px_rgba(6,182,212,0.4)] border-0"
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium shadow-sm"
               disabled={isSubmitting}
             >
               {isSubmitting

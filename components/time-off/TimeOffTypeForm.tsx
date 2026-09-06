@@ -115,7 +115,7 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-xl border border-white/10 bg-black/20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-xl border border-white/10 bg-secondary">
             {/* Left Column */}
             <div className="space-y-4">
               <FormField
@@ -129,7 +129,7 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
                         placeholder="Annual Leave"
                         {...field}
                         disabled={!isEditable}
-                        className="bg-white/[0.03] border-white/[0.08]"
+                        className="bg-background/[0.03] border-white/[0.08]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -149,7 +149,7 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
                       disabled={!isEditable}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                        <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                           <SelectValue placeholder="Select unit" />
                         </SelectTrigger>
                       </FormControl>
@@ -175,7 +175,7 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
                       disabled={!isEditable}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                        <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                           <SelectValue placeholder="Who approves this?" />
                         </SelectTrigger>
                       </FormControl>
@@ -202,7 +202,7 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
                         {...field}
                         value={field.value || ""}
                         disabled={!isEditable}
-                        className="bg-white/[0.03] border-white/[0.08]"
+                        className="bg-background/[0.03] border-white/[0.08]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -218,7 +218,7 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
                   control={form.control}
                   name="requiresAllocation"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2 rounded-lg border border-white/10 p-4 w-full bg-white/[0.02]">
+                    <FormItem className="flex flex-col gap-2 rounded-lg border border-white/10 p-4 w-full bg-background/[0.02]">
                       <div className="space-y-0.5">
                         <FormLabel className="text-sm">Requires Allocation</FormLabel>
                       </div>
@@ -237,7 +237,7 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
                   control={form.control}
                   name="active"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col gap-2 rounded-lg border border-white/10 p-4 w-full bg-white/[0.02]">
+                    <FormItem className="flex flex-col gap-2 rounded-lg border border-white/10 p-4 w-full bg-background/[0.02]">
                       <div className="space-y-0.5">
                         <FormLabel className="text-sm">Active</FormLabel>
                       </div>
@@ -266,10 +266,10 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
                           {...field}
                           value={field.value || "#3b82f6"}
                           disabled={!isEditable}
-                          className="h-10 w-20 p-1 bg-white/[0.03] border-white/[0.08]"
+                          className="h-10 w-20 p-1 bg-background/[0.03] border-white/[0.08]"
                         />
                       </FormControl>
-                      <span className="text-sm text-slate-400 font-mono uppercase">{field.value}</span>
+                      <span className="text-sm text-muted-foreground font-mono uppercase">{field.value}</span>
                     </div>
                     <FormMessage />
                   </FormItem>
@@ -288,7 +288,7 @@ export function TimeOffTypeForm({ initialData, onSuccess, isViewMode = false }: 
                         {...field}
                         value={field.value || ""}
                         disabled={!isEditable}
-                        className="h-24 bg-white/[0.03] border-white/[0.08] resize-none"
+                        className="h-24 bg-background/[0.03] border-white/[0.08] resize-none"
                       />
                     </FormControl>
                     <FormMessage />

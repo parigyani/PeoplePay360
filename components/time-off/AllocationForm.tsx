@@ -129,7 +129,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
             {initialData ? "Allocation Details" : "New Allocation"}
           </h2>
           {initialData && (
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-muted-foreground mt-1">
               Status: <span className={initialData.status === "Approved" ? "text-green-400 font-medium" : initialData.status === "Refused" ? "text-red-400 font-medium" : "text-orange-400 font-medium"}>{initialData.status}</span>
             </p>
           )}
@@ -158,7 +158,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
 
       <Form {...form}>
         <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-xl border border-white/10 bg-black/20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-6 rounded-xl border border-white/10 bg-secondary">
             {/* Left Column */}
             <div className="space-y-4">
               <FormField
@@ -173,7 +173,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                       disabled={isViewMode}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                        <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                           <SelectValue placeholder="Select employee" />
                         </SelectTrigger>
                       </FormControl>
@@ -200,7 +200,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                       disabled={isViewMode}
                     >
                       <FormControl>
-                        <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                        <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                           <SelectValue placeholder="Select type" />
                         </SelectTrigger>
                       </FormControl>
@@ -228,7 +228,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                           step="0.5"
                           {...field}
                           disabled={isViewMode}
-                          className="bg-white/[0.03] border-white/[0.08]"
+                          className="bg-background/[0.03] border-white/[0.08]"
                         />
                       </FormControl>
                       <FormMessage />
@@ -241,7 +241,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                   <Input
                     disabled
                     value={initialData?.taken ?? 0}
-                    className="bg-white/[0.03] border-white/[0.08] text-slate-400"
+                    className="bg-background/[0.03] border-white/[0.08] text-muted-foreground"
                   />
                 </div>
 
@@ -250,7 +250,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                   <Input
                     disabled
                     value={initialData?.remaining ?? (isViewMode ? 0 : form.watch("allocated"))}
-                    className="bg-white/[0.03] border-white/[0.08] text-slate-400 font-bold"
+                    className="bg-background/[0.03] border-white/[0.08] text-muted-foreground font-bold"
                   />
                 </div>
               </div>
@@ -270,7 +270,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                           type="date"
                           {...field}
                           disabled={isViewMode}
-                          className="bg-white/[0.03] border-white/[0.08]"
+                          className="bg-background/[0.03] border-white/[0.08]"
                         />
                       </FormControl>
                       <FormMessage />
@@ -289,7 +289,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                           type="date"
                           {...field}
                           disabled={isViewMode}
-                          className="bg-white/[0.03] border-white/[0.08]"
+                          className="bg-background/[0.03] border-white/[0.08]"
                         />
                       </FormControl>
                       <FormMessage />
@@ -309,7 +309,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                         placeholder="e.g. HR Manager"
                         {...field}
                         disabled={isViewMode}
-                        className="bg-white/[0.03] border-white/[0.08]"
+                        className="bg-background/[0.03] border-white/[0.08]"
                       />
                     </FormControl>
                     <FormMessage />
@@ -328,7 +328,7 @@ export function AllocationForm({ initialData, employees, types, canApprove }: Pr
                         placeholder="e.g. 2026 Annual Balance"
                         {...field}
                         disabled={isViewMode}
-                        className="h-20 bg-white/[0.03] border-white/[0.08] resize-none"
+                        className="h-20 bg-background/[0.03] border-white/[0.08] resize-none"
                       />
                     </FormControl>
                     <FormMessage />

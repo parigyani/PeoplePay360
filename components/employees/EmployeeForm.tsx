@@ -98,7 +98,7 @@ export function EmployeeForm({ managers, schedules, onSuccess }: EmployeeFormPro
                 <Input
                   placeholder="John Doe"
                   {...field}
-                  className="bg-white/[0.03] border-white/[0.08]"
+                  className="bg-background/[0.03] border-white/[0.08]"
                 />
               </FormControl>
               <FormMessage />
@@ -117,7 +117,7 @@ export function EmployeeForm({ managers, schedules, onSuccess }: EmployeeFormPro
                   <Input
                     placeholder="Engineering"
                     {...field}
-                    className="bg-white/[0.03] border-white/[0.08]"
+                    className="bg-background/[0.03] border-white/[0.08]"
                   />
                 </FormControl>
                 <FormMessage />
@@ -136,7 +136,7 @@ export function EmployeeForm({ managers, schedules, onSuccess }: EmployeeFormPro
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                    <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                       <SelectValue placeholder="Select a position" />
                     </SelectTrigger>
                   </FormControl>
@@ -171,7 +171,7 @@ export function EmployeeForm({ managers, schedules, onSuccess }: EmployeeFormPro
                   defaultValue={field.value}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                    <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                       <SelectValue placeholder="Select a manager" />
                     </SelectTrigger>
                   </FormControl>
@@ -204,7 +204,7 @@ export function EmployeeForm({ managers, schedules, onSuccess }: EmployeeFormPro
                   disabled={schedules.length === 0}
                 >
                   <FormControl>
-                    <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                    <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                       <SelectValue
                         placeholder={
                           schedules.length === 0
@@ -243,7 +243,7 @@ export function EmployeeForm({ managers, schedules, onSuccess }: EmployeeFormPro
                 defaultValue={field.value}
               >
                 <FormControl>
-                  <SelectTrigger className="bg-white/[0.03] border-white/[0.08]">
+                  <SelectTrigger className="bg-background/[0.03] border-white/[0.08]">
                     <SelectValue placeholder="Select status" />
                   </SelectTrigger>
                 </FormControl>

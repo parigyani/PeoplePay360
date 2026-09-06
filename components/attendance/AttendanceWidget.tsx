@@ -92,7 +92,7 @@ export function AttendanceWidget() {
   return (
     <Popover>
       <PopoverTrigger
-        className="flex items-center gap-2 rounded-full border border-white/10 bg-black/20 p-1 pr-3 transition-colors hover:bg-black/40 focus:outline-none"
+        className="flex items-center gap-2 rounded-full border border-white/10 bg-secondary p-1 pr-3 transition-colors hover:bg-secondary/80 focus:outline-none"
       >
         <div
           className={cn(
@@ -100,32 +100,32 @@ export function AttendanceWidget() {
             isCheckedIn ? "bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]" : "bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.6)]"
           )}
         />
-        <span className="text-xs font-medium text-white/80">
+        <span className="text-xs font-medium text-secondary-foreground">
           {isCheckedIn ? "Checked In" : "Check In"}
         </span>
       </PopoverTrigger>
-      <PopoverContent className="w-80 border-[#2D3342] bg-[#1E2330] text-slate-100 p-5 rounded-xl shadow-2xl" align="end" sideOffset={12}>
+      <PopoverContent className="w-80 border-border bg-popover text-popover-foreground p-5 rounded-xl shadow-2xl" align="end" sideOffset={12}>
         <div className="flex flex-col space-y-4">
           <div>
-            <div className="text-sm text-slate-400">Welcome back</div>
+            <div className="text-sm text-muted-foreground">Welcome back</div>
             <div className="text-xl font-semibold tracking-tight">{data.employeeName}!</div>
           </div>
           
           <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between text-sm">
-              <span className="flex items-center gap-2 text-slate-300">
+              <span className="flex items-center gap-2 text-muted-foreground">
                 {isCheckedIn ? format(new Date(data.active!.checkIn), "h:mm a") : "Not active"}
-                {isCheckedIn && <span className="text-slate-500">— Now</span>}
+                {isCheckedIn && <span className="text-muted-foreground">— Now</span>}
               </span>
               <span className="font-medium text-white">
                 {isCheckedIn ? formatDuration(elapsed) : "0h00"}
               </span>
             </div>
             
-            <div className="h-[1px] w-full bg-white/10 rounded-full" />
+            <div className="h-[1px] w-full bg-background/10 rounded-full" />
             
             <div className="flex items-center justify-between text-sm">
-              <span className="text-slate-300">Today</span>
+              <span className="text-muted-foreground">Today</span>
               <span className="font-medium text-white">
                 {formatDuration(data.todayHoursExcludingActive + elapsed)}
               </span>
@@ -145,7 +145,7 @@ export function AttendanceWidget() {
             {acting ? "Please wait..." : isCheckedIn ? "Check Out" : "Check In"}
           </Button>
           
-          <p className="text-[10px] text-slate-500 text-center leading-tight pt-1">
+          <p className="text-[10px] text-muted-foreground text-center leading-tight pt-1">
             Employees can mark attendance from the quick widget and review records from the Attendance module.
           </p>
         </div>

@@ -43,15 +43,15 @@ interface EmployeeListProps {
 
 export function EmployeeList({ employees, onClick }: EmployeeListProps) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+    <div className="premium-card">
       <Table>
-        <TableHeader>
-          <TableRow className="border-white/[0.06] hover:bg-transparent">
-            <TableHead className="text-muted-foreground/70">Employee</TableHead>
-            <TableHead className="text-muted-foreground/70">Work Email</TableHead>
-            <TableHead className="text-muted-foreground/70">Job Position</TableHead>
-            <TableHead className="text-muted-foreground/70">Department</TableHead>
-            <TableHead className="text-muted-foreground/70">Status</TableHead>
+        <TableHeader className="bg-muted/50 border-b border-border">
+          <TableRow className="border-none hover:bg-transparent">
+            <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Employee</TableHead>
+            <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Work Email</TableHead>
+            <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Job Position</TableHead>
+            <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Department</TableHead>
+            <TableHead className="text-muted-foreground font-medium uppercase text-xs tracking-wider">Status</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -68,7 +68,7 @@ export function EmployeeList({ employees, onClick }: EmployeeListProps) {
             employees.map((employee) => (
               <TableRow
                 key={employee.id}
-                className="cursor-pointer border-white/[0.04] hover:bg-white/[0.03] transition-colors"
+                className="cursor-pointer border-border hover:bg-muted/50 transition-colors"
                 onClick={() => onClick(employee.id)}
               >
                 <TableCell>
@@ -80,7 +80,7 @@ export function EmployeeList({ employees, onClick }: EmployeeListProps) {
                     >
                       {getInitials(employee.name)}
                     </div>
-                    <span className="font-medium">{employee.name}</span>
+                    <span className="font-medium text-foreground">{employee.name}</span>
                   </div>
                 </TableCell>
                 <TableCell className="text-muted-foreground">

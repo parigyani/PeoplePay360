@@ -106,10 +106,10 @@ export default async function AttendanceListPage({
   return (
     <div className="container mx-auto py-10 space-y-6 max-w-7xl">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-extrabold tracking-tight">Attendance Records</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight text-foreground">Attendance Records</h1>
         {canWrite && (
           <Link href="/attendance/new">
-            <Button className="shadow-md shadow-primary/20">Add Manual Entry</Button>
+            <Button className="shadow-sm">Add Manual Entry</Button>
           </Link>
         )}
       </div>
@@ -118,39 +118,39 @@ export default async function AttendanceListPage({
 
       <div className="space-y-12">
         {Object.keys(grouped).length === 0 ? (
-          <div className="rounded-xl border border-white/[0.05] p-12 text-center text-muted-foreground glass-card">
+          <div className="rounded-xl border border-border bg-card p-12 text-center text-muted-foreground shadow-sm">
             No attendance records found.
           </div>
         ) : (
           Object.entries(grouped).map(([empName, months]) => (
             <details key={empName} className="group premium-card" open>
-              <summary className="text-2xl font-bold tracking-tight flex items-center gap-3 cursor-pointer p-6 bg-white/[0.01] hover:bg-white/[0.03] transition-colors list-none [&::-webkit-details-marker]:hidden">
-                <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 text-white flex items-center justify-center text-sm shrink-0 shadow-lg">
+              <summary className="text-2xl font-bold tracking-tight flex items-center gap-3 cursor-pointer p-6 bg-card hover:bg-muted/50 transition-colors list-none [&::-webkit-details-marker]:hidden">
+                <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white flex items-center justify-center text-sm shrink-0 shadow-sm">
                   {empName.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)}
                 </span>
-                <span className="flex-1 text-foreground/90">{empName}</span>
-                <div className="ml-auto text-muted-foreground transition-transform duration-300 group-open:rotate-180 bg-white/5 p-2 rounded-full">
+                <span className="flex-1 text-foreground">{empName}</span>
+                <div className="ml-auto text-muted-foreground transition-transform duration-300 group-open:rotate-180 bg-secondary p-2 rounded-full hover:bg-secondary/80">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polyline points="6 9 12 15 18 9"></polyline>
                   </svg>
                 </div>
               </summary>
               
-              <div className="space-y-8 p-6 border-t border-white/[0.05] bg-black/20">
+              <div className="space-y-8 p-6 border-t border-border bg-muted/30">
                 {Object.entries(months).map(([monthStr, records]) => (
                   <div key={monthStr} className="space-y-4">
-                    <h3 className="text-lg font-semibold text-primary/90 border-b border-white/[0.05] pb-2">
+                    <h3 className="text-lg font-semibold text-primary border-b border-border pb-2">
                       {monthStr}
                     </h3>
-                    <div className="rounded-xl border border-white/[0.06] overflow-hidden shadow-inner bg-white/[0.01]">
+                    <div className="rounded-xl border border-border overflow-hidden shadow-sm bg-card">
                       <Table>
-                        <TableHeader className="bg-white/[0.02]">
-                          <TableRow className="border-white/[0.06] hover:bg-transparent">
-                            <TableHead>Check In</TableHead>
-                            <TableHead>Check Out</TableHead>
-                            <TableHead>Worked Hours</TableHead>
-                            <TableHead>Status</TableHead>
-                            <TableHead className="text-right">Actions</TableHead>
+                        <TableHeader className="bg-muted/50">
+                          <TableRow className="border-border hover:bg-transparent">
+                            <TableHead className="text-muted-foreground font-medium">Check In</TableHead>
+                            <TableHead className="text-muted-foreground font-medium">Check Out</TableHead>
+                            <TableHead className="text-muted-foreground font-medium">Worked Hours</TableHead>
+                            <TableHead className="text-muted-foreground font-medium">Status</TableHead>
+                            <TableHead className="text-right text-muted-foreground font-medium">Actions</TableHead>
                           </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -165,23 +165,23 @@ export default async function AttendanceListPage({
                             }
 
                             return (
-                              <TableRow key={record.id} className="border-white/[0.04] hover:bg-white/[0.02]">
-                                <TableCell>{format(new Date(record.checkIn), "PPP p")}</TableCell>
-                                <TableCell>
+                              <TableRow key={record.id} className="border-border hover:bg-muted/50">
+                                <TableCell className="text-foreground">{format(new Date(record.checkIn), "PPP p")}</TableCell>
+                                <TableCell className="text-muted-foreground">
                                   {record.checkOut
                                     ? format(new Date(record.checkOut), "PPP p")
                                     : "-"}
                                 </TableCell>
-                                <TableCell>
+                                <TableCell className="text-muted-foreground">
                                   {displayHours}
                                 </TableCell>
                                 <TableCell>
                                   <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className="bg-white/[0.03] border-white/[0.1]">
+                                    <Badge variant="outline" className="bg-secondary border-border text-secondary-foreground">
                                       {record.status}
                                     </Badge>
                                     {record.isManualEntry && (
-                                      <Badge variant="default" className="bg-amber-600 hover:bg-amber-700">
+                                      <Badge variant="default" className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border-none shadow-none">
                                         Manual Correction
                                       </Badge>
                                     )}
@@ -190,7 +190,7 @@ export default async function AttendanceListPage({
                                 <TableCell className="text-right">
                                   {canWrite && (
                                     <Link href={`/attendance/${record.id}`}>
-                                      <Button variant="outline" size="sm" className="bg-white/[0.02] border-white/[0.1] hover:bg-white/[0.05]">
+                                      <Button variant="outline" size="sm" className="bg-background border-border text-foreground hover:bg-muted">
                                         Edit
                                       </Button>
                                     </Link>

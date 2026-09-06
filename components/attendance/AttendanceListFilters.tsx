@@ -52,45 +52,45 @@ export function AttendanceListFilters({ employeeName }: Props) {
           <Input 
             type="search" 
             placeholder="Search employee..." 
-            className="pl-8" 
+            className="pl-8 bg-background border-border text-foreground placeholder:text-muted-foreground focus-visible:ring-primary focus-visible:border-primary" 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
           />
         </div>
-        <Button type="submit" variant="secondary">Filter</Button>
+        <Button type="submit" variant="secondary" className="bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border">Filter</Button>
       </form>
 
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant="outline" size="sm" onClick={setToday} className="flex items-center gap-2">
+        <Button variant="outline" size="sm" onClick={setToday} className="flex items-center gap-2 bg-background text-foreground border-border hover:bg-muted">
           <CalendarDays className="h-4 w-4" />
           Today
         </Button>
 
         {employeeName && (
-          <Badge variant="secondary" className="px-3 py-1.5 text-sm flex items-center gap-2">
+          <Badge variant="secondary" className="px-3 py-1.5 text-sm flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border">
             Employee: {employeeName}
             <X 
-              className="h-3.5 w-3.5 cursor-pointer hover:text-red-500" 
+              className="h-3.5 w-3.5 cursor-pointer hover:text-destructive" 
               onClick={() => updateParam("employeeId", null)}
             />
           </Badge>
         )}
         
         {searchParams.get("date") && (
-          <Badge variant="secondary" className="px-3 py-1.5 text-sm flex items-center gap-2">
+          <Badge variant="secondary" className="px-3 py-1.5 text-sm flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border">
             Date: {searchParams.get("date")}
             <X 
-              className="h-3.5 w-3.5 cursor-pointer hover:text-red-500" 
+              className="h-3.5 w-3.5 cursor-pointer hover:text-destructive" 
               onClick={() => updateParam("date", null)}
             />
           </Badge>
         )}
         
         {searchParams.get("month") && (
-          <Badge variant="secondary" className="px-3 py-1.5 text-sm flex items-center gap-2">
+          <Badge variant="secondary" className="px-3 py-1.5 text-sm flex items-center gap-2 bg-secondary text-secondary-foreground hover:bg-secondary/80 border border-border">
             Month: {searchParams.get("month")}
             <X 
-              className="h-3.5 w-3.5 cursor-pointer hover:text-red-500" 
+              className="h-3.5 w-3.5 cursor-pointer hover:text-destructive" 
               onClick={() => updateParam("month", null)}
             />
           </Badge>
@@ -100,7 +100,7 @@ export function AttendanceListFilters({ employeeName }: Props) {
           value={searchParams.get("month") || ""} 
           onValueChange={(val) => updateParam("month", val || null)}
         >
-          <SelectTrigger className="w-[180px] bg-background">
+          <SelectTrigger className="w-[180px] bg-background border-border text-foreground focus:ring-primary focus:border-primary">
             <SelectValue placeholder="Select Month" />
           </SelectTrigger>
           <SelectContent>

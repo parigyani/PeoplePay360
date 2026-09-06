@@ -58,7 +58,7 @@ export function RequestTable({
   return (
     <div className="glass-card rounded-md border border-white/[0.08] overflow-hidden">
       <Table>
-        <TableHeader className="bg-white/[0.02]">
+        <TableHeader className="bg-background/[0.02]">
           <TableRow className="border-white/[0.08]">
             <TableHead>Employee</TableHead>
             <TableHead>Type</TableHead>
@@ -85,7 +85,7 @@ export function RequestTable({
               return (
                 <TableRow 
                   key={req.id} 
-                  className="border-white/[0.08] hover:bg-white/[0.02] transition-colors"
+                  className="border-white/[0.08] hover:bg-background/[0.02] transition-colors"
                 >
                   <TableCell className="font-medium cursor-pointer" onClick={() => router.push(`/time-off/requests/${req.id}`)}>
                     {req.employee.name}
