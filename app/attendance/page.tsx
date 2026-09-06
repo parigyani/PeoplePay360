@@ -19,7 +19,7 @@ import { AttendanceListFilters } from "@/components/attendance/AttendanceListFil
 export default async function AttendanceListPage({
   searchParams,
 }: {
-  searchParams: Promise<{ employeeId?: string; search?: string; date?: string }>;
+  searchParams: Promise<{ employeeId?: string; search?: string; date?: string; month?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session) return null;
@@ -61,6 +61,16 @@ export default async function AttendanceListPage({
     whereClause.checkIn = {
       gte: startOfDay,
       lte: endOfDay
+    };
+  } else if (params.month) {
+    // params.month is in YYYY-MM format
+    const [year, month] = params.month.split("-");
+    const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
+    const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59, 999);
+    
+    whereClause.checkIn = {
+      gte: startDate,
+      lte: endDate
     };
   }
 

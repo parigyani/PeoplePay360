@@ -78,6 +78,27 @@ export function AttendanceListFilters({ employeeName }: Props) {
             />
           </Badge>
         )}
+        
+        {searchParams.get("month") && (
+          <Badge variant="secondary" className="px-3 py-1.5 text-sm flex items-center gap-2">
+            Month: {searchParams.get("month")}
+            <X 
+              className="h-3.5 w-3.5 cursor-pointer hover:text-red-500" 
+              onClick={() => updateParam("month", null)}
+            />
+          </Badge>
+        )}
+        
+        <div className="flex items-center gap-2 border rounded-md px-2 bg-background ml-auto">
+          <label htmlFor="monthFilter" className="text-sm text-muted-foreground whitespace-nowrap">Month:</label>
+          <input
+            id="monthFilter"
+            type="month"
+            className="bg-transparent border-none focus:outline-none text-sm p-1"
+            value={searchParams.get("month") || ""}
+            onChange={(e) => updateParam("month", e.target.value || null)}
+          />
+        </div>
       </div>
     </div>
   );

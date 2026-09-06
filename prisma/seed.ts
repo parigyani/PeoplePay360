@@ -42,7 +42,22 @@ async function main() {
     data: [
       { employeeId: emp2.id, checkIn: new Date('2024-08-01T09:00:00Z'), checkOut: new Date('2024-08-01T17:00:00Z'), status: 'Present' },
       { employeeId: emp2.id, checkIn: new Date('2024-08-02T09:00:00Z'), checkOut: new Date('2024-08-02T17:00:00Z'), status: 'Absent' },
-      { employeeId: emp3.id, checkIn: new Date('2024-08-01T09:00:00Z'), checkOut: new Date('2024-08-01T17:00:00Z'), status: 'Present' }
+      { employeeId: emp3.id, checkIn: new Date('2024-08-01T09:00:00Z'), checkOut: new Date('2024-08-01T17:00:00Z'), status: 'Present' },
+      
+      // July 2026
+      { employeeId: emp2.id, checkIn: new Date('2026-07-15T09:00:00Z'), checkOut: new Date('2026-07-15T17:15:00Z'), status: 'Present' },
+      { employeeId: emp2.id, checkIn: new Date('2026-07-16T09:10:00Z'), checkOut: new Date('2026-07-16T17:00:00Z'), status: 'Late' },
+      { employeeId: emp3.id, checkIn: new Date('2026-07-15T08:55:00Z'), checkOut: new Date('2026-07-15T17:00:00Z'), status: 'Present' },
+
+      // August 2026
+      { employeeId: emp2.id, checkIn: new Date('2026-08-10T09:00:00Z'), checkOut: new Date('2026-08-10T17:00:00Z'), status: 'Present' },
+      { employeeId: emp2.id, checkIn: new Date('2026-08-11T09:00:00Z'), checkOut: new Date('2026-08-11T17:00:00Z'), status: 'Present' },
+      { employeeId: emp3.id, checkIn: new Date('2026-08-10T09:00:00Z'), checkOut: new Date('2026-08-10T17:00:00Z'), status: 'Present' },
+
+      // September 2026
+      { employeeId: emp2.id, checkIn: new Date('2026-09-01T09:00:00Z'), checkOut: new Date('2026-09-01T17:00:00Z'), status: 'Present' },
+      { employeeId: emp2.id, checkIn: new Date('2026-09-02T09:00:00Z'), checkOut: new Date('2026-09-02T17:00:00Z'), status: 'Present' },
+      { employeeId: emp3.id, checkIn: new Date('2026-09-01T09:00:00Z'), checkOut: new Date('2026-09-01T17:00:00Z'), status: 'Present' }
     ]
   });
   console.log('Created Mock Attendance records');
