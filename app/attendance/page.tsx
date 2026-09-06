@@ -38,19 +38,20 @@ export default async function AttendanceListPage({
     targetEmployeeId = parseInt(params.employeeId, 10);
   }
 
-  const whereClause: any = {};
+  const employeeWhere: any = {};
+  const attendanceWhere: any = {};
   
   if (targetEmployeeId) {
-    whereClause.employeeId = targetEmployeeId;
+    employeeWhere.id = targetEmployeeId;
     const emp = await prisma.employee.findUnique({ where: { id: targetEmployeeId }, select: { name: true }});
     if (emp) employeeName = emp.name;
   }
 
   if (params.search) {
-    whereClause.employee = {
-      name: { contains: params.search, mode: "insensitive" }
-    };
+    employeeWhere.name = { contains: params.search, mode: "insensitive" };
   }
+
+  let selectedMonthStr = format(new Date(), "MMMM yyyy");
 
   if (params.date) {
     const startOfDay = new Date(params.date);
@@ -58,49 +59,56 @@ export default async function AttendanceListPage({
     const endOfDay = new Date(params.date);
     endOfDay.setHours(23, 59, 59, 999);
     
-    whereClause.checkIn = {
+    attendanceWhere.checkIn = {
       gte: startOfDay,
       lte: endOfDay
     };
+    selectedMonthStr = format(startOfDay, "MMMM yyyy");
   } else if (params.month) {
     // params.month is in YYYY-MM format
     const [year, month] = params.month.split("-");
     const startDate = new Date(parseInt(year), parseInt(month) - 1, 1);
     const endDate = new Date(parseInt(year), parseInt(month), 0, 23, 59, 59, 999);
     
-    whereClause.checkIn = {
+    attendanceWhere.checkIn = {
       gte: startDate,
       lte: endDate
     };
+    selectedMonthStr = format(startDate, "MMMM yyyy");
   }
 
-  const attendances = await prisma.attendance.findMany({
-    where: whereClause,
+  const employees = await prisma.employee.findMany({
+    where: employeeWhere,
     include: {
-      employee: true,
+      attendance: {
+        where: attendanceWhere,
+        orderBy: { checkIn: 'desc' }
+      }
     },
-    orderBy: {
-      checkIn: 'desc',
-    }
+    orderBy: { name: 'asc' }
   });
 
   // Group by Employee -> Month
   type GroupedAttendances = {
     [employeeName: string]: {
-      [monthStr: string]: typeof attendances;
+      [monthStr: string]: any[];
     };
   };
 
   const grouped: GroupedAttendances = {};
 
-  attendances.forEach((record) => {
-    const empName = record.employee.name;
-    const monthStr = format(new Date(record.checkIn), "MMMM yyyy");
+  employees.forEach((emp) => {
+    grouped[emp.name] = {};
     
-    if (!grouped[empName]) grouped[empName] = {};
-    if (!grouped[empName][monthStr]) grouped[empName][monthStr] = [];
-    
-    grouped[empName][monthStr].push(record);
+    if (emp.attendance.length === 0) {
+      grouped[emp.name][selectedMonthStr] = [];
+    } else {
+      emp.attendance.forEach((record) => {
+        const monthStr = format(new Date(record.checkIn), "MMMM yyyy");
+        if (!grouped[emp.name][monthStr]) grouped[emp.name][monthStr] = [];
+        grouped[emp.name][monthStr].push(record);
+      });
+    }
   });
 
   return (
@@ -119,7 +127,7 @@ export default async function AttendanceListPage({
       <div className="space-y-12">
         {Object.keys(grouped).length === 0 ? (
           <div className="rounded-xl border border-border bg-card p-12 text-center text-muted-foreground shadow-sm">
-            No attendance records found.
+            No employees found matching the filters.
           </div>
         ) : (
           Object.entries(grouped).map(([empName, months]) => (
@@ -154,51 +162,59 @@ export default async function AttendanceListPage({
                           </TableRow>
                         </TableHeader>
                         <TableBody>
-                          {records.map((record) => {
-                            let displayHours = "-";
-                            if (record.workedHours !== null) {
-                              displayHours = record.workedHours.toFixed(2);
-                            } else if (record.checkIn && record.checkOut) {
-                              // Compute dynamically if missing
-                              const diff = record.checkOut.getTime() - record.checkIn.getTime();
-                              displayHours = (diff / (1000 * 60 * 60)).toFixed(2);
-                            }
-
-                            return (
-                              <TableRow key={record.id} className="border-border hover:bg-muted/50">
-                                <TableCell className="text-foreground">{format(new Date(record.checkIn), "PPP p")}</TableCell>
-                                <TableCell className="text-muted-foreground">
-                                  {record.checkOut
-                                    ? format(new Date(record.checkOut), "PPP p")
-                                    : "-"}
-                                </TableCell>
-                                <TableCell className="text-muted-foreground">
-                                  {displayHours}
-                                </TableCell>
-                                <TableCell>
-                                  <div className="flex items-center gap-2">
-                                    <Badge variant="outline" className="bg-secondary border-border text-secondary-foreground">
-                                      {record.status}
-                                    </Badge>
-                                    {record.isManualEntry && (
-                                      <Badge variant="default" className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border-none shadow-none">
-                                        Manual Correction
+                          {records.length === 0 ? (
+                            <TableRow className="border-border hover:bg-muted/50">
+                              <TableCell colSpan={5} className="text-center py-6 text-muted-foreground italic">
+                                No records this period
+                              </TableCell>
+                            </TableRow>
+                          ) : (
+                            records.map((record: any) => {
+                              let displayHours = "-";
+                              if (record.workedHours !== null && record.workedHours !== undefined) {
+                                displayHours = record.workedHours.toFixed(2);
+                              } else if (record.checkIn && record.checkOut) {
+                                // Compute dynamically if missing
+                                const diff = record.checkOut.getTime() - record.checkIn.getTime();
+                                displayHours = (diff / (1000 * 60 * 60)).toFixed(2);
+                              }
+  
+                              return (
+                                <TableRow key={record.id} className="border-border hover:bg-muted/50">
+                                  <TableCell className="text-foreground">{format(new Date(record.checkIn), "PPP p")}</TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {record.checkOut
+                                      ? format(new Date(record.checkOut), "PPP p")
+                                      : "-"}
+                                  </TableCell>
+                                  <TableCell className="text-muted-foreground">
+                                    {displayHours}
+                                  </TableCell>
+                                  <TableCell>
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="outline" className="bg-secondary border-border text-secondary-foreground">
+                                        {record.status}
                                       </Badge>
+                                      {record.isManualEntry && (
+                                        <Badge variant="default" className="bg-amber-500/10 text-amber-600 hover:bg-amber-500/20 border-none shadow-none">
+                                          Manual Correction
+                                        </Badge>
+                                      )}
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="text-right">
+                                    {canWrite && (
+                                      <Link href={`/attendance/${record.id}`}>
+                                        <Button variant="outline" size="sm" className="bg-background border-border text-foreground hover:bg-muted">
+                                          Edit
+                                        </Button>
+                                      </Link>
                                     )}
-                                  </div>
-                                </TableCell>
-                                <TableCell className="text-right">
-                                  {canWrite && (
-                                    <Link href={`/attendance/${record.id}`}>
-                                      <Button variant="outline" size="sm" className="bg-background border-border text-foreground hover:bg-muted">
-                                        Edit
-                                      </Button>
-                                    </Link>
-                                  )}
-                                </TableCell>
-                              </TableRow>
-                            );
-                          })}
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })
+                          )}
                         </TableBody>
                       </Table>
                     </div>
