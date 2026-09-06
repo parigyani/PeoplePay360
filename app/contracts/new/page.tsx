@@ -12,9 +12,10 @@ export default async function NewContractPage() {
     redirect("/contracts");
   }
 
-  const [employees, structures] = await Promise.all([
+  const [employees, structures, schedules] = await Promise.all([
     prisma.employee.findMany({ select: { id: true, name: true } }),
     prisma.salaryStructure.findMany({ select: { id: true, name: true } }),
+    prisma.workingSchedule.findMany({ select: { id: true, name: true, weeklyHours: true } }),
   ]);
 
   return (
@@ -22,6 +23,7 @@ export default async function NewContractPage() {
       <ContractForm 
         employees={employees} 
         structures={structures} 
+        schedules={schedules}
       />
     </div>
   );

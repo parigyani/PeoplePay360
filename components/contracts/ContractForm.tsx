@@ -35,6 +35,7 @@ const contractSchema = z.object({
   }),
   endDate: z.date().optional().nullable(),
   structureId: z.string().min(1, "Salary Structure is required"),
+  scheduleId: z.string().optional(), // New field to assign schedule
   status: z.string().min(1, "Status is required"),
 }).refine(
   (data) => !data.endDate || data.endDate >= data.startDate,
@@ -50,9 +51,10 @@ interface ContractFormProps {
   initialData?: ContractFormValues & { id?: number; code?: string | null };
   employees: { id: number; name: string }[];
   structures: { id: number; name: string }[];
+  schedules?: { id: number; name: string; weeklyHours: number }[]; // Added schedules
 }
 
-export function ContractForm({ initialData, employees, structures }: ContractFormProps) {
+export function ContractForm({ initialData, employees, structures, schedules = [] }: ContractFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
@@ -66,6 +68,7 @@ export function ContractForm({ initialData, employees, structures }: ContractFor
       startDate: undefined,
       endDate: null,
       structureId: "",
+      scheduleId: "", // Default empty
       status: "Active",
     },
   });
@@ -154,6 +157,35 @@ export function ContractForm({ initialData, employees, structures }: ContractFor
                         {structures.map((s) => (
                           <SelectItem key={s.id} value={s.id.toString()}>
                             {s.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="scheduleId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Working Schedule (Optional)</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Assign a schedule..." />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        <SelectItem value="none">Leave unchanged</SelectItem>
+                        {schedules.map((s) => (
+                          <SelectItem key={s.id} value={s.id.toString()}>
+                            {s.name} ({s.weeklyHours}h)
                           </SelectItem>
                         ))}
                       </SelectContent>

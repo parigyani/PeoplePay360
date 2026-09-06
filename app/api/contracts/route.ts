@@ -13,6 +13,7 @@ const contractSchema = z.object({
   startDate: z.coerce.date(),
   endDate: z.coerce.date().nullable().optional(),
   structureId: z.string().min(1),
+  scheduleId: z.string().optional(),
   status: z.string().min(1),
 }).refine(
   (data) => !data.endDate || data.endDate >= data.startDate,
@@ -51,18 +52,30 @@ export async function POST(request: Request) {
       }
     }
 
-    const contract = await prisma.contract.create({
-      data: {
-        employeeId: parseInt(data.employeeId, 10),
-        department: data.department,
-        jobPosition: data.jobPosition,
-        wage: data.wage,
-        startDate: data.startDate,
-        endDate: data.endDate,
-        structureId: parseInt(data.structureId, 10),
-        status: data.status,
-        code: `CON/${data.startDate.getFullYear()}/${Math.floor(Math.random() * 10000)}`,
-      },
+    const contract = await prisma.$transaction(async (tx) => {
+      const newContract = await tx.contract.create({
+        data: {
+          employeeId: parseInt(data.employeeId, 10),
+          department: data.department,
+          jobPosition: data.jobPosition,
+          wage: data.wage,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          structureId: parseInt(data.structureId, 10),
+          status: data.status,
+          code: `CON/${data.startDate.getFullYear()}/${Math.floor(Math.random() * 10000)}`,
+        },
+      });
+
+      // Update employee schedule if a new one was selected
+      if (data.scheduleId && data.scheduleId !== "none") {
+        await tx.employee.update({
+          where: { id: parseInt(data.employeeId, 10) },
+          data: { scheduleId: parseInt(data.scheduleId, 10) },
+        });
+      }
+
+      return newContract;
     });
 
     return NextResponse.json(contract);

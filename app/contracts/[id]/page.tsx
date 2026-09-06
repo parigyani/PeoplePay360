@@ -26,9 +26,10 @@ export default async function EditContractPage({ params }: { params: Promise<{ i
     notFound();
   }
 
-  const [employees, structures] = await Promise.all([
+  const [employees, structures, schedules] = await Promise.all([
     prisma.employee.findMany({ select: { id: true, name: true } }),
     prisma.salaryStructure.findMany({ select: { id: true, name: true } }),
+    prisma.workingSchedule.findMany({ select: { id: true, name: true, weeklyHours: true } }),
   ]);
 
   const initialData = {
@@ -40,6 +41,7 @@ export default async function EditContractPage({ params }: { params: Promise<{ i
     startDate: contract.startDate,
     endDate: contract.endDate,
     structureId: contract.structureId.toString(),
+    scheduleId: "", // we don't store it on contract, so keep empty for "Leave unchanged"
     status: contract.status,
     code: contract.code,
   };
@@ -50,6 +52,7 @@ export default async function EditContractPage({ params }: { params: Promise<{ i
         initialData={initialData}
         employees={employees} 
         structures={structures} 
+        schedules={schedules}
       />
     </div>
   );
