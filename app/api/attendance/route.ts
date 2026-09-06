@@ -4,17 +4,27 @@ import { authOptions } from "@/lib/auth";
 import { can } from "@/lib/rbac";
 import prisma from "@/lib/prisma";
 import * as z from "zod";
+import { computeWorkedHours } from "@/lib/attendance";
 
 const attendanceSchema = z.object({
   employeeId: z.string().min(1),
   checkIn: z.coerce.date(),
   checkOut: z.coerce.date().nullable().optional(),
-  workedHours: z.coerce.number().min(0).nullable().optional(),
+  workedHours: z.number().min(0).nullable().optional(),
   status: z.string().min(1),
   isManualEntry: z.boolean().default(true),
 }).refine(
-  (data) => !data.checkOut || data.checkOut >= data.checkIn,
+  (data) => !data.checkOut || data.checkOut > data.checkIn,
   { message: "Check Out cannot be earlier than Check In" }
+).refine(
+  (data) => {
+    if (data.workedHours !== null && data.workedHours !== undefined && data.checkOut) {
+      const elapsed = (data.checkOut.getTime() - data.checkIn.getTime()) / (1000 * 60 * 60);
+      if (data.workedHours > Math.max(4, elapsed * 2)) return false;
+    }
+    return true;
+  },
+  { message: "Worked hours is unusually large" }
 );
 
 export async function POST(request: Request) {
@@ -27,12 +37,17 @@ export async function POST(request: Request) {
     const body = await request.json();
     const data = attendanceSchema.parse(body);
 
+    let finalWorkedHours = data.workedHours;
+    if ((finalWorkedHours === null || finalWorkedHours === undefined) && data.checkOut) {
+      finalWorkedHours = computeWorkedHours(data.checkIn, data.checkOut);
+    }
+
     const attendance = await prisma.attendance.create({
       data: {
         employeeId: parseInt(data.employeeId, 10),
         checkIn: data.checkIn,
         checkOut: data.checkOut,
-        workedHours: data.workedHours,
+        workedHours: finalWorkedHours,
         status: data.status,
         isManualEntry: data.isManualEntry,
       },

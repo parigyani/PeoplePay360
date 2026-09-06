@@ -77,6 +77,7 @@ model Employee {
   phone        String?
   workLocation String?
   company      String?
+  employeeCode String?          @unique
 
   user        User?            @relation("UserEmployee")
   contracts   Contract[]       @relation("EmployeeContracts")
@@ -143,6 +144,8 @@ model Attendance {
   workedHours   Float?
   status        String
   isManualEntry Boolean   @default(false)
+
+  @@unique([employeeId, checkIn])
 }
 
 model TimeOffType {
@@ -181,6 +184,8 @@ model Allocation {
   approverRole String?
 
   requests     TimeOffRequest[] @relation("AllocationRequests")
+
+  @@unique([employeeId, typeId, validFrom])
 }
 
 model TimeOffRequest {
@@ -199,6 +204,8 @@ model TimeOffRequest {
   allocation   Allocation? @relation("AllocationRequests", fields: [allocationId], references: [id])
   approverRole String?
   reason       String?
+
+  @@unique([employeeId, typeId, startDate])
 }
 
 model SalaryStructure {
@@ -258,4 +265,6 @@ model Payslip {
   net        Float
   status     PayslipStatus
   warnings   String[]
+
+  @@unique([payrunId, employeeId])
 }

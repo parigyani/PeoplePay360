@@ -42,13 +42,25 @@ const attendanceSchema = z.object({
   employeeId: z.string().min(1, "Employee is required"),
   checkIn: z.date({ required_error: "Check In is required" }),
   checkOut: z.date().optional().nullable(),
-  workedHours: z.coerce.number().min(0).optional().nullable(),
+  workedHours: z.number().min(0, "Worked hours cannot be negative").nullable().optional(),
   status: z.string().min(1, "Status is required"),
 }).refine(
-  (data) => !data.checkOut || data.checkOut >= data.checkIn,
+  (data) => !data.checkOut || data.checkOut > data.checkIn,
   {
-    message: "Check Out cannot be earlier than Check In",
+    message: "Check Out must be later than Check In",
     path: ["checkOut"],
+  }
+).refine(
+  (data) => {
+    if (data.workedHours !== null && data.workedHours !== undefined && data.checkOut) {
+      const elapsed = (data.checkOut.getTime() - data.checkIn.getTime()) / (1000 * 60 * 60);
+      if (data.workedHours > Math.max(4, elapsed * 2)) return false;
+    }
+    return true;
+  },
+  {
+    message: "Worked hours is wildly inconsistent with elapsed time",
+    path: ["workedHours"],
   }
 );
 

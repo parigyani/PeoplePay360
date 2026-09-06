@@ -6,37 +6,93 @@ const prisma = new PrismaClient();
 async function main() {
   console.log('Starting seed...');
 
+  // Manual "upserts" for low-cardinality reference tables to avoid schema constraints
+  // Note: We use findFirst + update/create instead of deleteMany to avoid Foreign Key constraint errors
+  // with the dependent rows (Contracts, Allocations, etc.) which we are upserting below.
+  
+  let schedule1 = await prisma.workingSchedule.findFirst({ where: { name: 'Standard 40h' } });
+  if (!schedule1) {
+    schedule1 = await prisma.workingSchedule.create({
+      data: {
+        name: 'Standard 40h',
+        type: 'Fixed',
+        weeklyHours: 40,
+        patterns: {
+          create: [
+            { day: 'Monday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
+            { day: 'Tuesday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
+            { day: 'Wednesday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
+            { day: 'Thursday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
+            { day: 'Friday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
+          ],
+        },
+      },
+    });
+  }
 
-  const emp1 = await prisma.employee.create({
-    data: {
+  let schedule2 = await prisma.workingSchedule.findFirst({ where: { name: 'Part-Time 20h' } });
+  if (!schedule2) {
+    schedule2 = await prisma.workingSchedule.create({
+      data: {
+        name: 'Part-Time 20h',
+        type: 'Fixed',
+        weeklyHours: 20,
+        patterns: {
+          create: [
+            { day: 'Monday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
+            { day: 'Tuesday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
+            { day: 'Wednesday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
+            { day: 'Thursday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
+            { day: 'Friday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
+          ],
+        },
+      },
+    });
+  }
+  console.log('Upserted WorkingSchedules');
+
+  const emp1 = await prisma.employee.upsert({
+    where: { employeeCode: 'EMP-1' },
+    update: { scheduleId: schedule1.id },
+    create: {
+      employeeCode: 'EMP-1',
       name: 'Alice Manager',
       department: 'HR',
       jobPosition: 'HR Manager',
       status: 'Active',
+      scheduleId: schedule1.id,
     },
   });
 
-  const emp2 = await prisma.employee.create({
-    data: {
+  const emp2 = await prisma.employee.upsert({
+    where: { employeeCode: 'EMP-2' },
+    update: { managerId: emp1.id, scheduleId: schedule1.id },
+    create: {
+      employeeCode: 'EMP-2',
       name: 'Bob Employee',
       department: 'Engineering',
       jobPosition: 'Software Engineer',
       status: 'Active',
       managerId: emp1.id,
+      scheduleId: schedule1.id,
     },
   });
 
-  const emp3 = await prisma.employee.create({
-    data: {
+  const emp3 = await prisma.employee.upsert({
+    where: { employeeCode: 'EMP-3' },
+    update: { managerId: emp1.id, scheduleId: schedule2.id },
+    create: {
+      employeeCode: 'EMP-3',
       name: 'Charlie Employee',
       department: 'Engineering',
       jobPosition: 'QA Engineer',
       status: 'Active',
       managerId: emp1.id,
+      scheduleId: schedule2.id,
     },
   });
 
-  console.log('Created Employees:', emp1.name, emp2.name, emp3.name);
+  console.log('Upserted Employees:', emp1.name, emp2.name, emp3.name);
 
   function generateAttendancesForMonth(employeeId: number, year: number, monthIndex: number) {
     const records = [];
@@ -88,65 +144,33 @@ async function main() {
   await prisma.attendance.createMany({
     data: attendanceData
   });
-  console.log('Created Mock Attendance records');
+  console.log('Upserted Mock Attendance records');
 
-  const schedule1 = await prisma.workingSchedule.create({
-    data: {
-      name: 'Standard 40h',
-      type: 'Fixed',
-      weeklyHours: 40,
-      patterns: {
-        create: [
-          { day: 'Monday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
-          { day: 'Tuesday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
-          { day: 'Wednesday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
-          { day: 'Thursday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
-          { day: 'Friday', startTime: '09:00', endTime: '17:00', breakMins: 60 },
-        ],
+
+  let structure = await prisma.salaryStructure.findFirst({ where: { name: 'Standard Structure' } });
+  if (!structure) {
+    structure = await prisma.salaryStructure.create({
+      data: {
+        name: 'Standard Structure',
+        rules: {
+          create: [
+            { name: 'Basic Salary', code: 'BASIC', category: RuleCategory.BASIC, sequence: 1, method: ComputeMethod.FORMULA, formula: 'WAGE' },
+            { name: 'House Rent Allowance', code: 'HRA', category: RuleCategory.ALLOWANCE, sequence: 2, method: ComputeMethod.PERCENTAGE, value: 20, formula: 'BASIC' },
+            { name: 'Provident Fund', code: 'PF', category: RuleCategory.DEDUCTION, sequence: 3, method: ComputeMethod.PERCENTAGE, value: 12, formula: 'BASIC' },
+            { name: 'Gross Salary', code: 'GROSS', category: RuleCategory.GROSS, sequence: 4, method: ComputeMethod.FORMULA, formula: 'BASIC + HRA' },
+            { name: 'Net Salary', code: 'NET', category: RuleCategory.NET, sequence: 5, method: ComputeMethod.FORMULA, formula: 'GROSS - PF' },
+          ],
+        },
       },
-    },
-  });
+    });
+  }
+  console.log('Upserted SalaryStructure');
 
-  const schedule2 = await prisma.workingSchedule.create({
-    data: {
-      name: 'Part-Time 20h',
-      type: 'Fixed',
-      weeklyHours: 20,
-      patterns: {
-        create: [
-          { day: 'Monday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
-          { day: 'Tuesday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
-          { day: 'Wednesday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
-          { day: 'Thursday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
-          { day: 'Friday', startTime: '09:00', endTime: '13:00', breakMins: 0 },
-        ],
-      },
-    },
-  });
-  console.log('Created WorkingSchedules');
-
-  await prisma.employee.update({ where: { id: emp1.id }, data: { scheduleId: schedule1.id } });
-  await prisma.employee.update({ where: { id: emp2.id }, data: { scheduleId: schedule1.id } });
-  await prisma.employee.update({ where: { id: emp3.id }, data: { scheduleId: schedule2.id } });
-
-  const structure = await prisma.salaryStructure.create({
-    data: {
-      name: 'Standard Structure',
-      rules: {
-        create: [
-          { name: 'Basic Salary', code: 'BASIC', category: RuleCategory.BASIC, sequence: 1, method: ComputeMethod.FORMULA, formula: 'WAGE' },
-          { name: 'House Rent Allowance', code: 'HRA', category: RuleCategory.ALLOWANCE, sequence: 2, method: ComputeMethod.PERCENTAGE, value: 20, formula: 'BASIC' },
-          { name: 'Provident Fund', code: 'PF', category: RuleCategory.DEDUCTION, sequence: 3, method: ComputeMethod.PERCENTAGE, value: 12, formula: 'BASIC' },
-          { name: 'Gross Salary', code: 'GROSS', category: RuleCategory.GROSS, sequence: 4, method: ComputeMethod.FORMULA, formula: 'BASIC + HRA' },
-          { name: 'Net Salary', code: 'NET', category: RuleCategory.NET, sequence: 5, method: ComputeMethod.FORMULA, formula: 'GROSS - PF' },
-        ],
-      },
-    },
-  });
-  console.log('Created SalaryStructure');
-
-  const contract1 = await prisma.contract.create({
-    data: {
+  const contract1 = await prisma.contract.upsert({
+    where: { code: 'C-EMP1-1' },
+    update: {},
+    create: {
+      code: 'C-EMP1-1',
       employeeId: emp1.id,
       department: 'HR',
       jobPosition: 'HR Manager',
@@ -157,8 +181,11 @@ async function main() {
     },
   });
 
-  const contract2 = await prisma.contract.create({
-    data: {
+  const contract2 = await prisma.contract.upsert({
+    where: { code: 'C-EMP2-1' },
+    update: {},
+    create: {
+      code: 'C-EMP2-1',
       employeeId: emp2.id,
       department: 'Engineering',
       jobPosition: 'Software Engineer',
@@ -170,8 +197,11 @@ async function main() {
     },
   });
 
-  const contract3 = await prisma.contract.create({
-    data: {
+  const contract3 = await prisma.contract.upsert({
+    where: { code: 'C-EMP2-2' },
+    update: {},
+    create: {
+      code: 'C-EMP2-2',
       employeeId: emp2.id,
       department: 'Engineering',
       jobPosition: 'Senior Software Engineer',
@@ -181,29 +211,37 @@ async function main() {
       status: 'Active',
     },
   });
-  console.log('Created Contracts including overlapping/adjacent pair for emp2');
+  console.log('Upserted Contracts');
 
-  const toType1 = await prisma.timeOffType.create({
-    data: {
-      name: 'Paid Leave',
-      unit: LeaveUnit.DAYS,
-      requiresAllocation: true,
-      payrollIntegrated: true,
-    },
-  });
+  let toType1 = await prisma.timeOffType.findFirst({ where: { name: 'Paid Leave' } });
+  if (!toType1) {
+    toType1 = await prisma.timeOffType.create({
+      data: {
+        name: 'Paid Leave',
+        unit: LeaveUnit.DAYS,
+        requiresAllocation: true,
+        payrollIntegrated: true,
+      },
+    });
+  }
 
-  const toType2 = await prisma.timeOffType.create({
-    data: {
-      name: 'Sick Leave',
-      unit: LeaveUnit.DAYS,
-      requiresAllocation: true,
-      payrollIntegrated: true,
-    },
-  });
-  console.log('Created TimeOffTypes');
+  let toType2 = await prisma.timeOffType.findFirst({ where: { name: 'Sick Leave' } });
+  if (!toType2) {
+    toType2 = await prisma.timeOffType.create({
+      data: {
+        name: 'Sick Leave',
+        unit: LeaveUnit.DAYS,
+        requiresAllocation: true,
+        payrollIntegrated: true,
+      },
+    });
+  }
+  console.log('Upserted TimeOffTypes');
 
-  await prisma.allocation.create({
-    data: {
+  await prisma.allocation.upsert({
+    where: { employeeId_typeId_validFrom: { employeeId: emp2.id, typeId: toType1.id, validFrom: new Date('2024-01-01') } },
+    update: {},
+    create: {
       employeeId: emp2.id,
       typeId: toType1.id,
       allocated: 20,
@@ -214,8 +252,10 @@ async function main() {
     },
   });
 
-  await prisma.timeOffRequest.create({
-    data: {
+  await prisma.timeOffRequest.upsert({
+    where: { employeeId_typeId_startDate: { employeeId: emp2.id, typeId: toType1.id, startDate: new Date('2024-08-01') } },
+    update: {},
+    create: {
       employeeId: emp2.id,
       typeId: toType1.id,
       startDate: new Date('2024-08-01'),
@@ -225,8 +265,10 @@ async function main() {
     },
   });
 
-  await prisma.timeOffRequest.create({
-    data: {
+  await prisma.timeOffRequest.upsert({
+    where: { employeeId_typeId_startDate: { employeeId: emp2.id, typeId: toType1.id, startDate: new Date('2024-08-10') } },
+    update: {},
+    create: {
       employeeId: emp2.id,
       typeId: toType1.id,
       startDate: new Date('2024-08-10'),
@@ -235,20 +277,25 @@ async function main() {
       status: 'Approved',
     },
   });
-  console.log('Created Allocations and TimeOffRequests (Pending and Approved)');
+  console.log('Upserted Allocations and TimeOffRequests');
 
-  const payrun = await prisma.payrun.create({
-    data: {
-      name: 'August 2024 Payrun',
-      periodStart: new Date('2024-08-01'),
-      periodEnd: new Date('2024-08-31'),
-      structureId: structure.id,
-      status: PayrunStatus.DRAFT,
-    },
-  });
+  let payrun = await prisma.payrun.findFirst({ where: { name: 'August 2024 Payrun' } });
+  if (!payrun) {
+    payrun = await prisma.payrun.create({
+      data: {
+        name: 'August 2024 Payrun',
+        periodStart: new Date('2024-08-01'),
+        periodEnd: new Date('2024-08-31'),
+        structureId: structure.id,
+        status: PayrunStatus.DRAFT,
+      },
+    });
+  }
 
-  const payslip = await prisma.payslip.create({
-    data: {
+  await prisma.payslip.upsert({
+    where: { payrunId_employeeId: { payrunId: payrun.id, employeeId: emp2.id } },
+    update: {},
+    create: {
       payrunId: payrun.id,
       employeeId: emp2.id,
       contractId: contract3.id,
@@ -266,7 +313,7 @@ async function main() {
       warnings: [],
     },
   });
-  console.log('Created Payrun and fake Payslip');
+  console.log('Upserted Payrun and fake Payslip');
 
   const defaultPassword = await bcrypt.hash('password123', 10);
   
@@ -312,7 +359,27 @@ async function main() {
     },
   });
 
-  console.log('Created/Upserted 4 RBAC Demo Users (password: password123)');
+  console.log('Upserted 4 RBAC Demo Users');
+
+  const allEmployees = [emp1, emp2, emp3];
+  const demoAccountEmployeeIds = [emp1.id, emp2.id];
+  for (const emp of allEmployees) {
+    if (demoAccountEmployeeIds.includes(emp.id)) continue;
+    
+    const generatedEmail = `${emp.name.toLowerCase().replace(/\s+/g, '.')}@peoplepay360.com`;
+
+    await prisma.user.upsert({
+      where: { email: generatedEmail },
+      update: {},
+      create: {
+        email: generatedEmail,
+        password: defaultPassword,
+        role: Role.EMPLOYEE,
+        employeeId: emp.id,
+      },
+    });
+    console.log(`Upserted per-employee User: ${generatedEmail}`);
+  }
 
   console.log('Seeding finished successfully.');
 }
