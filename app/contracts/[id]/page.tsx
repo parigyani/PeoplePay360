@@ -27,7 +27,7 @@ export default async function EditContractPage({ params }: { params: Promise<{ i
   }
 
   const [employees, structures, schedules] = await Promise.all([
-    prisma.employee.findMany({ select: { id: true, name: true } }),
+    prisma.employee.findMany({ select: { id: true, name: true, department: true, jobPosition: true } }),
     prisma.salaryStructure.findMany({ select: { id: true, name: true } }),
     prisma.workingSchedule.findMany({ select: { id: true, name: true, weeklyHours: true } }),
   ]);

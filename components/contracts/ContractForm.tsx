@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -49,7 +49,7 @@ export type ContractFormValues = z.infer<typeof contractSchema>;
 
 interface ContractFormProps {
   initialData?: ContractFormValues & { id?: number; code?: string | null };
-  employees: { id: number; name: string }[];
+  employees: { id: number; name: string; department?: string; jobPosition?: string }[];
   structures: { id: number; name: string }[];
   schedules?: { id: number; name: string; weeklyHours: number }[]; // Added schedules
 }
@@ -57,6 +57,9 @@ interface ContractFormProps {
 export function ContractForm({ initialData, employees, structures, schedules = [] }: ContractFormProps) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const [lastAutoFilledEmployee, setLastAutoFilledEmployee] = useState(
+    initialData?.id ? initialData.employeeId : ""
+  );
 
   const form = useForm<ContractFormValues>({
     resolver: zodResolver(contractSchema),
@@ -73,7 +76,21 @@ export function ContractForm({ initialData, employees, structures, schedules = [
     },
   });
 
+  const selectedEmployeeId = form.watch("employeeId");
+
+  useEffect(() => {
+    if (selectedEmployeeId && selectedEmployeeId !== lastAutoFilledEmployee) {
+      const emp = employees.find(e => e.id.toString() === selectedEmployeeId);
+      if (emp) {
+        form.setValue("department", emp.department || "");
+        form.setValue("jobPosition", emp.jobPosition || "");
+      }
+      setLastAutoFilledEmployee(selectedEmployeeId);
+    }
+  }, [selectedEmployeeId, employees, form, lastAutoFilledEmployee]);
+
   async function onSubmit(data: ContractFormValues) {
+
     try {
       setLoading(true);
       const url = initialData?.id
