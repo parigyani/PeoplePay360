@@ -65,7 +65,7 @@ export function RequestList({ requests, canApprove, currentEmployeeId }: { reque
           />
         </div>
         
-        {currentEmployeeId && (
+        {currentEmployeeId && canApprove && (
           <div className="flex items-center space-x-2">
             <Switch id="my-team" checked={myTeamOnly} onCheckedChange={setMyTeamOnly} />
             <Label htmlFor="my-team" className="text-slate-300">My Team</Label>

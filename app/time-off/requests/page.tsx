@@ -17,7 +17,10 @@ export default async function RequestsPage() {
   const currentEmployeeId = (session.user as any).employeeId;
   const canApprove = can(role, "timeoff:approve");
 
+  const whereClause = canApprove ? undefined : { employeeId: currentEmployeeId || -1 };
+
   const requests = await prisma.timeOffRequest.findMany({
+    where: whereClause,
     include: {
       employee: { select: { id: true, name: true, managerId: true } },
       type: { select: { id: true, name: true, color: true } },
