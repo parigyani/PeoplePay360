@@ -20,7 +20,7 @@ export async function computePayslip(
   // 1. Resolve Active Contract
   let contract;
   try {
-    contract = await resolveActiveContract(employeeId, payrun.periodStart);
+    contract = await resolveActiveContract(employeeId, payrun.periodEnd);
     if (!contract) {
       warnings.push("No active contract found for this period");
       return { lines, gross: 0, net: 0, warnings };
