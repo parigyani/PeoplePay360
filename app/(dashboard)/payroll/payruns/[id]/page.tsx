@@ -57,6 +57,7 @@ export default async function PayrunDetailPage({
                 <TableHead>Net</TableHead>
                 <TableHead>Status</TableHead>
                 <TableHead>Warnings</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -77,11 +78,16 @@ export default async function PayrunDetailPage({
                   <TableCell className="text-destructive max-w-[200px] truncate" title={payslip.warnings.join(", ")}>
                     {payslip.warnings.length > 0 ? payslip.warnings[0] : "—"}
                   </TableCell>
+                  <TableCell className="text-right">
+                    <a href={`/payroll/payslips/${payslip.id}`} className="text-sm font-medium text-blue-600 hover:underline">
+                      View Details
+                    </a>
+                  </TableCell>
                 </TableRow>
               ))}
               {payrun.payslips.length === 0 && (
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center text-muted-foreground py-8">
+                  <TableCell colSpan={6} className="text-center text-muted-foreground py-8">
                     No payslips found for this payrun.
                   </TableCell>
                 </TableRow>
