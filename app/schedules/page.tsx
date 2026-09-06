@@ -14,12 +14,22 @@ export default async function SchedulesPage() {
 
   if (!canRead) return <div className="p-8 text-center">Unauthorized</div>;
 
+  const isAdmin = role === "ADMIN";
+
   const schedules = await prisma.workingSchedule.findMany({
     include: {
       _count: {
         select: { employees: true },
       },
       patterns: true,
+      employees: isAdmin ? {
+        select: {
+          id: true,
+          name: true,
+          department: true,
+          jobPosition: true,
+        }
+      } : false,
     },
     orderBy: {
       name: 'asc',
@@ -33,7 +43,7 @@ export default async function SchedulesPage() {
         <p className="text-sm text-muted-foreground mt-1">Manage working schedules and patterns for employees.</p>
       </div>
 
-      <SchedulesView schedules={schedules} canWrite={canWrite} />
+      <SchedulesView schedules={schedules} canWrite={canWrite} isAdmin={isAdmin} />
     </div>
   );
 }

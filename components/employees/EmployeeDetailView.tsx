@@ -27,7 +27,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
 import { Edit2, Save, X, CalendarClock, FileText, CheckCircle2 } from "lucide-react";
 
 const AVATAR_COLORS = [
@@ -153,14 +153,11 @@ export function EmployeeDetailView({
           )}
 
           <div className="flex items-center gap-2 mt-2">
-            <Link href={`/time-off?employeeId=${employee.id}`} className="smart-button">
-              <CalendarClock className="w-3.5 h-3.5" /> Time Off {counts.timeOff}
-            </Link>
             <Link href={`/contracts?employeeId=${employee.id}`} className="smart-button">
-              <FileText className="w-3.5 h-3.5" /> Contracts {counts.contracts}
+              <FileText className="w-3.5 h-3.5" /> Contracts
             </Link>
             <Link href={`/attendance?employeeId=${employee.id}`} className="smart-button">
-              <CheckCircle2 className="w-3.5 h-3.5" /> Attendance {counts.attendance}
+              <CheckCircle2 className="w-3.5 h-3.5" /> Attendance
             </Link>
           </div>
         </div>
@@ -171,215 +168,114 @@ export function EmployeeDetailView({
 
       {/* Main Content */}
       <div className="glass-card rounded-2xl p-6 shadow-xl overflow-hidden">
-        <Tabs defaultValue="work" className="w-full">
-          <TabsList className="bg-background/[0.03] border-white/[0.08] mb-8">
-            <TabsTrigger value="work" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">Work Information</TabsTrigger>
-            <TabsTrigger value="private">Private Information</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="work">
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <div className="grid grid-cols-2 gap-x-12 gap-y-6">
-                  {/* Left Column */}
-                  <div className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="department"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-muted-foreground/80">Department</FormLabel>
-                          {isEditing ? (
-                            <FormControl>
-                              <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
-                            </FormControl>
-                          ) : (
-                            <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">{field.value}</div>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="managerId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-muted-foreground/80">Manager</FormLabel>
-                          {isEditing ? (
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
-                                  <SelectValue placeholder="Select a manager" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="none">None</SelectItem>
-                                {allEmployees.map((emp: any) => (
-                                  <SelectItem key={emp.id} value={emp.id.toString()}>{emp.name}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
-                              {employee.manager ? employee.manager.name : "None"}
-                            </div>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="scheduleId"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-muted-foreground/80">Working Schedule</FormLabel>
-                          {isEditing ? (
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
-                                  <SelectValue placeholder="Select schedule" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="none">None</SelectItem>
-                                {allSchedules.map((sch: any) => (
-                                  <SelectItem key={sch.id} value={sch.id.toString()}>
-                                    {sch.name} ({sch.weeklyHours}h / Week)
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
-                              {employee.schedule ? `${employee.schedule.name} (${employee.schedule.weeklyHours}h / Week)` : "None"}
-                            </div>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    
-                    <FormField
-                      control={form.control}
-                      name="company"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-muted-foreground/80">Company</FormLabel>
-                          {isEditing ? (
-                            <FormControl>
-                              <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
-                            </FormControl>
-                          ) : (
-                            <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
-                              {field.value || "Not provided"}
-                            </div>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-
-                  {/* Right Column */}
-                  <div className="space-y-6">
-                    <FormField
-                      control={form.control}
-                      name="jobPosition"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-muted-foreground/80">Job Position</FormLabel>
-                          {isEditing ? (
-                            <FormControl>
-                              <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
-                            </FormControl>
-                          ) : (
-                            <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">{field.value}</div>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="workLocation"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-muted-foreground/80">Work Location</FormLabel>
-                          {isEditing ? (
-                            <FormControl>
-                              <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
-                            </FormControl>
-                          ) : (
-                            <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
-                              {field.value || "Not provided"}
-                            </div>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <FormField
-                      control={form.control}
-                      name="status"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel className="text-muted-foreground/80">Status</FormLabel>
-                          {isEditing ? (
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
-                                  <SelectValue placeholder="Select status" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                <SelectItem value="Active">Active</SelectItem>
-                                <SelectItem value="Inactive">Inactive</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          ) : (
-                            <div className="font-medium pb-2 border-b border-white/[0.06] flex items-center gap-2">
-                              <div className={`status-dot ${field.value === 'Active' ? 'status-dot-active' : 'status-dot-inactive'}`} />
-                              <span className={field.value === 'Active' ? 'text-status-active' : 'text-status-inactive'}>{field.value}</span>
-                            </div>
-                          )}
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-
-                    <div className="space-y-2">
-                      <label className="text-sm font-medium leading-none text-muted-foreground/80">Work Email</label>
-                      <div className="font-medium text-foreground/60 pb-2 border-b border-white/[0.06]">
-                        {workEmail}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {isEditing && (
-                  <div className="pt-6 flex justify-end">
-                    <Button type="submit" disabled={isSubmitting} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 w-32">
-                      {isSubmitting ? "Saving..." : <><Save className="w-4 h-4 mr-2"/> Save</>}
-                    </Button>
-                  </div>
-                )}
-              </form>
-            </Form>
-          </TabsContent>
-
-          <TabsContent value="private">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="text-lg font-semibold mb-6 border-b border-white/[0.08] pb-2 text-foreground/80">
+              Work Information
+            </div>
             <div className="grid grid-cols-2 gap-x-12 gap-y-6">
+              {/* Left Column */}
               <div className="space-y-6">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none text-muted-foreground/80">Personal Email</label>
-                  <div className="font-medium text-foreground/40 pb-2 border-b border-white/[0.04] italic">Not provided</div>
-                </div>
+                <FormField
+                  control={form.control}
+                  name="department"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground/80">Department</FormLabel>
+                      {isEditing ? (
+                        <FormControl>
+                          <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                        </FormControl>
+                      ) : (
+                        <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">{field.value}</div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="managerId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground/80">Manager</FormLabel>
+                      {isEditing ? (
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
+                              <SelectValue placeholder="Select a manager" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {allEmployees.map((emp: any) => (
+                              <SelectItem key={emp.id} value={emp.id.toString()}>{emp.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
+                          {employee.manager ? employee.manager.name : "None"}
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="scheduleId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground/80">Working Schedule</FormLabel>
+                      {isEditing ? (
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
+                              <SelectValue placeholder="Select schedule" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="none">None</SelectItem>
+                            {allSchedules.map((sch: any) => (
+                              <SelectItem key={sch.id} value={sch.id.toString()}>
+                                {sch.name} ({sch.weeklyHours}h / Week)
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
+                          {employee.schedule ? `${employee.schedule.name} (${employee.schedule.weeklyHours}h / Week)` : "None"}
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <FormField
+                  control={form.control}
+                  name="company"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground/80">Company</FormLabel>
+                      {isEditing ? (
+                        <FormControl>
+                          <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                        </FormControl>
+                      ) : (
+                        <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
+                          {field.value || "Not provided"}
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
                 <FormField
                   control={form.control}
                   name="phone"
@@ -391,7 +287,7 @@ export function EmployeeDetailView({
                           <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
                         </FormControl>
                       ) : (
-                        <div className="font-medium text-foreground pb-2 border-b border-white/[0.04]">
+                        <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
                           {field.value || <span className="italic text-foreground/40">Not provided</span>}
                         </div>
                       )}
@@ -399,27 +295,95 @@ export function EmployeeDetailView({
                     </FormItem>
                   )}
                 />
-                <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none text-muted-foreground/80">Address</label>
-                  <div className="font-medium text-foreground/40 pb-2 border-b border-white/[0.04] italic">Not provided</div>
-                </div>
               </div>
+
+              {/* Right Column */}
               <div className="space-y-6">
+                <FormField
+                  control={form.control}
+                  name="jobPosition"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground/80">Job Position</FormLabel>
+                      {isEditing ? (
+                        <FormControl>
+                          <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                        </FormControl>
+                      ) : (
+                        <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">{field.value}</div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="workLocation"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground/80">Work Location</FormLabel>
+                      {isEditing ? (
+                        <FormControl>
+                          <Input {...field} className="bg-background/[0.03] border-white/[0.1] focus-visible:ring-primary" />
+                        </FormControl>
+                      ) : (
+                        <div className="font-medium text-foreground pb-2 border-b border-white/[0.06]">
+                          {field.value || "Not provided"}
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="status"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-muted-foreground/80">Status</FormLabel>
+                      {isEditing ? (
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="bg-background/[0.03] border-white/[0.1]">
+                              <SelectValue placeholder="Select status" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="Active">Active</SelectItem>
+                            <SelectItem value="Inactive">Inactive</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      ) : (
+                        <div className="font-medium pb-2 border-b border-white/[0.06] flex items-center gap-2">
+                          <div className={`status-dot ${field.value === 'Active' ? 'status-dot-active' : 'status-dot-inactive'}`} />
+                          <span className={field.value === 'Active' ? 'text-status-active' : 'text-status-inactive'}>{field.value}</span>
+                        </div>
+                      )}
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
                 <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none text-muted-foreground/80">Emergency Contact</label>
-                  <div className="font-medium text-foreground/40 pb-2 border-b border-white/[0.04] italic">Not provided</div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium leading-none text-muted-foreground/80">IBAN / Bank Details</label>
-                  <div className="font-medium text-foreground/40 pb-2 border-b border-white/[0.04] italic">Not provided</div>
+                  <label className="text-sm font-medium leading-none text-muted-foreground/80">Work Email</label>
+                  <div className="font-medium text-foreground/60 pb-2 border-b border-white/[0.06]">
+                    {workEmail}
+                  </div>
                 </div>
               </div>
             </div>
-            <p className="mt-8 text-xs text-muted-foreground/50 text-center">
-              Private information fields are currently UI-only placeholders.
-            </p>
-          </TabsContent>
-        </Tabs>
+
+            {isEditing && (
+              <div className="pt-6 flex justify-end">
+                <Button type="submit" disabled={isSubmitting} className="bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/20 w-32">
+                  {isSubmitting ? "Saving..." : <><Save className="w-4 h-4 mr-2"/> Save</>}
+                </Button>
+              </div>
+            )}
+          </form>
+        </Form>
       </div>
     </div>
   );

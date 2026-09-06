@@ -10,9 +10,10 @@ import { Plus } from "lucide-react";
 interface SchedulesViewProps {
   schedules: any[];
   canWrite: boolean;
+  isAdmin?: boolean;
 }
 
-export function SchedulesView({ schedules, canWrite }: SchedulesViewProps) {
+export function SchedulesView({ schedules, canWrite, isAdmin }: SchedulesViewProps) {
   const router = useRouter();
   const [selectedId, setSelectedId] = useState<number | "new" | null>(null);
 
@@ -74,6 +75,33 @@ export function SchedulesView({ schedules, canWrite }: SchedulesViewProps) {
                 router.refresh();
               }} 
             />
+            {isAdmin && selectedSchedule && selectedSchedule.employees && (
+              <div className="mt-8 max-w-5xl mx-auto">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-medium">Assigned Employees</h3>
+                  <Badge variant="secondary">{selectedSchedule.employees.length} employees</Badge>
+                </div>
+                {selectedSchedule.employees.length === 0 ? (
+                  <div className="p-8 text-center border border-white/[0.05] rounded-xl text-muted-foreground bg-background/[0.01]">
+                    No employees are currently assigned to this working schedule.
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {selectedSchedule.employees.map((emp: any) => (
+                      <div key={emp.id} className="p-4 rounded-xl border border-white/[0.05] bg-background/[0.02] flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{emp.name}</p>
+                          <p className="text-xs text-muted-foreground">{emp.jobPosition} • {emp.department}</p>
+                        </div>
+                        <Button variant="ghost" size="sm" onClick={() => router.push(`/employees/${emp.id}`)}>
+                          View
+                        </Button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         ) : (
           <div className="m-auto text-muted-foreground text-sm flex flex-col items-center gap-3">
