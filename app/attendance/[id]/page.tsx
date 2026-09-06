@@ -5,14 +5,15 @@ import prisma from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { AttendanceForm } from "@/components/attendance/AttendanceForm";
 
-export default async function EditAttendancePage({ params }: { params: { id: string } }) {
+export default async function EditAttendancePage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   
   if (!session || !can((session.user as any).role, "attendance:write")) {
     redirect("/attendance");
   }
 
-  const attendanceId = parseInt(params.id, 10);
+  const resolvedParams = await params;
+  const attendanceId = parseInt(resolvedParams.id, 10);
   if (isNaN(attendanceId)) {
     notFound();
   }

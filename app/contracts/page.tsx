@@ -19,7 +19,7 @@ import { Button } from "@/components/ui/button";
 export default async function ContractsListPage({
   searchParams,
 }: {
-  searchParams: { employeeId?: string };
+  searchParams: Promise<{ employeeId?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session) return null;
@@ -27,8 +27,9 @@ export default async function ContractsListPage({
   const role = (session.user as any).role;
   const canWrite = can(role, "contract:write");
 
-  const whereClause = searchParams.employeeId
-    ? { employeeId: parseInt(searchParams.employeeId, 10) }
+  const resolvedSearchParams = await searchParams;
+  const whereClause = resolvedSearchParams.employeeId
+    ? { employeeId: parseInt(resolvedSearchParams.employeeId, 10) }
     : {};
 
   const contracts = await prisma.contract.findMany({

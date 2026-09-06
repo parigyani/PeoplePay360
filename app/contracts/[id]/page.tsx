@@ -5,14 +5,15 @@ import { prisma } from "@/lib/prisma";
 import { redirect, notFound } from "next/navigation";
 import { ContractForm } from "@/components/contracts/ContractForm";
 
-export default async function EditContractPage({ params }: { params: { id: string } }) {
+export default async function EditContractPage({ params }: { params: Promise<{ id: string }> }) {
   const session = await getServerSession(authOptions);
   
   if (!session || !can((session.user as any).role, "contract:write")) {
     redirect("/contracts");
   }
 
-  const contractId = parseInt(params.id, 10);
+  const resolvedParams = await params;
+  const contractId = parseInt(resolvedParams.id, 10);
   if (isNaN(contractId)) {
     notFound();
   }

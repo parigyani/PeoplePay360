@@ -18,13 +18,15 @@ import { Button } from "@/components/ui/button";
 export default async function AttendanceListPage({
   searchParams,
 }: {
-  searchParams: { employeeId?: string };
+  searchParams: Promise<{ employeeId?: string }>;
 }) {
   const session = await getServerSession(authOptions);
   if (!session) return null;
 
   const role = (session.user as any).role;
   const canWrite = can(role, "attendance:write");
+
+  const resolvedSearchParams = await searchParams;
 
   // Non-privileged users (like EMPLOYEE) can only see their own attendance
   // unless they are explicitly looking at someone else and have HR access.
@@ -33,8 +35,8 @@ export default async function AttendanceListPage({
   
   if (role === "EMPLOYEE") {
     targetEmployeeId = (session.user as any).employeeId;
-  } else if (searchParams.employeeId) {
-    targetEmployeeId = parseInt(searchParams.employeeId, 10);
+  } else if (resolvedSearchParams.employeeId) {
+    targetEmployeeId = parseInt(resolvedSearchParams.employeeId, 10);
   }
 
   const whereClause = targetEmployeeId ? { employeeId: targetEmployeeId } : {};

@@ -1,6 +1,13 @@
 // @ts-nocheck
 "use client";
 
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -346,12 +353,12 @@ export function EmployeeDetailView({
                       )}
                     />
 
-                    <FormItem>
-                      <FormLabel className="text-muted-foreground/80">Work Email</FormLabel>
+                    <div className="space-y-2">
+                      <label className="text-sm font-medium leading-none text-muted-foreground/80">Work Email</label>
                       <div className="font-medium text-foreground/60 pb-2 border-b border-white/[0.06]">
                         {workEmail}
                       </div>
-                    </FormItem>
+                    </div>
                   </div>
                 </div>
 
@@ -369,10 +376,10 @@ export function EmployeeDetailView({
           <TabsContent value="private">
             <div className="grid grid-cols-2 gap-x-12 gap-y-6">
               <div className="space-y-6">
-                <FormItem>
-                  <FormLabel className="text-muted-foreground/80">Personal Email</FormLabel>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium leading-none text-muted-foreground/80">Personal Email</label>
                   <div className="font-medium text-foreground/40 pb-2 border-b border-white/[0.04] italic">Not provided</div>
-                </FormItem>
+                </div>
                 <FormField
                   control={form.control}
                   name="phone"
@@ -392,20 +399,20 @@ export function EmployeeDetailView({
                     </FormItem>
                   )}
                 />
-                <FormItem>
-                  <FormLabel className="text-muted-foreground/80">Address</FormLabel>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium leading-none text-muted-foreground/80">Address</label>
                   <div className="font-medium text-foreground/40 pb-2 border-b border-white/[0.04] italic">Not provided</div>
-                </FormItem>
+                </div>
               </div>
               <div className="space-y-6">
-                <FormItem>
-                  <FormLabel className="text-muted-foreground/80">Emergency Contact</FormLabel>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium leading-none text-muted-foreground/80">Emergency Contact</label>
                   <div className="font-medium text-foreground/40 pb-2 border-b border-white/[0.04] italic">Not provided</div>
-                </FormItem>
-                <FormItem>
-                  <FormLabel className="text-muted-foreground/80">IBAN / Bank Details</FormLabel>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium leading-none text-muted-foreground/80">IBAN / Bank Details</label>
                   <div className="font-medium text-foreground/40 pb-2 border-b border-white/[0.04] italic">Not provided</div>
-                </FormItem>
+                </div>
               </div>
             </div>
             <p className="mt-8 text-xs text-muted-foreground/50 text-center">
