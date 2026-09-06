@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { EmployeeKanban } from "@/components/employees/EmployeeKanban";
 import { EmployeeList } from "@/components/employees/EmployeeList";
 import { EmployeeForm } from "@/components/employees/EmployeeForm";
@@ -68,6 +69,7 @@ export function EmployeeClientView({
 }: EmployeeClientViewProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data: session } = useSession();
   const viewParam = searchParams.get("view");
   
   const [activeView, setActiveView] = useState<"kanban" | "list">(
@@ -98,11 +100,17 @@ export function EmployeeClientView({
     list: "List view for sort, filter and bulk scanning",
   };
 
+  const employeeId = (session?.user as any)?.employeeId;
+  const currentEmployee = employees.find(e => e.id === employeeId);
+  const fullName = currentEmployee?.name || session?.user?.name || session?.user?.email?.split('@')[0] || "User";
+  const firstName = fullName.split(' ')[0];
+
   return (
     <div className="space-y-6 container mx-auto max-w-7xl">
       {/* Header */}
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight">Employees</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight">Hi {firstName}!</h1>
+        <h2 className="text-2xl font-bold tracking-tight mt-2">Employees</h2>
         <p className="text-sm text-muted-foreground mt-1">
           {subtextMap[activeView]}
         </p>
