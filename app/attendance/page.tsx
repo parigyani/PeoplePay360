@@ -123,15 +123,20 @@ export default async function AttendanceListPage({
           </div>
         ) : (
           Object.entries(grouped).map(([empName, months]) => (
-            <div key={empName} className="space-y-6 bg-white/[0.01] border border-white/[0.05] p-6 rounded-xl">
-              <h2 className="text-2xl font-bold tracking-tight flex items-center gap-2">
-                <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm">
+            <details key={empName} className="group bg-white/[0.01] border border-white/[0.05] rounded-xl overflow-hidden" open>
+              <summary className="text-2xl font-bold tracking-tight flex items-center gap-2 cursor-pointer p-6 bg-white/[0.01] hover:bg-white/[0.03] transition-colors list-none [&::-webkit-details-marker]:hidden">
+                <span className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center text-sm shrink-0">
                   {empName.split(' ').map(w => w[0]).join('').toUpperCase().substring(0, 2)}
                 </span>
-                {empName}
-              </h2>
+                <span className="flex-1">{empName}</span>
+                <div className="ml-auto text-muted-foreground transition-transform duration-200 group-open:rotate-180">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </div>
+              </summary>
               
-              <div className="space-y-8">
+              <div className="space-y-8 p-6 border-t border-white/[0.05] bg-background/50">
                 {Object.entries(months).map(([monthStr, records]) => (
                   <div key={monthStr} className="space-y-3">
                     <h3 className="text-lg font-semibold text-primary/80 border-b border-white/[0.05] pb-2">
@@ -200,7 +205,7 @@ export default async function AttendanceListPage({
                   </div>
                 ))}
               </div>
-            </div>
+            </details>
           ))
         )}
       </div>
