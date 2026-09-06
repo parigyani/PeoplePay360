@@ -26,11 +26,17 @@ export default async function ContractsListPage({
 
   const role = (session.user as any).role;
   const canWrite = can(role, "contract:write");
+  const canReadAny = can(role, "contract:read");
+  const currentEmployeeId = (session.user as any).employeeId;
 
   const resolvedSearchParams = await searchParams;
-  const whereClause = resolvedSearchParams.employeeId
+  let whereClause: any = resolvedSearchParams.employeeId
     ? { employeeId: parseInt(resolvedSearchParams.employeeId, 10) }
     : {};
+
+  if (!canReadAny) {
+    whereClause = { employeeId: currentEmployeeId || -1 };
+  }
 
   const contracts = await prisma.contract.findMany({
     where: whereClause,

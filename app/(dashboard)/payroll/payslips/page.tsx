@@ -5,14 +5,29 @@ import { Prisma } from '@prisma/client';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Card, CardContent } from "@/components/ui/card";
 
+import { getServerSession } from "next-auth/next";
+import { authOptions } from "@/lib/auth";
+import { can } from "@/lib/rbac";
+
 export default async function PayslipsPage({
   searchParams,
 }: {
   searchParams: Promise<{ q?: string; period?: string }>;
 }) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user) return null;
+
+  const role = (session.user as any).role;
+  const currentEmployeeId = (session.user as any).employeeId;
+  const canReadAny = can(role, "payslip:read");
+
   const { q, period } = await searchParams;
 
   const where: Prisma.PayslipWhereInput = {};
+  if (!canReadAny) {
+    where.employeeId = currentEmployeeId || -1;
+  }
+
   if (q) {
     where.employee = { name: { contains: q, mode: 'insensitive' } };
   }
