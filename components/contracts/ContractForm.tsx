@@ -263,6 +263,7 @@ export function ContractForm({ initialData, employees, structures }: ContractFor
                         <DatePicker
                           date={field.value || undefined}
                           setDate={field.onChange}
+                          minDate={form.watch("startDate")}
                         />
                       </div>
                       {field.value && (
